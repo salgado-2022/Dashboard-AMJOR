@@ -338,6 +338,7 @@ export default function SuppliesPage() {
                         </TableContainer>
                     </Scrollbar>
 
+
                     <TablePagination style={{marginBottom: ''}}
                         rowsPerPageOptions={[5, 10, 25]}
                         component="div"
