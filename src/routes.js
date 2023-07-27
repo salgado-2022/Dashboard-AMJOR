@@ -11,7 +11,7 @@ import OrdersPage from './pages/OrdersPage';
 import DashboardAppPage from './pages/DashboardAppPage';
 import SuppliesPage from './pages/SuppliesPage';
 import AnchetasPage from './pages/AnchetaPage';
-
+import { UsuariosFormulario2 } from './sections/@dashboard/user/modal/create';
 // ----------------------------------------------------------------------
 
 export default function Router() {
@@ -26,7 +26,8 @@ export default function Router() {
         { path: 'orders', element: <OrdersPage /> },
         { path: 'blog', element: <BlogPage /> },
         { path: 'supplies', element: <SuppliesPage /> },
-        { path: 'anchetas', element: <AnchetasPage /> }
+        { path: 'anchetas', element: <AnchetasPage /> },
+        { path: 'create', element: <UsuariosFormulario2 />}
       ],
     },
     {
