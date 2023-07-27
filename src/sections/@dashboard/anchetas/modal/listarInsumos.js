@@ -9,8 +9,6 @@ function ListarInsumos(props) {
     const { onHide, show } = props;
 
     const [data, setData] = useState([]);
-    const [tabla, setTabla] = useState([]);
-    const [busqueda, setBusqueda] = useState("");
 
     const Globalstate = useContext(Insumoscontext);
     const dispatch = Globalstate.dispatch;
@@ -30,26 +28,9 @@ function ListarInsumos(props) {
             .get("http://localhost:4000/api/admin/insumos")
             .then((res) => {
                 setData(res.data);
-                setTabla(res.data);
             })
             .catch((err) => console.log(err));
     };
-
-
-    const filtrar = (terminoBusqueda) => {
-        var resultadosBusqueda = tabla.filter((elemento) => {
-            if (
-                elemento.NombreInsumo.toString().toLowerCase().includes(terminoBusqueda.toLowerCase()) ||
-                elemento.PrecioUnitario.toString().toLowerCase().includes(terminoBusqueda.toLowerCase()) ||
-                elemento.Estado.toString().toLowerCase().includes(terminoBusqueda.toLowerCase())
-            ) {
-                return elemento;
-            }
-            return null;
-        });
-        setData(resultadosBusqueda);
-    };
-
     useEffect(() => {
         fetchData();
     }, []);
