@@ -5,6 +5,11 @@ import { Box, Divider, Typography, Stack, MenuItem, Avatar, IconButton, Popover 
 // mocks_
 import account from '../../../_mock/account';
 
+import axios from "axios";
+
+//sweetalert2
+import Swal from 'sweetalert2';
+
 // ----------------------------------------------------------------------
 
 const MENU_OPTIONS = [
@@ -30,11 +35,33 @@ export default function AccountPopover() {
   const handleOpen = (event) => {
     setOpen(event.currentTarget);
   };
-
+  axios.defaults.withCredentials = true;
   const handleClose = () => {
-    setOpen(null);
-  };
+    axios.get('http://localhost:4000/api/logout')
+      .then(res => {
+        window.location.href = "http://localhost:3000";
+        setOpen(null);
+        let timerInterval
+        Swal.fire({
+          title: 'Cerrando Sesión!',
+          html: 'Por favor espere un momento.',
+          timer: 2000,
+          timerProgressBar: true,
+          didOpen: () => {
 
+          },
+          willClose: () => {
+            clearInterval(timerInterval);
+            window.location.reload(true);
+          }
+        }).then((result) => {
+          /* Read more about handling dismissals below */
+          if (result.dismiss === Swal.DismissReason.timer) {
+            console.log('I was closed by the timer');
+          }
+        })
+      }).catch(err => console.log(err));
+  }
   return (
     <>
       <IconButton
