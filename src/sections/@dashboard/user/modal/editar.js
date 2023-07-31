@@ -118,7 +118,6 @@ function EditarUsuario(props) {
         <div>
           <form onSubmit={handleUpdate} id="editarUsuario">
             <div className="form-group">
-              {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
               <label htmlFor="correo">Cambia tu correo</label>
               <input
                 type="email"
@@ -131,7 +130,6 @@ function EditarUsuario(props) {
               {correoError && <div className="invalid-feedback">Por favor, ingresa un correo electrónico válido.</div>}
             </div>
             <div className="form-group">
-              {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
               <label htmlFor="contrasena">Cambia tu Contraseña</label>
               <div className="input-group">
                 <input
@@ -164,7 +162,6 @@ function EditarUsuario(props) {
                 checked={isChecked}
                 onChange={handleInput}
               />
-              {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
               <label className="form-check-label" htmlFor="estadoUsuarios">
                 Disponible
               </label>

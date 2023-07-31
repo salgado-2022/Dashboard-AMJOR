@@ -111,16 +111,6 @@ function UsuariosFormulario2() {
 
   return (
     <>
-      <div className="bg-light py-3">
-        <div className="container">
-          <div className="row">
-            <div className="col-md-10 mb-0">
-              <a href="/">Home</a> <span className="mx-2 mb-0">/</span>{" "}
-              <strong className="text-black">Nuevo Usuario</strong>
-            </div>
-          </div>
-        </div>
-      </div>
       <div className="site-section">
         <div className="container">
           <div className="row">
@@ -132,89 +122,91 @@ function UsuariosFormulario2() {
           </div>
           <div className="row">
             <div className="col-md-6">
-              <div className="p-3 p-lg-12 border rounded">
-                <div className="form-group row">
-                  <div className="col-md-12">
-                    <label htmlFor="correo" className="text-black custom-font">
-                      CORREO ELECTRONICO{" "}
-                      <span className="text-danger">*</span>
-                    </label>
-                    <div className="input-group">
-                      <input
-                        type="text"
-                        className={`form-control rounded ${
-                          errors.correo || (values.correo !== "" && !isCorreoValid)
-                            ? "is-invalid"
-                            : ""
-                        }`}
-                        id="correo"
-                        name="correo"
-                        placeholder="juan@gmail.com"
-                        value={values.correo}
-                        onChange={handleCorreoChange}
-                      />
-                      {isCorreoValid && (
-                        <span className="input-group-append">
-                          <span className="input-group-text bg-success border-0">
-                            <AiOutlineCheckCircle size={20} color="white" />
+              {/* Agregar el formulario aquí */}
+              <form onSubmit={handleSubmit}>
+                <div className="p-3 p-lg-12 border rounded">
+                  <div className="form-group row">
+                    <div className="col-md-12">
+                      <label htmlFor="correo" className="text-black custom-font">
+                        CORREO ELECTRONICO{" "}
+                        <span className="text-danger">*</span>
+                      </label>
+                      <div className="input-group">
+                        <input
+                          type="text"
+                          className={`form-control rounded ${
+                            errors.correo || (values.correo !== "" && !isCorreoValid)
+                              ? "is-invalid"
+                              : ""
+                          }`}
+                          id="correo"
+                          name="correo"
+                          placeholder="juan@gmail.com"
+                          value={values.correo}
+                          onChange={handleCorreoChange}
+                        />
+                        {isCorreoValid && (
+                          <span className="input-group-append">
+                            <span className="input-group-text bg-success border-0">
+                              <AiOutlineCheckCircle size={20} color="white" />
+                            </span>
                           </span>
-                        </span>
-                      )}
-                    </div>
-                    <span className="text-danger">{errors.correo}</span>
-                  </div>
-                </div>
-                <br />
-                <div className="form-group row">
-                  <div className="col-md-12">
-                    <label htmlFor="contraseña" className="text-black">
-                      CONTRASEÑA{" "}
-                      <span className="text-danger">*</span>
-                    </label>
-                    <div className="input-group">
-                      <input
-                        type="password"
-                        className={`form-control rounded ${
-                          errors.contrasena || (values.contrasena !== "" && !isContrasenaValid)
-                            ? "is-invalid"
-                            : ""
-                        }`}
-                        id="contraseña"
-                        name="contrasena"
-                        value={values.contrasena}
-                        onChange={handleContrasenaChange}
-                      />
-                      {isContrasenaValid && (
-                        <span className="input-group-append">
-                          <span className="input-group-text bg-success border-0">
-                            <AiOutlineCheckCircle size={20} color="white" />
-                          </span>
-                        </span>
-                      )}
-                    </div>
-                    <span className="text-danger">{errors.contrasena}</span>
-                    {values.contrasena.length > 0 && (
-                      <div>
-                        <h6>Contraseña: {values.contrasena}</h6>
-                        <br />
+                        )}
                       </div>
-                    )}
+                      <span className="text-danger">{errors.correo}</span>
+                    </div>
+                  </div>
+                  <br />
+                  <div className="form-group row">
+                    <div className="col-md-12">
+                      <label htmlFor="contraseña" className="text-black">
+                        CONTRASEÑA{" "}
+                        <span className="text-danger">*</span>
+                      </label>
+                      <div className="input-group">
+                        <input
+                          type="password"
+                          className={`form-control rounded ${
+                            errors.contrasena || (values.contrasena !== "" && !isContrasenaValid)
+                              ? "is-invalid"
+                              : ""
+                          }`}
+                          id="contraseña"
+                          name="contrasena"
+                          value={values.contrasena}
+                          onChange={handleContrasenaChange}
+                        />
+                        {isContrasenaValid && (
+                          <span className="input-group-append">
+                            <span className="input-group-text bg-success border-0">
+                              <AiOutlineCheckCircle size={20} color="white" />
+                            </span>
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-danger">{errors.contrasena}</span>
+                      {values.contrasena.length > 0 && (
+                        <div>
+                          <h6>Contraseña: {values.contrasena}</h6>
+                          <br />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  &nbsp;
+                  <div className="row">
+                    <div className="col-md-12 d-flex justify-content-start">
+                      <button
+                        type="submit"
+                        className="btn btn-primary2"
+                        id="UsuariosFormulario2"
+                      >
+                        Guardar el nuevo Usuario
+                      </button>
+                    </div>
                   </div>
                 </div>
-                &nbsp;
-                <div className="row">
-                  <div className="col-md-12 d-flex justify-content-start">
-                    <button
-                      type="submit"
-                      className="btn btn-primary2"
-                      id="UsuariosFormulario2"
-                      onClick={handleSubmit}
-                    >
-                      Guardar el nuevo Usuario
-                    </button>
-                  </div>
-                </div>
-              </div>
+              </form>
             </div>
           </div>
         </div>

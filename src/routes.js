@@ -4,6 +4,7 @@ import DashboardLayout from './layouts/dashboard';
 import SimpleLayout from './layouts/simple';
 import BlogPage from './pages/BlogPage';
 import UserPage from './pages/UserPage';
+import  {ListaConfiguracion} from './pages/ConfigurationPage';
 import LoginPage from './pages/LoginPage';
 import Page404 from './pages/Page404';
 import OrdersPage from './pages/OrdersPage';
@@ -21,7 +22,7 @@ function AuthGuard({ children }) {
   const isTokenValid = checkTokenInCookies();
 
   if (!isTokenValid) {
-    // Si el token no es válido, redirigir al usuario a la página de inicio de sesión
+// Si el token no es válido, redirigir al usuario a la página de inicio de sesión
     return window.location.href = "http://localhost:3000/login";
   }
 
@@ -42,6 +43,7 @@ export default function Router() {
         { path: 'supplies', element: <SuppliesPage /> },
         { path: 'anchetas', element: <AnchetasPage /> },
         { path: 'create', element: <UsuariosFormulario2 /> },
+        { path: 'create', element: <ListaConfiguracion />}
       ],
     },
     {
