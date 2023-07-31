@@ -4,7 +4,7 @@ import DashboardLayout from './layouts/dashboard';
 import SimpleLayout from './layouts/simple';
 import BlogPage from './pages/BlogPage';
 import UserPage from './pages/UserPage';
-import  {ListaConfiguracion} from './pages/ConfigurationPage';
+import ListaConfiguracion from './pages/ConfigurationPage';
 import LoginPage from './pages/LoginPage';
 import Page404 from './pages/Page404';
 import OrdersPage from './pages/OrdersPage';
@@ -43,7 +43,7 @@ export default function Router() {
         { path: 'supplies', element: <SuppliesPage /> },
         { path: 'anchetas', element: <AnchetasPage /> },
         { path: 'create', element: <UsuariosFormulario2 /> },
-        { path: 'create', element: <ListaConfiguracion />}
+        { path: 'confi', element: <ListaConfiguracion />}
       ],
     },
     {
