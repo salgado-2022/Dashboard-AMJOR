@@ -154,7 +154,7 @@ export default function AnchetasPage() {
                     </Typography>
                 </Stack>
 
-                <Card style={{backgroundColor: ''}}>
+                <Card style={{ backgroundColor: '' }}>
                     <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} placeholder="Buscar Ancheta..." />
 
                     <Scrollbar>
@@ -212,30 +212,33 @@ export default function AnchetasPage() {
                                                 {/* Detalles desplegables */}
 
                                                 <TableRow>
-                                                    <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-                                                        <Collapse in={open[ID_Ancheta]} timeout="auto" unmountOnExit>
-                                                            <Box sx={{ margin: 1 }}>
-                                                                <Typography variant="h6" gutterBottom component="div">
-                                                                    Anchetas pedidas
-                                                                </Typography>
-                                                                <Table size="small" aria-label="purchases">
-                                                                    <TableHead>
-                                                                        <TableRow>
-                                                                            <TableCell>Date</TableCell>
-                                                                            <TableCell>Customer</TableCell>
-                                                                            <TableCell align="right">Amount</TableCell>
-                                                                            <TableCell align="right">Total price ($)</TableCell>
-                                                                        </TableRow>
-                                                                    </TableHead>
-                                                                    <TableBody>
-                                                                        <TableRow>
-                                                                            <TableCell component="th" scope="row">
-                                                                                {ID_Ancheta}
-                                                                            </TableCell>
-                                                                        </TableRow>
-                                                                    </TableBody>
-                                                                </Table>
-                                                            </Box>
+                                                    <TableCell style={{ padding: 0, backgroundColor: "#F4F6F8" }} colSpan={8} size='medium'>
+                                                        <Collapse in={open[ID_Ancheta]} timeout="auto" unmountOnExit > 
+                                                            <Card sx={{margin:1.5}} style={{padding: 0}}>
+                                                                <Box sx={{ margin: 2 }}>
+                                                                    
+                                                                    <Typography variant="h5" gutterBottom component="div">
+                                                                        Anchetas pedidas
+                                                                    </Typography>
+                                                                    <Table size="small" aria-label="purchases">
+                                                                        <TableHead>
+                                                                            <TableRow>
+                                                                                <TableCell>Date</TableCell>
+                                                                                <TableCell>Customer</TableCell>
+                                                                                <TableCell align="right">Amount</TableCell>
+                                                                                <TableCell align="right">Total price ($)</TableCell>
+                                                                            </TableRow>
+                                                                        </TableHead>
+                                                                        <TableBody>
+                                                                            <TableRow>
+                                                                                <TableCell component="th" scope="row">
+                                                                                    {ID_Ancheta}
+                                                                                </TableCell>
+                                                                            </TableRow>
+                                                                        </TableBody>
+                                                                    </Table>
+                                                                </Box>
+                                                            </Card>
                                                         </Collapse>
                                                     </TableCell>
                                                 </TableRow>
