@@ -14,7 +14,7 @@ const navConfig = [
   {
     title: 'Configuración',
     path: '/dashboard/confi',
-    icon: icon('ic_confi'),
+    icon: icon('setting'),
   },
   {
     title: 'Usuarios',
