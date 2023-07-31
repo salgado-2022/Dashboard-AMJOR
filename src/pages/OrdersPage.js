@@ -154,7 +154,7 @@ export default function AnchetasPage() {
                     </Typography>
                 </Stack>
 
-                <Card>
+                <Card style={{backgroundColor: ''}}>
                     <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} placeholder="Buscar Ancheta..." />
 
                     <Scrollbar>

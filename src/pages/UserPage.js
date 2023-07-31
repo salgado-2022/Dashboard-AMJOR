@@ -105,8 +105,8 @@ export default function UserPage() {
       .then((res) => {
         console.log(res);
         Swal.fire({
-          title: 'Eliminado Correctamente',
-          text: 'Tu usuario ha sido eliminado correctamente',
+          title: 'Eliminado correctamente',
+          text: 'El usuario ha sido eliminado correctamente',
           icon: 'success',
           showConfirmButton: false,
           timer: 1500,
@@ -185,7 +185,7 @@ export default function UserPage() {
           </Typography>
           <Link to="/dashboard/create">
             <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />}>
-              Crear Usuario
+              Crear usuario
             </Button>
           </Link>
         </Stack>
@@ -194,7 +194,7 @@ export default function UserPage() {
             numSelected={selected.length}
             filterName={filterName}
             onFilterName={handleFilterByName}
-            placeholder="Buscar Usuario..."
+            placeholder="Buscar usuario..."
           />
 
           <Scrollbar>
@@ -287,13 +287,13 @@ export default function UserPage() {
                           }}
                         >
                           <Typography variant="h6" paragraph>
-                            Not found
+                            No encontrado
                           </Typography>
 
                           <Typography variant="body2">
-                            No results found for &nbsp;
+                            No se encontraron resultados para &nbsp;
                             <strong>&quot;{filterName}&quot;</strong>.
-                            <br /> Try checking for typos or using complete words.
+                            <br /> Intente verificar errores tipográficos o usar palabras completas.
                           </Typography>
                         </Paper>
                       </TableCell>
