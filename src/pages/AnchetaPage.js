@@ -113,7 +113,11 @@ export default function AnchetasPage() {
 
     useEffect(() => {
         fetchData();
-    }, []);
+
+        if (!modalShowNew) {
+            fetchData();
+        }
+    }, [modalShowNew]);
 
     const fetchData = () => {
         axios.get('http://localhost:4000/api/admin/anchetas')

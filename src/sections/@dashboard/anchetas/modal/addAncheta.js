@@ -150,7 +150,7 @@ function AddAncheta(props) {
                                 popup: 'custom-swal-alert' // Aquí pasamos la clase personalizada
                             }
                         });
-                        setTimeout(function () { window.location = "anchetas"; }, 670);
+                        props.onHide()
                     } else {
                         Swal.fire({
                             title: 'Error!',
