@@ -36,13 +36,13 @@
     ]
   },
   "dependencies": {
-    "@emotion/react": "^11.10.6",
-    "@emotion/styled": "^11.10.6",
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
     "@faker-js/faker": "^7.6.0",
     "@iconify/react": "^4.1.0",
     "@mui/icons-material": "^5.14.1",
     "@mui/lab": "^5.0.0-alpha.103",
-    "@mui/material": "^5.11.10",
+    "@mui/material": "^5.14.2",
     "@restart/ui": "^1.6.6",
     "apexcharts": "^3.37.0",
     "axios": "^1.4.0",

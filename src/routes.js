@@ -12,6 +12,7 @@ import DashboardAppPage from './pages/DashboardAppPage';
 import SuppliesPage from './pages/SuppliesPage';
 import AnchetasPage from './pages/AnchetaPage';
 import { UsuariosFormulario2 } from './sections/@dashboard/user/modal/create';
+import { ConfiFormulario } from './sections/@dashboard/configuracion/modal/crearte';
 
 function checkTokenInCookies() {
   const token = Cookies.get('token');
@@ -43,7 +44,8 @@ export default function Router() {
         { path: 'supplies', element: <SuppliesPage /> },
         { path: 'anchetas', element: <AnchetasPage /> },
         { path: 'create', element: <UsuariosFormulario2 /> },
-        { path: 'confi', element: <ListaConfiguracion />}
+        { path: 'confi', element: <ListaConfiguracion />},
+        { path: 'crearte', element: <ConfiFormulario/>}
       ],
     },
     {
