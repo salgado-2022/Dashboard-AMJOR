@@ -25,7 +25,7 @@ import {
 
 import Iconify from '../components/iconify';
 import Scrollbar from '../components/scrollbar';
-import { EditarConfi } from "../sections/@dashboard/configuracion/modal/editarConfiguracion";
+import { EditarConfi } from '../sections/@dashboard/configuracion/modal/edita';
 import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
 
 const TABLE_HEAD = [
@@ -59,7 +59,7 @@ function applySortFilter(array, comparator, query) {
     return a[1] - b[1];
   });
   if (query) {
-    return filter(array, (_correo) => _correo.correo.toLowerCase().indexOf(query.toLowerCase()) !== -1);
+    return filter(array, (_Rol) => _Rol._Rol.toLowerCase().indexOf(query.toLowerCase()) !== -1);
   }
   return stabilizedThis.map((el) => el[0]);
 }
@@ -74,8 +74,6 @@ export default function ListaConfiguracion() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [data, setData] = useState([]);
   const [selectedConfiguracionID, setSelectedConfiguracionID] = useState(null);
-  const [showDeleteMenu, setShowDeleteMenu] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null);
   const [modalShow, setModalShow] = useState(false);
 
   useEffect(() => {
@@ -96,6 +94,7 @@ export default function ListaConfiguracion() {
       .delete(`http://localhost:4000/api/admin/configuracion/Confidel/${id}`)
       .then((res) => {
         console.log(res);
+        fetchData(); // Actualiza los datos después de la eliminación
         Swal.fire({
           title: 'Eliminado Correctamente',
           text: 'El rol se ha sido eliminado correctamente',
@@ -103,23 +102,17 @@ export default function ListaConfiguracion() {
           showConfirmButton: false,
           timer: 1500,
         });
-        setTimeout(function () {
-          window.location = 'confi';
-        }, 670);
       })
       .catch((err) => console.log(err));
   };
 
   const handleOpenMenu = (event, ID_Rol) => {
     setOpen(event.currentTarget);
-    setSelectedUser(ID_Rol);
-    setShowDeleteMenu(true);
+    setSelectedConfiguracionID(ID_Rol);
   };
 
   const handleCloseMenu = () => {
     setOpen(null);
-    setSelectedUser(null);
-    setShowDeleteMenu(false);
   };
 
   const handleRequestSort = (event, property) => {
@@ -186,9 +179,9 @@ export default function ListaConfiguracion() {
           <Typography variant="h4" gutterBottom>
             Configuración
           </Typography>
-          <Link to="/dashboard/create">
+          <Link to="/dashboard/crearte">
             <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />}>
-              Crear Configuración
+              Crear Roles y Permisos
             </Button>
           </Link>
         </Stack>
@@ -217,9 +210,9 @@ export default function ListaConfiguracion() {
                   const estadoText = estado === 1 ? 'Activo' : 'Inactivo';
 
                   return (
-                    <TableRow hover key={ID_Rol} tabIndex={-1} role="checkbox" selected={selectedUser === ID_Rol}>
+                    <TableRow hover key={ID_Rol} tabIndex={-1} role="checkbox" selected={selected.indexOf(ID_Rol) !== -1}>
                       <TableCell padding="checkbox">
-                        <Checkbox checked={selectedUser === ID_Rol} onChange={(event) => handleClick(event, ID_Rol)} />
+                        <Checkbox checked={selected.indexOf(ID_Rol) !== -1} onClick={(event) => handleClick(event, ID_Rol)} />
                       </TableCell>
                       <TableCell component="th" scope="row" padding="none">
                         <Stack direction="row" alignItems="center" spacing={2}>
@@ -230,13 +223,13 @@ export default function ListaConfiguracion() {
                         </Stack>
                       </TableCell>
                       <TableCell align="left">{Nombre_Rol}</TableCell>
-                      <TableCell align="left">{estadoText}</TableCell> {/* Campo de estado */}
+                      <TableCell align="left">{estadoText}</TableCell>
                       <TableCell align="left">
                         <IconButton size="large" color="inherit" onClick={(event) => handleOpenMenu(event, ID_Rol)}>
                           <Iconify icon={'eva:more-vertical-fill'} />
                         </IconButton>
                         <Popover
-                          open={Boolean(open) && showDeleteMenu}
+                          open={Boolean(open) && selectedConfiguracionID === ID_Rol}
                           anchorEl={open}
                           onClose={handleCloseMenu}
                           anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
@@ -260,7 +253,7 @@ export default function ListaConfiguracion() {
                           <MenuItem sx={{ color: 'error.main' }} onClick={() => handleDelete(selectedConfiguracionID)}>
                             <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
                             Eliminar
-                          </MenuItem> 
+                          </MenuItem>
                         </Popover>
                       </TableCell>
                     </TableRow>
@@ -309,7 +302,11 @@ export default function ListaConfiguracion() {
         </Card>
       </Container>
       {/* Ventana modal */}
-      <EditarConfi show={modalShow} onHide={() => setModalShow(false)} selectedConfiguracionID={selectedConfiguracionID} />
+      <EditarConfi
+        show={modalShow}
+        onHide={() => setModalShow(false)}
+        selectedConfiguracionID={selectedConfiguracionID}
+      />
     </>
   );
 }

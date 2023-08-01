@@ -81,7 +81,7 @@ export default function AnchetasPage() {
     const [open, setOpen] = useState({});
     const [page, setPage] = useState(0);
     const [order, setOrder] = useState('desc');
-    const [selected, setSelected] = useState([]);
+    const [selected, setSelected ] = useState([]);
     const [orderBy, setOrderBy] = useState('ID_Ancheta');
     const [filterName, setFilterName] = useState('');
     const [rowsPerPage, setRowsPerPage] = useState(5);
