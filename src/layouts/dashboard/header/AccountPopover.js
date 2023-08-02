@@ -35,12 +35,15 @@ export default function AccountPopover() {
   const handleOpen = (event) => {
     setOpen(event.currentTarget);
   };
-  axios.defaults.withCredentials = true;
+
   const handleClose = () => {
+    setOpen(null);
+  };
+  axios.defaults.withCredentials = true;
+  const logout = () => {
     axios.get('http://localhost:4000/api/logout')
       .then(res => {
         window.location.href = "http://localhost:3000";
-        setOpen(null);
         let timerInterval
         Swal.fire({
           title: 'Cerrando Sesión!',
@@ -124,7 +127,7 @@ export default function AccountPopover() {
 
         <Divider sx={{ borderStyle: 'dashed' }} />
 
-        <MenuItem onClick={handleClose} sx={{ m: 1 }}>
+        <MenuItem onClick={logout} sx={{ m: 1 }}>
           Logout
         </MenuItem>
       </Popover>
