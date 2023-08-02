@@ -5,7 +5,7 @@ import { Box, Divider, Typography, Stack, MenuItem, Avatar, IconButton, Popover 
 // mocks_
 import account from '../../../_mock/account';
 
-import axios from "axios";
+import axios from 'axios';
 
 //sweetalert2
 import Swal from 'sweetalert2';
@@ -39,32 +39,41 @@ export default function AccountPopover() {
   const handleClose = () => {
     setOpen(null);
   };
+
   axios.defaults.withCredentials = true;
+
   const logout = () => {
-    axios.get('http://localhost:4000/api/logout')
-      .then(res => {
-        window.location.href = "http://localhost:3000";
-        let timerInterval
+    axios
+      .get('http://localhost:4000/api/logout')
+      .then((res) => {
+        window.location.href = 'http://localhost:3000';
+        let timerInterval;
         Swal.fire({
-          title: 'Cerrando Sesión!',
-          html: 'Por favor espere un momento.',
+          title: 'Cerrando sesión...',
+          html: 'Por favor espere un momento',
           timer: 2000,
           timerProgressBar: true,
           didOpen: () => {
-
+            Swal.showLoading();
+            const b = Swal.getHtmlContainer().querySelector('b');
+            timerInterval = setInterval(() => {
+              b.textContent = Swal.getTimerLeft();
+            }, 100);
           },
           willClose: () => {
             clearInterval(timerInterval);
             window.location.reload(true);
-          }
+          },
         }).then((result) => {
           /* Read more about handling dismissals below */
           if (result.dismiss === Swal.DismissReason.timer) {
             console.log('I was closed by the timer');
           }
-        })
-      }).catch(err => console.log(err));
-  }
+        });
+      })
+      .catch((err) => console.log(err));
+  };
+
   return (
     <>
       <IconButton
@@ -128,7 +137,7 @@ export default function AccountPopover() {
         <Divider sx={{ borderStyle: 'dashed' }} />
 
         <MenuItem onClick={logout} sx={{ m: 1 }}>
-          Logout
+          Cerrar sesión
         </MenuItem>
       </Popover>
     </>
