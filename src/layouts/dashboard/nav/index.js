@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 // @mui
 import { styled, alpha } from '@mui/material/styles';
-import { Box, Link, Button, Drawer, Typography, Avatar, Stack } from '@mui/material';
+import { Box, Link, Drawer, Typography, Avatar } from '@mui/material';
 // mock
 import account from '../../../_mock/account';
 // hooks
@@ -14,6 +14,10 @@ import Scrollbar from '../../../components/scrollbar';
 import NavSection from '../../../components/nav-section';
 //
 import navConfig from './config';
+
+//js-cookie
+import Cookies from "js-cookie";
+import axios from 'axios';
 
 // ----------------------------------------------------------------------
 
@@ -39,12 +43,25 @@ export default function Nav({ openNav, onCloseNav }) {
 
   const isDesktop = useResponsive('up', 'lg');
 
+  const token = Cookies.get("token");
+  const [nombre, setNombre] = useState(null);
+  const [rol, setRol] = useState(null);
+
   useEffect(() => {
     if (openNav) {
       onCloseNav();
     }
+    if(token) {
+      axios.get(`http://localhost:4000/api/search/${token}`)
+      .then((res) =>{
+          const {Nombre, Nombre_Rol} = res.data[0]
+          setNombre(Nombre);
+          setRol(Nombre_Rol);
+      })
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
+
 
   const renderContent = (
     <Scrollbar
@@ -64,11 +81,11 @@ export default function Nav({ openNav, onCloseNav }) {
 
             <Box sx={{ ml: 2 }}>
               <Typography variant="subtitle2" sx={{ color: 'text.primary' }}>
-                {account.displayName}
+                {nombre} 
               </Typography>
 
               <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                {account.role}
+                {rol} 
               </Typography>
             </Box>
           </StyledAccount>
