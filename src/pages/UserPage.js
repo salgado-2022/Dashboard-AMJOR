@@ -71,7 +71,6 @@ function applySortFilter(array, comparator, query) {
   }
   return stabilizedThis.map((el) => el[0]);
 }
-
 export default function UserPage() {
   const [open, setOpen] = useState(null);
   const [page, setPage] = useState(0);
@@ -83,14 +82,12 @@ export default function UserPage() {
   const [data, setData] = useState([]);
   const [selectedUser1, setSelectedUser] = useState(null);
   const [showDeleteMenu, setShowDeleteMenu] = useState(false);
-
+  
   //Modal Editar Usuario
   const [modalShow, setModalShow] = useState(false);
-
   useEffect(() => {
     fetchData();
   }, []);
-
   const fetchData = () => {
     axios
       .get('http://localhost:4000/api/admin/usuario')
@@ -99,12 +96,10 @@ export default function UserPage() {
       })
       .catch((err) => console.log(err));
   };
-
   const handleDelete = () => {
     if (!selectedUser1) {
       return;
     }
-
     axios
       .delete('http://localhost:4000/api/admin/usuarios/Usuariodel/' + selectedUser1)
       .then((res) => {
@@ -121,25 +116,21 @@ export default function UserPage() {
       })
       .catch((err) => console.log(err));
   };
-
   const handleOpenMenu = (event, idUsuario) => {
     setOpen(event.currentTarget);
     setSelectedUser(idUsuario);
     setShowDeleteMenu(true);
   };
-
   const handleCloseMenu = () => {
     setOpen(null);
     setSelectedUser(null);
     setShowDeleteMenu(false);
   };
-
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
   };
-
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
       const newSelecteds = data.map((n) => n.idUsuario);
@@ -148,7 +139,6 @@ export default function UserPage() {
     }
     setSelected([]);
   };
-
   const handleClick = (event, idUsuario) => {
     const selectedIndex = selected.indexOf(idUsuario);
     let newSelected = [];
@@ -163,33 +153,25 @@ export default function UserPage() {
     }
     setSelected(newSelected);
   };
-
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
-
   const handleChangeRowsPerPage = (event) => {
     setPage(0);
     setRowsPerPage(parseInt(event.target.value, 10));
   };
-
   const handleFilterByName = (event) => {
     setPage(0);
     setFilterName(event.target.value);
   };
-
   const handleEditar = (idSelectedUser) => {
     setSelectedUser(idSelectedUser);
     setModalShow(true);
     setOpen(null);
   };
-
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0;
-
   const filteredUsers = applySortFilter(data, getComparator(order, orderBy), filterName);
-
   const isNotFound = !filteredUsers.length && !!filterName;
-
   return (
     <>
       <Helmet>
@@ -216,82 +198,81 @@ export default function UserPage() {
           />
 
           <Scrollbar>
-          <TableContainer sx={{ minWidth: 800 }}>
-        <Table>
-          <UserListHead
-            order={order}
-            orderBy={orderBy}
-            headLabel={TABLE_HEAD}
-            rowCount={data.length}
-            numSelected={selected.length}
-            onRequestSort={handleRequestSort}
-            onSelectAllClick={handleSelectAllClick}
-          />
-          <TableBody>
-            {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-              const { idUsuario, correo, estado } = row;
-              const selectedUser = selected.indexOf(idUsuario) !== -1;
-              const estadoText = estado === 1 ? 'Activo' : 'Inactivo'; // Texto del estado según el valor
-
-              return (
-                <TableRow hover key={idUsuario} tabIndex={-1} role="checkbox" selected={selectedUser}>
-                  <TableCell padding="checkbox">
-                    <Checkbox checked={selectedUser} onChange={(event) => handleClick(event, idUsuario)} />
-                  </TableCell>
-
-                  <TableCell component="th" scope="row" padding="none">
-                    <Stack direction="row" alignItems="center" spacing={2}>
-                      <Avatar alt="" src="" />
-                      <Typography variant="subtitle2" noWrap>
-                        {idUsuario}
-                      </Typography>
-                    </Stack>
-                  </TableCell>
-
-                  <TableCell key={correo} align="left">
-                    {correo}
-                  </TableCell>
-
-                  <TableCell align="left">{estadoText}</TableCell> {/* Campo de estado */}
-                  <TableCell align="left">
-               
-                    <IconButton size="large" color="inherit" onClick={(event) => handleOpenMenu(event, idUsuario)}>
-                      <Iconify icon={'eva:more-vertical-fill'} />
-                    </IconButton>
-                    <Popover
-                      open={Boolean(open) && showDeleteMenu}
-                      anchorEl={open}
-                      onClose={handleCloseMenu}
-                      anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-                      transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-                      PaperProps={{
-                        sx: {
-                          p: 1,
-                          width: 140,
-                          '& .MuiMenuItem-root': {
-                            px: 1,
-                            typography: 'body2',
-                            borderRadius: 0.75,
-                          },
-                        },
-                      }}
-                    >
-                      <MenuItem onClick={() => handleEditar(selectedUser1)}>
-                        <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
-                        Editar
-                      </MenuItem>
-                      <MenuItem sx={{ color: 'error.main' }} onClick={() => handleDelete(selectedUser1)}>
-                        <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
-                        Eliminar
-                      </MenuItem>
-                    </Popover>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
+            <TableContainer sx={{ minWidth: 800 }}>
+              <Table>
+                <UserListHead
+                  order={order}
+                  orderBy={orderBy}
+                  headLabel={TABLE_HEAD}
+                  rowCount={data.length}
+                  numSelected={selected.length}
+                  onRequestSort={handleRequestSort}
+                  onSelectAllClick={handleSelectAllClick}
+                />
+                <TableBody>
+                  {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+                    const { idUsuario, correo, estado } = row;
+                    const selectedUser = selected.indexOf(idUsuario) !== -1;
+                    const estadoText = estado === 1 ? 'Activo' : 'Inactivo'; // Texto del estado según el valor
+                    return (
+                      <TableRow hover key={idUsuario} tabIndex={-1} role="checkbox" selected={selectedUser}>
+                        <TableCell padding="checkbox">
+                          <Checkbox checked={selectedUser} onChange={(event) => handleClick(event, idUsuario)} />
+                        </TableCell>
+                        <TableCell component="th" scope="row" padding="none">
+                          <Stack direction="row" alignItems="center" spacing={2}>
+                            <Avatar alt="" src="" />
+                            <Typography variant="subtitle2" noWrap>
+                              {idUsuario}
+                            </Typography>
+                          </Stack>
+                        </TableCell>
+                        <TableCell key={correo} align="left">
+                          {correo}
+                        </TableCell>
+                        <TableCell align="left">{estadoText}</TableCell> {/* Campo de estado */}
+                        <TableCell align="left">
+                          <IconButton
+                            size="large"
+                            color="inherit"
+                            onClick={(event) => handleOpenMenu(event, idUsuario)}
+                          >
+                            <Iconify icon={'eva:more-vertical-fill'} />
+                          </IconButton>
+                          <Popover
+                            open={Boolean(open) && showDeleteMenu}
+                            anchorEl={open}
+                            onClose={handleCloseMenu}
+                            anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
+                            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                            PaperProps={{
+                              sx: {
+                                p: 1,
+                                width: 140,
+                                '& .MuiMenuItem-root': {
+                                  px: 1,
+                                  typography: 'body2',
+                                  borderRadius: 0.75,
+                                },
+                              },
+                            }}
+                          >
+                            <MenuItem onClick={() => handleEditar(selectedUser1)}>
+                              <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
+                              Editar
+                            </MenuItem>
+                            <MenuItem sx={{ color: 'error.main' }} onClick={() => handleDelete(selectedUser1)}>
+                              <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
+                              Eliminar
+                            </MenuItem>
+                          </Popover>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
                   {emptyRows > 0 && (
                     <TableRow style={{ height: 53 * emptyRows }}>
-                      <TableCell colSpan={6} />
+                      <TableCell colSpan={5} />{' '} 
                     </TableRow>
                   )}
                 </TableBody>
@@ -322,7 +303,6 @@ export default function UserPage() {
               </Table>
             </TableContainer>
           </Scrollbar>
-
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"

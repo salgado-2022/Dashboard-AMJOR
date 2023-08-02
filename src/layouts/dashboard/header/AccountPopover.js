@@ -5,7 +5,7 @@ import { Box, Divider, Typography, Stack, MenuItem, Avatar, IconButton, Popover 
 // mocks_
 import account from '../../../_mock/account';
 
-import axios from "axios";
+import axios from 'axios';
 
 //sweetalert2
 import Swal from 'sweetalert2';

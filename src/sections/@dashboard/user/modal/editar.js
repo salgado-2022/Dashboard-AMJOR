@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import Modal from 'react-bootstrap/Modal';
-import { Button } from 'react-bootstrap';
+import Modal from '@mui/material/Modal';
+import { Button, TextField, FormControlLabel, Checkbox } from '@mui/material';
+import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import Swal from 'sweetalert2';
 import axios from 'axios';
 
@@ -105,80 +106,64 @@ function EditarUsuario(props) {
   };
 
   return (
-    <Modal onHide={onHide} show={show} size="lg" aria-labelledby="contained-modal-title-vcenter" centered>
-      <Modal.Header>
-        <Modal.Title id="contained-modal-title-vcenter" className="text-black">
-          Editar datos de Usuario
-        </Modal.Title>
-        <Button variant="secondary" onClick={props.onHide} className="close">
-          <span aria-hidden="true">&times;</span>
-        </Button>
-      </Modal.Header>
-      <Modal.Body>
-        <div>
-          <form onSubmit={handleUpdate} id="editarUsuario">
-            <div className="form-group">
-              {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-              <label htmlFor="correo">Cambia tu correo</label>
-              <input
-                type="email"
-                className={`form-control ${correoError ? 'is-invalid' : ''}`}
-                id="correo"
-                name="correo"
-                value={values.correo}
-                onChange={handleInput}
-              />
-              {correoError && <div className="invalid-feedback">Por favor, ingresa un correo electrónico válido.</div>}
-            </div>
-            <div className="form-group">
-              {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-              <label htmlFor="contrasena">Cambia tu Contraseña</label>
-              <div className="input-group">
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  className={`form-control ${contrasenaError ? 'is-invalid' : ''}`}
-                  id="contrasena"
-                  name="contrasena"
-                  value={values.contrasena}
-                  onChange={handleInput}
-                />
-                <div className="input-group-append">
-                  <button className="btn btn-outline-secondary" type="button" onClick={toggleShowPassword}>
-                    {showPassword ? 'Ocultar' : 'Mostrar'}
-                  </button>
-                </div>
-                {contrasenaError && (
-                  <div className="invalid-feedback">
-                    La contraseña debe tener al menos 5 caracteres, la primera letra debe ser mayúscula y debe contener
-                    al menos 2 números sin espacios.
-                  </div>
-                )}
-              </div>
-            </div>
-            <div className="form-check" style={{ marginBottom: '7px' }}>
-              <input
-                type="checkbox"
-                className="form-check-input"
-                id="ID_Estado"
-                name="ID_Estado"
+    <Modal onClose={onHide} open={show} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
+      <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: 'white', padding: '16px', borderRadius: '8px' }}>
+        <h2 style={{ textAlign: 'center' }}>Editar datos de Usuario</h2>
+        <form onSubmit={handleUpdate} id="editarUsuario">
+          <TextField
+            fullWidth
+            label="Cambia tu correo"
+            variant="outlined"
+            name="correo"
+            value={values.correo}
+            onChange={handleInput}
+            error={correoError}
+            helperText={correoError ? 'Por favor, ingresa un correo electrónico válido.' : ''}
+            style={{ marginBottom: '16px', borderRadius: '8px' }}
+          />
+          <TextField
+            fullWidth
+            label="Cambia tu Contraseña"
+            variant="outlined"
+            type={showPassword ? 'text' : 'password'}
+            name="contrasena"
+            value={values.contrasena}
+            onChange={handleInput}
+            error={contrasenaError}
+            helperText={
+              contrasenaError
+                ? 'La contraseña debe tener al menos 5 caracteres, la primera letra debe ser mayúscula y debe contener al menos 2 números sin espacios.'
+                : ''
+            }
+            style={{ marginBottom: '10px', borderRadius: '8px' }}
+            InputProps={{
+              endAdornment: (
+                <Button onClick={toggleShowPassword}>
+                  {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
+                </Button>
+              ),
+            }}
+          />
+          <FormControlLabel
+            control={
+              <Checkbox
                 checked={isChecked}
                 onChange={handleInput}
+                name="ID_Estado"
+                color="primary"
               />
-              {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-              <label className="form-check-label" htmlFor="estadoUsuarios">
-                Disponible
-              </label>
-            </div>
-            <button type="submit" className="btn btn-primary" id="modUsuario">
-              Guardar Cambios
-            </button>{' '}
-            &nbsp;
-            <button type="button" className="btn btn-dark" id="cancelarUsuario" onClick={props.onHide}>
-              Cancelar
-            </button>
-          </form>
-        </div>
-      </Modal.Body>
+            }
+            label="Disponible"
+            style={{ marginBottom: '16px' }}
+          />
+          <Button type="submit" variant="contained" color="primary" id="modUsuario" fullWidth>
+            Guardar Cambios
+          </Button>
+          <Button variant="contained" color="secondary" id="cancelarUsuario" fullWidth style={{ marginTop: '8px' }} onClick={onHide}>
+            Cancelar
+          </Button>
+        </form>
+      </div>
     </Modal>
   );
 }
