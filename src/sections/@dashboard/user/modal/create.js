@@ -1,135 +1,44 @@
-import React, { useState } from 'react';
-import { AiOutlineCheckCircle } from 'react-icons/ai';
-import Swal from 'sweetalert2';
+import React, { useState, useEffect } from 'react';
+import { Modal, TextField, FormControl, Button, Select, MenuItem, InputLabel } from '@mui/material';
 import axios from 'axios';
-import { InputAdornment, TextField, FormControl } from '@mui/material';
-import { LoadingButton } from '@mui/lab';
+import Swal from 'sweetalert2';
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Checkbox,
-  FormControlLabel,
-} from '@mui/material';
-
-function UsuariosFormulario2() {
+function UsuariosFormulario2({ open, onClose, refreshList }) {
   const [values, setValues] = useState({
+    nombre: '',
     correo: '',
     contrasena: '',
-  });
-
-  const [errors, setErrors] = useState({
-    correo: '',
-    contrasena: '',
+    documento: '',
+    apellidos: '',
+    telefono: '',
+    rol: '',
   });
 
   const [existingEmailError, setExistingEmailError] = useState('');
+  const [roles, setRoles] = useState([]);
 
-  const handleCorreoChange = (event) => {
-    const { name, value } = event.target;
-    setValues((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-    setErrors((prevState) => ({
-      ...prevState,
-      correo: !validateEmail(value) ? 'Ingrese un correo electrónico válido.' : '',
-    }));
-    setExistingEmailError(''); // Limpiamos el mensaje de error al cambiar el correo
-    checkExistingEmail(value);
-  };
-
-  const handleContrasenaChange = (event) => {
-    const { name, value } = event.target;
-    setValues((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-    setErrors((prevState) => ({
-      ...prevState,
-      contrasena: !validatePassword(value)
-        ? 'La contraseña debe tener al menos 8 caracteres y empezar con mayúscula.'
-        : '',
-    }));
-  };
-
-  const validateEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-
-  const validatePassword = (password) => {
-    const passwordRegex = /^(?=.*[A-Z])[a-zA-Z0-9]{8,}$/;
-    return passwordRegex.test(password);
-  };
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-
-    if (values.correo === '' || values.contrasena === '') {
-      return;
-    }
-
-    if (!validateEmail(values.correo)) {
-      setExistingEmailError(''); // Limpiamos el mensaje de error antes de mostrar el nuevo error
-      setErrors({
-        ...errors,
-        correo: 'Ingrese un correo electrónico válido.',
-      });
-      return;
-    }
-
-    if (selectedRoles.length === 0) {
-      setRolesError('Debe seleccionar al menos un rol.');
-      return;
-    }
-
+  useEffect(() => {
     axios
-      .post('http://localhost:4000/api/crearUsuario', values)
+      .get('http://localhost:4000/api/listarConfiguracion')
       .then((res) => {
-        if (res.data.Status === 'Success') {
-          Swal.fire({
-            title: 'Creado Correctamente',
-            text: 'Tu usuario ha sido creado correctamente',
-            icon: 'success',
-            showConfirmButton: false,
-            timer: 1500,
-          });
-          setTimeout(function () {
-            window.location = 'user';
-          }, 670);
-        } else if (res.data.Error === 'El correo ya está registrado.') {
-          setExistingEmailError('El correo ya está registrado.');
-        } else {
-          Swal.fire({
-            title: 'Error!',
-            text: 'Hubo un problema al registrar: ' + res.data.Error,
-            icon: 'error',
-            confirmButtonText: 'OK',
-          });
-        }
+        setRoles(res.data);
       })
       .catch((err) => {
-        Swal.fire({
-          title: 'Error!',
-          text: 'Hubo un problema al registrar.',
-          icon: 'error',
-          confirmButtonText: 'OK',
-        });
+        console.error('Error al cargar la lista de roles:', err);
       });
+  }, []);
+
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setValues((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+    if (name === 'correo') {
+      setExistingEmailError('');
+      checkExistingEmail(value);
+    }
   };
-
-  const isCorreoValid = values.correo !== "" && validateEmail(values.correo);
-  const isContrasenaValid = values.contrasena !== "" && validatePassword(values.contrasena);
-
-  const roles = ["Administrador", "Cliente", "Empleado"];
-  const [selectedRoles, setSelectedRoles] = useState([]);
-  const [rolesError, setRolesError] = useState('');
 
   const checkExistingEmail = (email) => {
     axios
@@ -144,155 +53,149 @@ function UsuariosFormulario2() {
       });
   };
 
-  const handleRoleCheckboxChange = (role) => {
-    if (selectedRoles.includes(role)) {
-      return;
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    try {
+      const res = await axios.post('http://localhost:4000/api/crearUsuario', {
+        correo: values.correo,
+        contrasena: values.contrasena,
+        documento: values.documento,
+        nombre: values.nombre,
+        apellido: values.apellidos,
+        telefono: values.telefono,
+        rol: values.rol,
+      });
+
+      if (res.data.Status === 'Success') {
+        onClose(); // Cerrar la modal después de crear el usuario
+        refreshList(); // Recargar la lista de usuarios
+        Swal.fire({
+          title: 'Creado Correctamente',
+          text: 'Tu usuario ha sido creado correctamente',
+          icon: 'success',
+          confirmButtonText: 'OK',
+        });
+      } else if (res.data.Error === 'El correo ya está registrado.') {
+        setExistingEmailError('El correo ya está registrado.');
+      } else {
+        setExistingEmailError('Hubo un problema al registrar.');
+      }
+    } catch (err) {
+      setExistingEmailError('Hubo un problema al registrar.');
     }
-    setSelectedRoles([role]);
-    setRolesError('');
   };
 
   return (
-    <>
-      <div className="site-section">
-        <div className="container">
-          <div className="row">
-            <div className="col-md-6">
-              <h1 className="h3 mb-3 text-black">Crear nuevo Usuario</h1>
-              <form onSubmit={handleSubmit}>
-                <div className="p-3 p-lg-12 border rounded">
-                  <div className="form-group row">
-                    <div className="col-md-12">
-                      <label htmlFor="correo" className="text-black custom-font">
-                        CORREO ELECTRÓNICO <span className="text-danger">*</span>
-                      </label>
-                      <FormControl fullWidth variant="outlined">
-                        <TextField
-                          fullWidth
-                          variant="outlined"
-                          name="correo"
-                          id="correo"
-                          placeholder="juan@gmail.com"
-                          value={values.correo}
-                          onChange={handleCorreoChange}
-                          error={!!errors.correo || !!existingEmailError}
-                          helperText={errors.correo || existingEmailError}
-                          InputProps={{
-                            endAdornment: (
-                              <InputAdornment position="end">
-                                {isCorreoValid && !existingEmailError && (
-                                  <span className="input-group-append">
-                                    <span className="input-group-text bg-success border-0">
-                                      <AiOutlineCheckCircle size={20} color="white" />
-                                    </span>
-                                  </span>
-                                )}
-                              </InputAdornment>
-                            ),
-                          }}
-                          style={{ borderRadius: '8px' }}
-                        />
-                      </FormControl>
-                    </div>
-                  </div>
-                  <br />
-                  <div className="form-group row">
-                    <div className="col-md-12">
-                      <label htmlFor="contraseña" className="text-black">
-                        CONTRASEÑA <span className="text-danger">*</span>
-                      </label>
-                      <FormControl fullWidth variant="outlined">
-                        <TextField
-                          fullWidth
-                          variant="outlined"
-                          type="password"
-                          name="contrasena"
-                          id="contraseña"
-                          value={values.contrasena}
-                          onChange={handleContrasenaChange}
-                          error={!!errors.contrasena}
-                          helperText={errors.contrasena}
-                          InputProps={{
-                            endAdornment: (
-                              <InputAdornment position="end">
-                                {isContrasenaValid && (
-                                  <span className="input-group-append">
-                                    <span className="input-group-text bg-success border-0">
-                                      <AiOutlineCheckCircle size={20} color="white" />
-                                    </span>
-                                  </span>
-                                )}
-                              </InputAdornment>
-                            ),
-                          }}
-                          style={{ borderRadius: '8px' }}
-                        />
-                      </FormControl>
-                      {values.contrasena.length > 0 && (
-                        <div>
-                          <h6>Contraseña: {values.contrasena}</h6>
-                          <br />
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  &nbsp;
-                  <div className="row">
-                    <div className="col-md-12 d-flex justify-content-start">
-                      <LoadingButton
-                        fullWidth
-                        size="large"
-                        type="submit"
-                        variant="contained"
-                        id="UsuariosFormulario2"
-                      >
-                        Guardar el nuevo Usuario
-                      </LoadingButton>
-                    </div>
-                  </div>
-                </div>
-              </form>
-            </div>
-            <div className="col-md-6">
-              <h2 className="h3 mb-3 text-black">Roles</h2>
-              {rolesError && (
-                <p style={{ color: 'red', backgroundColor: 'rgba(255, 0, 0, 0.2)', padding: '8px', marginBottom: '8px' }}>
-                  {rolesError}
-                </p>
-              )}
-              <TableContainer component={Paper}>
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Rol</TableCell>
-                      <TableCell align="center">Seleccionar</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {roles.map((role) => (
-                      <TableRow key={role}>
-                        <TableCell>{role}</TableCell>
-                        <TableCell align="center">
-                          <FormControlLabel
-                            control={
-                              <Checkbox
-                                checked={selectedRoles.includes(role)}
-                                onChange={() => handleRoleCheckboxChange(role)}
-                              />
-                            }
-                            label=""
-                          />
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </div>
+    <Modal open={open} onClose={onClose}>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          backgroundColor: 'white',
+          padding: '24px',
+          borderRadius: '8px',
+          width: '800px',
+        }}
+      >
+        <h2 style={{ marginBottom: '16px' }}>Crear un nuevo usuario</h2>
+        <form onSubmit={handleSubmit} style={{ width: '100%' }}>
+          <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginBottom: '16px' }}>
+            <TextField
+              label="Documento"
+              name="documento"
+              type="text"
+              value={values.documento}
+              onChange={handleInputChange}
+              margin="normal"
+              style={{ width: '48%' }}
+            />
+            <TextField
+              label="Nombre"
+              name="nombre"
+              type="text"
+              value={values.nombre}
+              onChange={handleInputChange}
+              margin="normal"
+              style={{ width: '48%' }}
+            />
           </div>
-        </div>
+          <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginBottom: '16px' }}>
+            <TextField
+              label="Apellidos"
+              name="apellidos"
+              type="text"
+              value={values.apellidos}
+              onChange={handleInputChange}
+              margin="normal"
+              style={{ width: '48%' }}
+            />
+            <TextField
+              label="Telefono"
+              name="telefono"
+              type="text"
+              value={values.telefono}
+              onChange={handleInputChange}
+              margin="normal"
+              style={{ width: '48%' }}
+            />
+          </div>
+          <TextField
+            label="Correo electrónico"
+            name="correo"
+            value={values.correo}
+            onChange={handleInputChange}
+            margin="normal"
+            error={existingEmailError !== ''}
+            helperText={existingEmailError}
+            style={{ width: '100%' }}
+          />
+          <TextField
+            label="Contraseña"
+            name="contrasena"
+            type="password"
+            value={values.contrasena}
+            onChange={handleInputChange}
+            margin="normal"
+            style={{ width: '100%' }}
+          />
+          <FormControl style={{ marginTop: '16px', width: '100%' }}>
+            <InputLabel>Rol</InputLabel>
+            <Select
+              label="Rol"
+              name="rol"
+              value={values.rol}
+              onChange={handleInputChange}
+              margin="normal"
+            >
+              {roles.map((rol) => (
+                <MenuItem key={rol.ID_Rol} value={rol.ID_Rol}>
+                  {rol.Nombre_Rol}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <Button type="submit" variant="contained" color="primary" fullWidth style={{ marginTop: '16px' }}>
+            Crear Usuario
+          </Button>
+          <Button
+            variant="contained"
+            color="secondary"
+            fullWidth
+            style={{ marginTop: '8px' }}
+            onClick={onClose}
+          >
+            Cancelar
+          </Button>
+        </form>
       </div>
-    </>
+    </Modal>
   );
 }
 

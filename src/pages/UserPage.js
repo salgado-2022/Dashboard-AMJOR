@@ -3,7 +3,7 @@ import { filter } from 'lodash';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
-import { Link } from 'react-router-dom';
+import { UsuariosFormulario2 } from '../sections/@dashboard/user/modal/create';
 // @mui
 import {
   Card,
@@ -82,6 +82,7 @@ export default function UserPage() {
   const [data, setData] = useState([]);
   const [selectedUser1, setSelectedUser] = useState(null);
   const [showDeleteMenu, setShowDeleteMenu] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
   
   //Modal Editar Usuario
   const [modalShow, setModalShow] = useState(false);
@@ -169,6 +170,16 @@ export default function UserPage() {
     setModalShow(true);
     setOpen(null);
   };
+
+  const handleOpenModal = () => {
+    setOpenModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+  };
+
+
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0;
   const filteredUsers = applySortFilter(data, getComparator(order, orderBy), filterName);
   const isNotFound = !filteredUsers.length && !!filterName;
@@ -183,11 +194,10 @@ export default function UserPage() {
           <Typography variant="h4" gutterBottom>
             Usuarios
           </Typography>
-          <Link to="/dashboard/create">
-            <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />}>
-              Crear usuario
-            </Button>
-          </Link>
+          <Button variant="contained" onClick={handleOpenModal}>
+        Crear usuario
+      </Button>
+      <UsuariosFormulario2 open={openModal} onClose={handleCloseModal} />
         </Stack>
         <Card>
           <UserListToolbar

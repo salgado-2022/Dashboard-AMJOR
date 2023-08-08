@@ -3,14 +3,14 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 import { Helmet } from 'react-helmet-async';
 import { filter } from 'lodash';
-import { Link } from 'react-router-dom';
+import { ConfiFormulario } from '../sections/@dashboard/configuracion/modal/crearte';
 import {
   Card,
   Table,
   Stack,
+  Button,
   Paper,
   Avatar,
-  Button,
   Popover,
   Checkbox,
   TableRow,
@@ -27,6 +27,7 @@ import Iconify from '../components/iconify';
 import Scrollbar from '../components/scrollbar';
 import { EditarConfi } from '../sections/@dashboard/configuracion/modal/edita';
 import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
+
 
 const TABLE_HEAD = [
   { id: 'ID_Rol', label: 'ID', alignRight: false },
@@ -75,6 +76,7 @@ export default function ListaConfiguracion() {
   const [data, setData] = useState([]);
   const [selectedConfiguracionID, setSelectedConfiguracionID] = useState(null);
   const [modalShow, setModalShow] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -130,6 +132,14 @@ export default function ListaConfiguracion() {
     setSelected([]);
   };
 
+  const handleCloseModal = () => {
+    setOpenModal(false);
+  };
+
+  const handleOpenModal = () => {
+    setOpenModal(true);
+  };
+  
   const handleClick = (event, ID_Rol) => {
     const selectedIndex = selected.indexOf(ID_Rol);
     let newSelected = [];
@@ -175,22 +185,21 @@ export default function ListaConfiguracion() {
         <title>Configuración | AMJOR</title>
       </Helmet>
       <Container>
-        <Stack direction="row" alignContent="center" justifyContent="space-between" mb={5}>
+      <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
             Configuración
           </Typography>
-          <Link to="/dashboard/crearte">
-            <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />}>
-              Crear Roles y Permisos
-            </Button>
-          </Link>
+          <Button variant="contained" onClick={handleOpenModal}>
+        Crear Rol y Permisos
+      </Button>
+      <ConfiFormulario open={openModal} onClose={handleCloseModal} />
         </Stack>
         <Card>
           <UserListToolbar
             numSelected={selected.length}
             filterName={filterName}
             onFilterName={handleFilterByName}
-            placeholder="Buscar Rol..."
+            placeholder="Buscar Rol..." 
           />
 
           <Scrollbar>
