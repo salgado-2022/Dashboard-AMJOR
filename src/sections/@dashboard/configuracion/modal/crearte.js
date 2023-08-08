@@ -13,6 +13,10 @@ import {
   Checkbox,
   TextField,
   Grid,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
 import Swal from "sweetalert2";
 import axios from "axios";
@@ -20,7 +24,12 @@ import axios from "axios";
 function ConfiFormulario() {
   const [rol, setRol] = useState("");
   const [selectedPermisos, setSelectedPermisos] = useState([]);
+  const [modalOpen, setModalOpen] = useState(false);
   const permisos = ["Usuarios", "Insumos", "Anchetas", "Pedidos"];
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+  };
 
   const validarRolPermiso = () => {
     if (!rol.trim()) {
@@ -83,49 +92,61 @@ function ConfiFormulario() {
   return (
     <Container>
       <Typography variant="h5" className="mt-5 mb-4">
-        CREAR UN NUEVO ROL Y PERMISOS
+        Configuración
       </Typography>
       <Grid container spacing={2}>
-        <Grid item xs={6}>
-          <TextField
-            label="Nuevo rol"
-            fullWidth
-            variant="outlined"
-            required
-            value={rol}
-            onChange={(e) => setRol(e.target.value)}
-          />
-          <Button variant="contained" color="primary" className="mt-3" onClick={validarRolPermiso}>
-            Crear el nuevo rol y permiso
+        <Grid item xs={12}>
+          <Button variant="contained" onClick={() => setModalOpen(true)}>
+            Crear Rol y Permisos
           </Button>
-        </Grid>
-        <Grid item xs={6}>
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Permiso</TableCell>
-                  <TableCell align="center">Seleccionar</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {permisos.map((permiso) => (
-                  <TableRow key={permiso}>
-                    <TableCell>{permiso}</TableCell>
-                    <TableCell align="center">
-                      <Checkbox
-                        checked={selectedPermisos.includes(permiso)}
-                        onChange={() => handleCheckboxChange(permiso)}
-                      />
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+          <Dialog open={modalOpen} onClose={handleCloseModal}>
+            <DialogTitle>Crear un nuevo rol y permisos</DialogTitle>
+            <DialogContent>
+              <TextField
+                label="Nuevo rol"
+                fullWidth
+                variant="outlined"
+                required
+                value={rol}
+                onChange={(e) => setRol(e.target.value)}
+              />
+              <TableContainer component={Paper}>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Permiso</TableCell>
+                      <TableCell align="center">Seleccionar</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {permisos.map((permiso) => (
+                      <TableRow key={permiso}>
+                        <TableCell>{permiso}</TableCell>
+                        <TableCell align="center">
+                          <Checkbox
+                            checked={selectedPermisos.includes(permiso)}
+                            onChange={() => handleCheckboxChange(permiso)}
+                          />
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleCloseModal} color="primary">
+                Cancelar
+              </Button>
+              <Button onClick={validarRolPermiso} color="primary">
+                Crear
+              </Button>
+            </DialogActions>
+          </Dialog>
         </Grid>
       </Grid>
     </Container>
   );
 }
+
 export { ConfiFormulario };
