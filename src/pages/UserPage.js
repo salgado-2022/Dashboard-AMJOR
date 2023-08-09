@@ -195,7 +195,7 @@ export default function UserPage() {
             Usuarios
           </Typography>
           <Button variant="contained" onClick={handleOpenModal}>
-        Crear usuario
+        Crear nuevo usuario
       </Button>
       <UsuariosFormulario2 open={openModal} onClose={handleCloseModal} />
         </Stack>

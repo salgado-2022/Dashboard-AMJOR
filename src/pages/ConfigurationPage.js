@@ -8,7 +8,6 @@ import {
   Card,
   Table,
   Stack,
-  Button,
   Paper,
   Avatar,
   Popover,
@@ -27,7 +26,6 @@ import Iconify from '../components/iconify';
 import Scrollbar from '../components/scrollbar';
 import { EditarConfi } from '../sections/@dashboard/configuracion/modal/edita';
 import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
-
 
 const TABLE_HEAD = [
   { id: 'ID_Rol', label: 'ID', alignRight: false },
@@ -136,10 +134,6 @@ export default function ListaConfiguracion() {
     setOpenModal(false);
   };
 
-  const handleOpenModal = () => {
-    setOpenModal(true);
-  };
-  
   const handleClick = (event, ID_Rol) => {
     const selectedIndex = selected.indexOf(ID_Rol);
     let newSelected = [];
@@ -185,21 +179,18 @@ export default function ListaConfiguracion() {
         <title>Configuración | AMJOR</title>
       </Helmet>
       <Container>
-      <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+        <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
             Configuración
           </Typography>
-          <Button variant="contained" onClick={handleOpenModal}>
-        Crear Rol y Permisos
-      </Button>
-      <ConfiFormulario open={openModal} onClose={handleCloseModal} />
+          <ConfiFormulario open={openModal} onClose={handleCloseModal} />
         </Stack>
         <Card>
           <UserListToolbar
             numSelected={selected.length}
             filterName={filterName}
             onFilterName={handleFilterByName}
-            placeholder="Buscar Rol..." 
+            placeholder="Buscar Rol..."
           />
 
           <Scrollbar>
@@ -219,9 +210,18 @@ export default function ListaConfiguracion() {
                   const estadoText = estado === 1 ? 'Activo' : 'Inactivo';
 
                   return (
-                    <TableRow hover key={ID_Rol} tabIndex={-1} role="checkbox" selected={selected.indexOf(ID_Rol) !== -1}>
+                    <TableRow
+                      hover
+                      key={ID_Rol}
+                      tabIndex={-1}
+                      role="checkbox"
+                      selected={selected.indexOf(ID_Rol) !== -1}
+                    >
                       <TableCell padding="checkbox">
-                        <Checkbox checked={selected.indexOf(ID_Rol) !== -1} onClick={(event) => handleClick(event, ID_Rol)} />
+                        <Checkbox
+                          checked={selected.indexOf(ID_Rol) !== -1}
+                          onClick={(event) => handleClick(event, ID_Rol)}
+                        />
                       </TableCell>
                       <TableCell component="th" scope="row" padding="none">
                         <Stack direction="row" alignItems="center" spacing={2}>
