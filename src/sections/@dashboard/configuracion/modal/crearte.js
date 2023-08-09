@@ -1,8 +1,7 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   Button,
   Container,
-  Typography,
   Table,
   TableBody,
   TableCell,
@@ -12,70 +11,75 @@ import {
   Paper,
   Checkbox,
   TextField,
-  Grid,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
-} from "@mui/material";
-import Swal from "sweetalert2";
-import axios from "axios";
+} from '@mui/material';
+import Swal from 'sweetalert2';
+import axios from 'axios';
 
 function ConfiFormulario() {
-  const [rol, setRol] = useState("");
+  const [rol, setRol] = useState('');
   const [selectedPermisos, setSelectedPermisos] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
-  const permisos = ["Usuarios", "Insumos", "Anchetas", "Pedidos"];
+  const permisos = ['Usuarios', 'Insumos', 'Anchetas', 'Pedidos'];
+
+  const handleOpenModal = () => {
+    setModalOpen(true);
+  };
 
   const handleCloseModal = () => {
     setModalOpen(false);
+    setRol('');
+    setSelectedPermisos([]);
   };
 
   const validarRolPermiso = () => {
     if (!rol.trim()) {
       Swal.fire({
-        title: "Validación fallida",
-        text: "Debes ingresar un rol.",
-        icon: "error",
+        title: 'Validación fallida',
+        text: 'Debes ingresar un rol.',
+        icon: 'error',
       });
     } else if (selectedPermisos.length === 0) {
       Swal.fire({
-        title: "Validación fallida",
-        text: "Debes seleccionar al menos 1 permiso.",
-        icon: "error",
+        title: 'Validación fallida',
+        text: 'Debes seleccionar al menos 1 permiso.',
+        icon: 'error',
       });
     } else {
-      // Aquí se ejecutará la solicitud POST para crear el rol y permisos
       axios
-        .post("http://localhost:4000/api/crearRol", { rol, permisos: selectedPermisos })
+        .post('http://localhost:4000/api/crearRol', { rol, permisos: selectedPermisos })
         .then((res) => {
-          if (res.data.Status === "Success") {
+          if (res.data.Status === 'Success') {
             Swal.fire({
-              title: "Creado Correctamente",
-              text: "El Rol y los permisos se han creado correctamente",
-              icon: "success",
+              title: 'Creado Correctamente',
+              text: 'El Rol y los permisos se han creado correctamente',
+              icon: 'success',
               showConfirmButton: false,
               timer: 1500,
             });
+            handleCloseModal(); // Cerrar el modal inmediatamente después de crear
             setTimeout(function () {
-              window.location = "confi";
+              window.location = 'confi';
             }, 670);
           } else {
             Swal.fire({
-              title: "Error!",
-              text: "Hubo un problema al crear el rol.",
-              icon: "error",
-              confirmButtonText: "OK",
+              title: 'Error!',
+              text: 'Hubo un problema al crear el rol.',
+              icon: 'error',
+              confirmButtonText: 'OK',
             });
           }
         })
         .catch((err) => {
           console.log(err);
           Swal.fire({
-            title: "Error!",
-            text: "Hubo un problema al crear el rol.",
-            icon: "error",
-            confirmButtonText: "OK",
+            title: 'Error!',
+            text: 'Hubo un problema al crear el rol.',
+            icon: 'error',
+            confirmButtonText: 'OK',
           });
         });
     }
@@ -91,60 +95,73 @@ function ConfiFormulario() {
 
   return (
     <Container>
-      <Typography variant="h5" className="mt-5 mb-4">
-        Configuración
-      </Typography>
-      <Grid container spacing={2}>
-        <Grid item xs={12}>
-          <Button variant="contained" onClick={() => setModalOpen(true)}>
-            Crear Rol y Permisos
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleOpenModal}
+        style={{ marginBottom: '16px', float: 'right' }}
+      >
+        Crear Rol y Permisos
+      </Button>
+      <Dialog open={modalOpen} onClose={handleCloseModal} fullWidth>
+        <DialogTitle>Crear un nuevo rol y permisos</DialogTitle>
+        <DialogContent dividers>
+          <TextField                                                                      //CREAR DE CONFIGURACIÓN - ROLES Y PERMISOS 
+            label="Nuevo rol"
+            fullWidth
+            variant="outlined"
+            required
+            value={rol}
+            onChange={(e) => setRol(e.target.value)}
+          />
+          <br></br><br></br>
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Permiso</TableCell>
+                  <TableCell align="center">Seleccionar</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {permisos.map((permiso) => (
+                  <TableRow key={permiso}>
+                    <TableCell>{permiso}</TableCell>
+                    <TableCell align="center">
+                      <Checkbox
+                        checked={selectedPermisos.includes(permiso)}
+                        onChange={() => handleCheckboxChange(permiso)}
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            id="modRol"
+            fullWidth
+            onClick={validarRolPermiso}
+          >
+            Crear el rol y permiso
           </Button>
-          <Dialog open={modalOpen} onClose={handleCloseModal}>
-            <DialogTitle>Crear un nuevo rol y permisos</DialogTitle>
-            <DialogContent>
-              <TextField
-                label="Nuevo rol"
-                fullWidth
-                variant="outlined"
-                required
-                value={rol}
-                onChange={(e) => setRol(e.target.value)}
-              />
-              <TableContainer component={Paper}>
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Permiso</TableCell>
-                      <TableCell align="center">Seleccionar</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {permisos.map((permiso) => (
-                      <TableRow key={permiso}>
-                        <TableCell>{permiso}</TableCell>
-                        <TableCell align="center">
-                          <Checkbox
-                            checked={selectedPermisos.includes(permiso)}
-                            onChange={() => handleCheckboxChange(permiso)}
-                          />
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={handleCloseModal} color="primary">
-                Cancelar
-              </Button>
-              <Button onClick={validarRolPermiso} color="primary">
-                Crear
-              </Button>
-            </DialogActions>
-          </Dialog>
-        </Grid>
-      </Grid>
+          <Button
+            variant="contained"
+            color="secondary"
+            id="cancelarRol"
+            fullWidth
+            style={{ marginTop: '8px' }}
+            onClick={handleCloseModal}
+          >
+            Cancelar
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 }

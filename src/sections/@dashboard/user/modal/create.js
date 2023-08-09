@@ -1,7 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, TextField, FormControl, Button, Select, MenuItem, InputLabel } from '@mui/material';
+import {
+  Modal,
+  TextField,
+  FormControl,
+  Button,
+  Select,
+  MenuItem,
+  InputLabel,
+  DialogActions,
+  Grid,
+  InputAdornment,
+  IconButton,
+} from '@mui/material';
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 function UsuariosFormulario2({ open, onClose, refreshList }) {
   const [values, setValues] = useState({
@@ -15,7 +28,13 @@ function UsuariosFormulario2({ open, onClose, refreshList }) {
   });
 
   const [existingEmailError, setExistingEmailError] = useState('');
+  const [documentoError, setDocumentoError] = useState('');
   const [roles, setRoles] = useState([]);
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleCloseModal = () => {
+    onClose(); // Cerrar la modal
+  };
 
   useEffect(() => {
     axios
@@ -28,18 +47,6 @@ function UsuariosFormulario2({ open, onClose, refreshList }) {
       });
   }, []);
 
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setValues((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-    if (name === 'correo') {
-      setExistingEmailError('');
-      checkExistingEmail(value);
-    }
-  };
-
   const checkExistingEmail = (email) => {
     axios
       .get(`http://localhost:4000/api/checkEmail/${email}`)
@@ -51,6 +58,45 @@ function UsuariosFormulario2({ open, onClose, refreshList }) {
       .catch((err) => {
         console.error('Error al verificar el correo electrónico:', err);
       });
+  };
+
+  const checkExistingDocumento = (documento) => {
+    if (/^\d{10}$/.test(documento)) {
+      axios
+        .get(`http://localhost:4000/api/checkDocumento/${documento}`)
+        .then((res) => {
+          if (res.data.exists) {
+            setDocumentoError('El documento ya existe.');
+          } else {
+            setDocumentoError(''); // No hay error
+          }
+        })
+        .catch((err) => {
+          console.error('Error al verificar el documento:', err);
+        });
+    } else {
+      setDocumentoError('El documento debe tener 10 dígitos numéricos.');
+    }
+  };
+
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setValues((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+    if (name === 'correo') {
+      setExistingEmailError('');
+      checkExistingEmail(value);
+    }
+    if (name === 'documento') {
+      setDocumentoError('');
+      if (/^\d*$/.test(value)) {
+        checkExistingDocumento(value);
+      } else {
+        setDocumentoError('Solo se permiten números.');
+      }
+    }
   };
 
   const handleSubmit = async (event) => {
@@ -68,13 +114,12 @@ function UsuariosFormulario2({ open, onClose, refreshList }) {
       });
 
       if (res.data.Status === 'Success') {
-        onClose(); // Cerrar la modal después de crear el usuario
-        refreshList(); // Recargar la lista de usuarios
         Swal.fire({
           title: 'Creado Correctamente',
           text: 'Tu usuario ha sido creado correctamente',
           icon: 'success',
-          confirmButtonText: 'OK',
+        }).then((result) => {
+          window.location.reload();
         });
       } else if (res.data.Error === 'El correo ya está registrado.') {
         setExistingEmailError('El correo ya está registrado.');
@@ -87,13 +132,9 @@ function UsuariosFormulario2({ open, onClose, refreshList }) {
   };
 
   return (
-    <Modal open={open} onClose={onClose}>
+    <Modal open={open} onClose={handleCloseModal}>
       <div
         style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
           position: 'absolute',
           top: '50%',
           left: '50%',
@@ -101,98 +142,131 @@ function UsuariosFormulario2({ open, onClose, refreshList }) {
           backgroundColor: 'white',
           padding: '24px',
           borderRadius: '8px',
-          width: '800px',
+          width: '90%', // Ajusta el ancho de acuerdo a tus necesidades
+          maxWidth: '800px', // Establece un ancho máximo si es necesario
         }}
       >
-        <h2 style={{ marginBottom: '16px' }}>Crear un nuevo usuario</h2>
-        <form onSubmit={handleSubmit} style={{ width: '100%' }}>
-          <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginBottom: '16px' }}>
-            <TextField
-              label="Documento"
-              name="documento"
-              type="text"
-              value={values.documento}
-              onChange={handleInputChange}
-              margin="normal"
-              style={{ width: '48%' }}
-            />
-            <TextField
-              label="Nombre"
-              name="nombre"
-              type="text"
-              value={values.nombre}
-              onChange={handleInputChange}
-              margin="normal"
-              style={{ width: '48%' }}
-            />
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginBottom: '16px' }}>
-            <TextField
-              label="Apellidos"
-              name="apellidos"
-              type="text"
-              value={values.apellidos}
-              onChange={handleInputChange}
-              margin="normal"
-              style={{ width: '48%' }}
-            />
-            <TextField
-              label="Telefono"
-              name="telefono"
-              type="text"
-              value={values.telefono}
-              onChange={handleInputChange}
-              margin="normal"
-              style={{ width: '48%' }}
-            />
-          </div>
-          <TextField
-            label="Correo electrónico"
-            name="correo"
-            value={values.correo}
-            onChange={handleInputChange}
-            margin="normal"
-            error={existingEmailError !== ''}
-            helperText={existingEmailError}
-            style={{ width: '100%' }}
-          />
-          <TextField
-            label="Contraseña"
-            name="contrasena"
-            type="password"
-            value={values.contrasena}
-            onChange={handleInputChange}
-            margin="normal"
-            style={{ width: '100%' }}
-          />
-          <FormControl style={{ marginTop: '16px', width: '100%' }}>
-            <InputLabel>Rol</InputLabel>
-            <Select
-              label="Rol"
-              name="rol"
-              value={values.rol}
-              onChange={handleInputChange}
-              margin="normal"
+        <h2 style={{ marginBottom: '16px', textAlign: 'center' }}>Crear un nuevo usuario</h2>
+        <form onSubmit={handleSubmit}>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Documento"
+                name="documento"
+                type="text"
+                value={values.documento}
+                onChange={handleInputChange}
+                margin="normal"
+                fullWidth
+                error={documentoError !== ''}
+                helperText={documentoError}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Nombre"
+                name="nombre"
+                type="text"
+                value={values.nombre}
+                onChange={handleInputChange}
+                margin="normal"
+                fullWidth
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Apellidos"
+                name="apellidos"
+                type="text"
+                value={values.apellidos}
+                onChange={handleInputChange}
+                margin="normal"
+                fullWidth
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Telefono"
+                name="telefono"
+                type="text"
+                value={values.telefono}
+                onChange={handleInputChange}
+                margin="normal"
+                fullWidth
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                label="Correo electrónico"
+                name="correo"
+                value={values.correo}
+                onChange={handleInputChange}
+                margin="normal"
+                error={existingEmailError !== ''}
+                helperText={existingEmailError}
+                fullWidth
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                label="Contraseña"
+                name="contrasena"
+                type={showPassword ? 'text' : 'password'}
+                value={values.contrasena}
+                onChange={handleInputChange}
+                margin="normal"
+                fullWidth
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={() => setShowPassword(!showPassword)}
+                        onMouseDown={(e) => e.preventDefault()}
+                        edge="end"
+                      >
+                        {showPassword ? <Visibility /> : <VisibilityOff />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <FormControl fullWidth>
+                <InputLabel>Rol</InputLabel>
+                <Select label="Rol" name="rol" value={values.rol} onChange={handleInputChange} margin="normal">
+                  {roles.map((rol) => (
+                    <MenuItem key={rol.ID_Rol} value={rol.ID_Rol}>
+                      {rol.Nombre_Rol}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+          </Grid>
+          <DialogActions>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              fullWidth
+              onClick={(event) => {
+                handleSubmit(event);
+                onClose();
+              }}
             >
-              {roles.map((rol) => (
-                <MenuItem key={rol.ID_Rol} value={rol.ID_Rol}>
-                  {rol.Nombre_Rol}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <Button type="submit" variant="contained" color="primary" fullWidth style={{ marginTop: '16px' }}>
-            Crear Usuario
-          </Button>
-          <Button
-            variant="contained"
-            color="secondary"
-            fullWidth
-            style={{ marginTop: '8px' }}
-            onClick={onClose}
-          >
-            Cancelar
-          </Button>
+              Guardar Cambios
+            </Button>
+            <Button
+              variant="contained"
+              color="secondary"
+              fullWidth
+              style={{ marginTop: '8px' }}
+              onClick={handleCloseModal}
+            >
+              Cancelar
+            </Button>
+          </DialogActions>
         </form>
       </div>
     </Modal>
