@@ -58,7 +58,8 @@ function applySortFilter(array, comparator, query) {
     return a[1] - b[1];
   });
   if (query) {
-    return filter(array, (_Rol) => _Rol._Rol.toLowerCase().indexOf(query.toLowerCase()) !== -1);
+    return filter(array, (_Rol) => _Rol.Nombre_Rol.toLowerCase().indexOf(query.toLowerCase()) !== -1);
+
   }
   return stabilizedThis.map((el) => el[0]);
 }
@@ -190,7 +191,7 @@ export default function ListaConfiguracion() {
             numSelected={selected.length}
             filterName={filterName}
             onFilterName={handleFilterByName}
-            placeholder="Buscar Rol..."
+            placeholder="Buscar rol..."
           />
 
           <Scrollbar>
@@ -255,7 +256,10 @@ export default function ListaConfiguracion() {
                             },
                           }}
                         >
-                          <MenuItem onClick={() => handleEditar(selectedConfiguracionID)}>
+                          <MenuItem
+                            sx={{ color: 'warning.main' }}
+                            onClick={() => handleEditar(selectedConfiguracionID)}
+                          >
                             <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
                             Editar
                           </MenuItem>
@@ -284,13 +288,13 @@ export default function ListaConfiguracion() {
                         }}
                       >
                         <Typography variant="h6" paragraph>
-                          Not found
+                          No encontrado
                         </Typography>
 
                         <Typography variant="body2">
-                          No results found for &nbsp;
+                          No se encontraron resultados para &nbsp;
                           <strong>&quot;{filterName}&quot;</strong>.
-                          <br /> Try checking for typos or using complete words.
+                          <br /> Intente verificar errores tipográficos o usar palabras completas.
                         </Typography>
                       </Paper>
                     </TableCell>

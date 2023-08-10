@@ -38,7 +38,7 @@ function UsuariosFormulario2({ open, onClose, refreshList }) {
 
   useEffect(() => {
     axios
-      .get('http://localhost:4000/api/listarConfiguracion')
+      .get('http://localhost:4000/api/admin/configuracion')
       .then((res) => {
         setRoles(res.data);
       })
@@ -156,7 +156,7 @@ function UsuariosFormulario2({ open, onClose, refreshList }) {
                 type="text"
                 value={values.documento}
                 onChange={handleInputChange}
-                margin="normal"
+                margin="dense"
                 fullWidth
                 error={documentoError !== ''}
                 helperText={documentoError}
@@ -169,7 +169,7 @@ function UsuariosFormulario2({ open, onClose, refreshList }) {
                 type="text"                               // CREAR USUARIO
                 value={values.nombre}
                 onChange={handleInputChange}
-                margin="normal"
+                margin="dense"
                 fullWidth
               />
             </Grid>
@@ -180,7 +180,7 @@ function UsuariosFormulario2({ open, onClose, refreshList }) {
                 type="text"
                 value={values.apellidos}
                 onChange={handleInputChange}
-                margin="normal"
+                margin="dense"
                 fullWidth
               />
             </Grid>
@@ -191,7 +191,7 @@ function UsuariosFormulario2({ open, onClose, refreshList }) {
                 type="text"
                 value={values.telefono}
                 onChange={handleInputChange}
-                margin="normal"
+                margin="dense"
                 fullWidth
               />
             </Grid>
@@ -201,7 +201,7 @@ function UsuariosFormulario2({ open, onClose, refreshList }) {
                 name="correo"
                 value={values.correo}
                 onChange={handleInputChange}
-                margin="normal"
+                margin="dense"
                 error={existingEmailError !== ''}
                 helperText={existingEmailError}
                 fullWidth
@@ -214,7 +214,7 @@ function UsuariosFormulario2({ open, onClose, refreshList }) {
                 type={showPassword ? 'text' : 'password'}
                 value={values.contrasena}
                 onChange={handleInputChange}
-                margin="normal"
+                margin="dense"
                 fullWidth
                 InputProps={{
                   endAdornment: (
@@ -233,8 +233,8 @@ function UsuariosFormulario2({ open, onClose, refreshList }) {
             </Grid>
             <Grid item xs={12}>
               <FormControl fullWidth>
-                <InputLabel>Rol</InputLabel>
-                <Select label="Rol" name="rol" value={values.rol} onChange={handleInputChange} margin="normal">
+                <InputLabel>Seleccionar rol</InputLabel>
+                <Select label="Rol" name="rol" value={values.rol} onChange={handleInputChange} margin="dense">
                   {roles.map((rol) => (
                     <MenuItem key={rol.ID_Rol} value={rol.ID_Rol}>
                       {rol.Nombre_Rol}
@@ -250,6 +250,7 @@ function UsuariosFormulario2({ open, onClose, refreshList }) {
               variant="contained"
               color="primary"
               fullWidth
+              style={{ marginTop: '8px' }}
               onClick={(event) => {
                 handleSubmit(event);
                 onClose();

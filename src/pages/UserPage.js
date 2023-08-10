@@ -267,7 +267,7 @@ export default function UserPage() {
                               },
                             }}
                           >
-                            <MenuItem onClick={() => handleEditar(selectedUser1)}>
+                            <MenuItem sx={{ color: 'warning.main' }} onClick={() => handleEditar(selectedUser1)}>
                               <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
                               Editar
                             </MenuItem>

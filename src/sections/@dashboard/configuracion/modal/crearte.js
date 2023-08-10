@@ -146,6 +146,7 @@ function ConfiFormulario() {
             color="primary"
             id="modRol"
             fullWidth
+            style={{ marginTop: '8px' }}
             onClick={validarRolPermiso}
           >
             Crear el rol y permiso
