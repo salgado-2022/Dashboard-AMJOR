@@ -166,7 +166,7 @@ function UsuariosFormulario2({ open, onClose, refreshList }) {
               <TextField
                 label="Nombre"
                 name="nombre"
-                type="text"
+                type="text"                               // CREAR USUARIO
                 value={values.nombre}
                 onChange={handleInputChange}
                 margin="normal"

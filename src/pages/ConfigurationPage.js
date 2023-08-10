@@ -170,8 +170,8 @@ export default function ListaConfiguracion() {
   };
 
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0;
-  const filteredUsers = applySortFilter(data, getComparator(order, orderBy), filterName);
-  const isNotFound = !filteredUsers.length && !!filterName;
+  const filteredRoles = applySortFilter(data, getComparator(order, orderBy), filterName);
+  const isNotFound = !filteredRoles.length && !!filterName;
 
   return (
     <>
@@ -205,7 +205,7 @@ export default function ListaConfiguracion() {
                 onSelectAllClick={handleSelectAllClick}
               />
               <TableBody>
-                {filteredUsers.map((row) => {
+                {filteredRoles.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
                   const { ID_Rol, Nombre_Rol, estado } = row;
                   const estadoText = estado === 1 ? 'Activo' : 'Inactivo';
 
