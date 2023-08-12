@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from "react";
-import Modal from 'react-bootstrap/Modal';
-import { Button } from "react-bootstrap";
+import { Modal, TextField, Button, DialogActions, Grid, Switch } from '@mui/material';
 import Swal from 'sweetalert2';
 import axios from "axios";
+import "../../../../styles/modal.css";
 
 function EditInsumo(props) {
     const { selectedInsumoID, onHide, show } = props;
     const id = selectedInsumoID;
+
+    const [nombreError, setNombreError] = useState('');
+    const [descripcionError, setDescripcionError] = useState('');
+    const [precioError, setPrecioError] = useState('');
 
     const [isChecked, setIsChecked] = useState(false); // false = 0
 
@@ -26,7 +30,40 @@ function EditInsumo(props) {
         } else {
             setValues(prev => ({ ...prev, [name]: value }));
         }
+
+        if (name === 'NombreInsumo') {
+            if (!value) {
+                setNombreError('El nombre es requerido');
+            } else if (!/^[^<>%$"!#&/=]*$/.test(value)) {
+                setNombreError('Por favor ingrese un nombre válido');
+            } else {
+                setNombreError('');
+            }
+        } else if (name === 'Descripcion') {
+            if (!value) {
+                setDescripcionError('La descripción es requerida');
+            } else if (!/^[^<>%$!#&/]*$/.test(value)) {
+                setDescripcionError('Por favor ingrese una descripción válida');
+            } else {
+                setDescripcionError('');
+            }
+        } else if (name === 'PrecioUnitario') {
+            if (!value) {
+                setPrecioError('El precio es requerido');
+            } else if (!/^[0-9\s]*$/.test(value)) {
+                setPrecioError('Ingrese un precio válido');
+            } else {
+                setPrecioError('');
+            }
+        }
     };
+
+    const handleCloseModal = () => {
+        props.onHide(); // Cerrar la modal
+        setNombreError(''); 
+        setDescripcionError(''); 
+        setPrecioError(''); 
+      };
 
     useEffect(() => {
         if (show) {
@@ -48,6 +85,7 @@ function EditInsumo(props) {
 
     const handleUpdate = (event) => {
         event.preventDefault();
+        if ( nombreError === "" && descripcionError === "" && precioError === "") {
         axios.put('http://localhost:4000/api/admin/insumos/insumoedit/' + id, values)
             .then(res => {
                 console.log(res);
@@ -58,51 +96,38 @@ function EditInsumo(props) {
                     showConfirmButton: false,
                     timer: 1500
                 });
+                handleCloseModal();
                 setTimeout(function () { window.location = "supplies"; }, 670);
             })
             .catch(err => console.log(err));
+        }
     };
 
     return (
-        <Modal
-            onHide={onHide}
-            show={show}
-            size="lg"
-            aria-labelledby="contained-modal-title-vcenter"
-            centered
-        >
-            <Modal.Header>
-                <Modal.Title id="contained-modal-title-vcenter" className="text-black">
-                    Editar insumo
-                </Modal.Title>
-                <Button variant="secondary" onClick={props.onHide} className="close">
-                    <span aria-hidden="true">&times;</span>
-                </Button>
-            </Modal.Header>
-            <Modal.Body>
-                <div>
-                    <form onSubmit={handleUpdate} id="editarInsumo">
-                        <div className="form-group">
-                            <label htmlFor="NombreInsumo">Nombre</label>
-                            <input type="text" className="form-control" id="NombreInsumo" name="NombreInsumo" value={values.NombreInsumo} onChange={handleInput} />
-                        </div>
-                        <div className="form-group">
-                            <label htmlFor="Descripcion">Descripción</label>
-                            <input type="text" className="form-control" id="Descripcion" name="Descripcion" value={values.Descripcion} onChange={handleInput} />
-                        </div>
-                        <div className="form-group">
-                            <label htmlFor="PrecioUnitario">Precio</label>
-                            <input type="text" className="form-control" id="PrecioUnitario" name="PrecioUnitario" value={values.PrecioUnitario} onChange={handleInput} />
-                        </div>
-                        <div className="form-check" style={{ marginBottom: '7px' }}>
-                            <input type="checkbox" className="form-check-input" id="ID_Estado" name="ID_Estado" checked={isChecked} onChange={handleInput} />
-                            <label className="form-check-label" htmlFor="estadoInsumo">Disponible</label>
-                        </div>
-                        <button type="submit" className="btn btn-primary" id="modInsumo">Modificar</button> &nbsp;
-                        <button type="reset" className="btn btn-dark" id="cancelarInsumo" onClick={props.onHide}>Cancelar</button>
-                    </form>
-                </div>
-            </Modal.Body>
+        <Modal onClose={onHide} open={show}>
+            <div className="modal-container">
+                <h2 className= "modal-title">Editar Insumo</h2>
+                <form onSubmit={handleUpdate} id="editarInsumo">
+                    <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                            <TextField fullWidth label="Nombre" variant="outlined" id="NombreInsumo" name="NombreInsumo" value={values.NombreInsumo} onChange={handleInput} error={nombreError !== ''}  helperText={nombreError}/>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField fullWidth label="Descripción" variant="outlined" id="Descripcion" name="Descripcion" value={values.Descripcion} onChange={handleInput} error={descripcionError !== ''}  helperText={descripcionError}/>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField fullWidth label="Precio" variant="outlined" id="PrecioUnitario" name="PrecioUnitario" value={values.PrecioUnitario} onChange={handleInput} error={precioError !== ''}  helperText={precioError}/>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Switch id="ID_Estado" name="ID_Estado" label="Disponible" checked={isChecked} onChange={handleInput}/>
+                        </Grid>
+                    </Grid>
+                    <DialogActions> 
+                        <Button type="submit" variant="contained" color="primary" id="modInsumo" fullWidth style={{ marginTop: '8px' }}>Editar Insumo</Button>
+                        <Button variant="contained" color="secondary" fullWidth id="cancelarInsumo" onClick={handleCloseModal} style={{marginTop: '8px'}}>Cancelar</Button>
+                    </DialogActions> 
+                </form>
+            </div>
         </Modal>
     );
 }
