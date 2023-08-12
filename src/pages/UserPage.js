@@ -1,6 +1,7 @@
 import { Helmet } from 'react-helmet-async';
 import { filter } from 'lodash';
 import { useState, useEffect } from 'react';
+import { sentenceCase } from 'change-case';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { UsuariosFormulario2 } from '../sections/@dashboard/user/modal/create';
@@ -27,6 +28,7 @@ import {
 // components
 import Iconify from '../components/iconify';
 import Scrollbar from '../components/scrollbar';
+import Label from '../components/label';
 import { EditarUsuario } from '../sections/@dashboard/user/modal/editar';
 
 // sections
@@ -221,9 +223,9 @@ export default function UserPage() {
                 />
                 <TableBody>
                   {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { idUsuario, correo, estado } = row;
+                    const { idUsuario, correo, Estado } = row;
                     const selectedUser = selected.indexOf(idUsuario) !== -1;
-                    const estadoText = estado === 1 ? 'Activo' : 'Inactivo'; // Texto del estado según el valor
+                    const estadoText = Estado === 1 ? 'Activo' : 'Inactivo'; // Texto del estado según el valor
                     return (
                       <TableRow hover key={idUsuario} tabIndex={-1} role="checkbox" selected={selectedUser}>
                         <TableCell padding="checkbox">
@@ -240,7 +242,12 @@ export default function UserPage() {
                         <TableCell key={correo} align="left">
                           {correo}
                         </TableCell>
-                        <TableCell align="left">{estadoText}</TableCell> {/* Campo de estado */}
+
+                        <TableCell align="left">
+                          <Label color={(estadoText === 'Activo' && 'success') || 'error' }>{sentenceCase(estadoText)}</Label>
+                        </TableCell>
+                        
+
                         <TableCell align="left">
                           <IconButton
                             size="large"
