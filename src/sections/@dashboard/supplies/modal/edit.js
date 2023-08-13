@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Modal, TextField, Button, DialogActions, Grid, Switch } from '@mui/material';
+import { Modal, TextField, Button, DialogActions, Grid, Switch, Typography } from '@mui/material';
 import Swal from 'sweetalert2';
 import axios from "axios";
 import "../../../../styles/modal.css";
 
 function EditInsumo(props) {
-    const { selectedInsumoID, onHide, show } = props;
+    const { selectedInsumoID, onHide, show, fetchData } = props;
     const id = selectedInsumoID;
 
     const [nombreError, setNombreError] = useState('');
@@ -58,13 +58,6 @@ function EditInsumo(props) {
         }
     };
 
-    const handleCloseModal = () => {
-        props.onHide(); // Cerrar la modal
-        setNombreError(''); 
-        setDescripcionError(''); 
-        setPrecioError(''); 
-      };
-
     useEffect(() => {
         if (show) {
             axios.get('http://localhost:4000/api/admin/insumos/insullamada/' + id)
@@ -81,6 +74,11 @@ function EditInsumo(props) {
                 })
                 .catch(err => console.log(err));
         }
+        if (!show) {
+            setNombreError('');
+            setDescripcionError('');
+            setPrecioError('');
+        }
     }, [id, show]);
 
     const handleUpdate = (event) => {
@@ -96,8 +94,8 @@ function EditInsumo(props) {
                     showConfirmButton: false,
                     timer: 1500
                 });
-                handleCloseModal();
-                setTimeout(function () { window.location = "supplies"; }, 670);
+                props.onHide();
+                fetchData();
             })
             .catch(err => console.log(err));
         }
@@ -119,12 +117,15 @@ function EditInsumo(props) {
                             <TextField fullWidth label="Precio" variant="outlined" id="PrecioUnitario" name="PrecioUnitario" value={values.PrecioUnitario} onChange={handleInput} error={precioError !== ''}  helperText={precioError}/>
                         </Grid>
                         <Grid item xs={12}>
-                            <Switch id="ID_Estado" name="ID_Estado" label="Disponible" checked={isChecked} onChange={handleInput}/>
+                            <Grid container alignItems="center" spacing={1}>
+                                <Switch color="switch" id="ID_Estado" name="ID_Estado" checked={isChecked}onChange={handleInput}/>
+                                <Typography>Disponible</Typography>
+                            </Grid>
                         </Grid>
                     </Grid>
                     <DialogActions> 
                         <Button type="submit" variant="contained" color="primary" id="modInsumo" fullWidth style={{ marginTop: '8px' }}>Editar Insumo</Button>
-                        <Button variant="contained" color="secondary" fullWidth id="cancelarInsumo" onClick={handleCloseModal} style={{marginTop: '8px'}}>Cancelar</Button>
+                        <Button variant="contained" color="secondary" fullWidth id="cancelarInsumo" onClick={props.onHide} style={{marginTop: '8px'}}>Cancelar</Button>
                     </DialogActions> 
                 </form>
             </div>

@@ -219,7 +219,6 @@ export default function SuppliesPage() {
           <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleOpenModal}>
             Crear Insumo
           </Button>
-          <AddInsumo open={openModal} onClose={handleCloseModal} />
         </Stack>
 
         <Card>
@@ -353,7 +352,8 @@ export default function SuppliesPage() {
           />
         </Card>
       </Container>
-      <EditInsumo show={modalShow} onHide={() => setModalShow(false)} selectedInsumoID={selectedInsumo} />
+      <AddInsumo open={openModal} onClose={handleCloseModal} fetchData={fetchData} />
+      <EditInsumo show={modalShow} onHide={() => setModalShow(false)} selectedInsumoID={selectedInsumo} fetchData={fetchData} />
     </>
   );
 }

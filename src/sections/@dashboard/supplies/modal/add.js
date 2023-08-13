@@ -4,7 +4,7 @@ import axios from "axios";
 import { Modal, TextField, Button, DialogActions, Grid } from '@mui/material';
 import "../../../../styles/modal.css";
 
-function AddInsumo({ open, onClose }) {
+function AddInsumo({ open, onClose, fetchData }) {
     const [nombreError, setNombreError] = useState('');
     const [descripcionError, setDescripcionError] = useState('');
     const [precioError, setPrecioError] = useState('');
@@ -116,8 +116,8 @@ function AddInsumo({ open, onClose }) {
                             showConfirmButton: false,
                             timer: 1500
                         });
-                        handleCloseModal();
-                        setTimeout(function () { window.location = "supplies"; }, 670);
+                        onClose();
+                        fetchData();
                     } else {
                         Swal.fire({
                             title: 'Error!',

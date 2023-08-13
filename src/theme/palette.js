@@ -70,6 +70,10 @@ const ERROR = {
   contrastText: '#fff',
 };
 
+const SWITCH = {
+  main: '#00e676'
+};
+
 const palette = {
   common: { black: '#000', white: '#fff' },
   primary: PRIMARY,
@@ -78,6 +82,7 @@ const palette = {
   success: SUCCESS,
   warning: WARNING,
   error: ERROR,
+  switch: SWITCH,
   grey: GREY,
   divider: alpha(GREY[500], 0.24),
   text: {
