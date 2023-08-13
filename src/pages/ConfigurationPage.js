@@ -30,7 +30,6 @@ import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
 const TABLE_HEAD = [
   { id: 'ID_Rol', label: 'ID', alignRight: false },
   { id: 'Nombre_Rol', label: 'Rol', alignRight: false },
-  { id: 'estado', label: 'Estado', alignRight: false },
   { id: 'Acciones', label: 'Acciones', alignRight: false },
 ];
 
@@ -207,9 +206,7 @@ export default function ListaConfiguracion() {
               />
               <TableBody>
                 {filteredRoles.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                  const { ID_Rol, Nombre_Rol, estado } = row;
-                  const estadoText = estado === 1 ? 'Activo' : 'Inactivo';
-
+                  const { ID_Rol, Nombre_Rol } = row;
                   return (
                     <TableRow
                       hover
@@ -233,7 +230,6 @@ export default function ListaConfiguracion() {
                         </Stack>
                       </TableCell>
                       <TableCell align="left">{Nombre_Rol}</TableCell>
-                      <TableCell align="left">{estadoText}</TableCell>
                       <TableCell align="left">
                         <IconButton size="large" color="inherit" onClick={(event) => handleOpenMenu(event, ID_Rol)}>
                           <Iconify icon={'eva:more-vertical-fill'} />

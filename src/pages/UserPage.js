@@ -37,7 +37,7 @@ import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
 const TABLE_HEAD = [
   { id: 'idUsuario', label: 'ID', alignRight: false },
   { id: 'correo', label: 'Correo', alignRight: false },
-  { id: 'estado', label: 'Estado', alignRight: false }, // Nuevo campo para el estado
+  { id: 'Estado', label: 'Estado', alignRight: false }, 
   { id: 'Acciones', label: 'Acciones', alignRight: false },
 ];
 
@@ -221,9 +221,10 @@ export default function UserPage() {
                 />
                 <TableBody>
                   {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { idUsuario, correo, estado } = row;
+                    const { idUsuario, correo, Estado } = row;
                     const selectedUser = selected.indexOf(idUsuario) !== -1;
-                    const estadoText = estado === 1 ? 'Activo' : 'Inactivo'; // Texto del estado según el valor
+                    const EstadoText = Estado === 1 ? 'Ina' : 'activo'; // Texto del Estado según el valor
+                    console.log(row)
                     return (
                       <TableRow hover key={idUsuario} tabIndex={-1} role="checkbox" selected={selectedUser}>
                         <TableCell padding="checkbox">
@@ -240,7 +241,7 @@ export default function UserPage() {
                         <TableCell key={correo} align="left">
                           {correo}
                         </TableCell>
-                        <TableCell align="left">{estadoText}</TableCell> {/* Campo de estado */}
+                        <TableCell align="left">{EstadoText}</TableCell> {/* Campo de Estado */}
                         <TableCell align="left">
                           <IconButton
                             size="large"
