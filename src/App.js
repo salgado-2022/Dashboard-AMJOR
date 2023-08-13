@@ -5,6 +5,7 @@ import Router from './routes';
 // theme
 import ThemeProvider from './theme';
 // components
+// Prueba subir a git
 import { StyledChart } from './components/chart';
 import ScrollToTop from './components/scroll-to-top';
 import { Context } from './sections/@dashboard/anchetas/context/Context';

@@ -1,5 +1,3 @@
-
-
 ::-moz-selection {
     background: #000;
     color: #fff;
@@ -82,34 +80,6 @@ a:hover {
     font-size: 17px;
     font-weight: 300;
     letter-spacing: .1em;
-}
-
-.btn.btn-image {
-    text-transform: none;
-    letter-spacing: normal;
-    color: #080808;
-    height: 50px;
-    width: 105px;
-    background-color: #feeb75;
-    border-radius: 8px;
-    font-weight: 100;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.btn.btn-add {
-    text-transform: none;
-    letter-spacing: normal;
-    color: mediumslateblue;
-    height: 50px;
-    width: 130px;
-    background-color: #d3cef3;
-    border-radius: 8px;
-    font-weight: 400;
-    display: flex;
-    justify-content: center;
-    align-items: center;
 }
 
 .btn.btn-counter {

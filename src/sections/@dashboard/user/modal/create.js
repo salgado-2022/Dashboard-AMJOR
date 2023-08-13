@@ -117,9 +117,9 @@ function UsuariosFormulario2({ open, onClose, refreshList }) {
       <div
         style={{
           backgroundColor: 'white',
-          padding: '24px',
+          padding: '24px',  
           borderRadius: '8px',
-          width: '90%',
+          width: '100%',
           maxWidth: '800px',
         }}
       >
@@ -236,7 +236,7 @@ function UsuariosFormulario2({ open, onClose, refreshList }) {
                 onClose();
               }}
             >
-              Guardar Cambios
+              Crear Usuario
             </Button>
             <Button
               variant="contained"

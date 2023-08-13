@@ -27,10 +27,10 @@ const PRIMARY = {
 
 const SECONDARY = {
   lighter: '#D6E4FF',
-  light: '#84A9FF',
-  main: '#3366FF',
-  dark: '#1939B7',
-  darker: '#091A7A',
+  light: '#5C6166',
+  main: '#343A40',
+  dark: '#24282C',
+  darker: '#272C30',
   contrastText: '#fff',
 };
 
@@ -70,6 +70,10 @@ const ERROR = {
   contrastText: '#fff',
 };
 
+const SWITCH = {
+  main: '#00e676'
+};
+
 const palette = {
   common: { black: '#000', white: '#fff' },
   primary: PRIMARY,
@@ -78,6 +82,7 @@ const palette = {
   success: SUCCESS,
   warning: WARNING,
   error: ERROR,
+  switch: SWITCH,
   grey: GREY,
   divider: alpha(GREY[500], 0.24),
   text: {
