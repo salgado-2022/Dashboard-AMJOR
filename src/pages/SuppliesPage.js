@@ -11,11 +11,11 @@ import {
   Table,
   Stack,
   Paper,
-  Button,
   Popover,
   Checkbox,
   TableRow,
   MenuItem,
+  Button,
   TableBody,
   TableCell,
   Container,
@@ -100,11 +100,19 @@ export default function SuppliesPage() {
   const [modalShow, setModalShow] = useState(false);
 
   //Modal Crear Usuario
-  const [modalShowNew, setModaShowNew] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
 
   useEffect(() => {
     fetchData();
   }, []);
+
+  const handleOpenModal = () => {
+    setOpenModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+  };
 
   const fetchData = () => {
     axios
@@ -120,6 +128,7 @@ export default function SuppliesPage() {
       .delete('http://localhost:4000/api/admin/insumos/insumodel/' + id)
       .then((res) => {
         console.log(res);
+        fetchData();
         Swal.fire({
           title: 'Eliminado Correctamente',
           text: 'Tu insumo ha sido eliminado correctamente',
@@ -127,9 +136,6 @@ export default function SuppliesPage() {
           showConfirmButton: false,
           timer: 1500,
         });
-        setTimeout(function () {
-          window.location = 'supplies';
-        }, 670);
       })
       .catch((err) => console.log(err));
   };
@@ -194,10 +200,6 @@ export default function SuppliesPage() {
     setOpen(null);
   };
 
-  const handleCreateUser = () => {
-    setModaShowNew(true);
-  };
-
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0;
 
   const filteredUsers = applySortFilter(data, getComparator(order, orderBy), filterName);
@@ -209,14 +211,13 @@ export default function SuppliesPage() {
       <Helmet>
         <title> Insumos | AMJOR </title>
       </Helmet>
-
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
             Insumos
           </Typography>
-          <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleCreateUser}>
-            Agregar insumo
+          <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleOpenModal}>
+            Crear Insumo
           </Button>
         </Stack>
 
@@ -274,7 +275,7 @@ export default function SuppliesPage() {
                           </IconButton>
                         </TableCell>
                         <Popover
-                          open={Boolean(open)}
+                          open={Boolean(open) && selectedInsumo === ID_Insumo}
                           anchorEl={open}
                           onClose={handleCloseMenu}
                           anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
@@ -351,8 +352,8 @@ export default function SuppliesPage() {
           />
         </Card>
       </Container>
-      <EditInsumo show={modalShow} onHide={() => setModalShow(false)} selectedInsumoID={selectedInsumo} />
-      <AddInsumo show={modalShowNew} onHide={() => setModaShowNew(false)} />
+      <AddInsumo open={openModal} onClose={handleCloseModal} fetchData={fetchData} />
+      <EditInsumo show={modalShow} onHide={() => setModalShow(false)} selectedInsumoID={selectedInsumo} fetchData={fetchData} />
     </>
   );
 }

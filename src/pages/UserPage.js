@@ -88,9 +88,11 @@ export default function UserPage() {
   
   //Modal Editar Usuario
   const [modalShow, setModalShow] = useState(false);
+
   useEffect(() => {
     fetchData();
   }, []);
+
   const fetchData = () => {
     axios
       .get('http://localhost:4000/api/admin/usuario')
@@ -99,6 +101,7 @@ export default function UserPage() {
       })
       .catch((err) => console.log(err));
   };
+
   const handleDelete = () => {
     if (!selectedUser1) {
       return;
@@ -119,21 +122,25 @@ export default function UserPage() {
       })
       .catch((err) => console.log(err));
   };
+
   const handleOpenMenu = (event, idUsuario) => {
     setOpen(event.currentTarget);
     setSelectedUser(idUsuario);
     setShowDeleteMenu(true);
   };
+
   const handleCloseMenu = () => {
     setOpen(null);
     setSelectedUser(null);
     setShowDeleteMenu(false);
   };
+
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
   };
+
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
       const newSelecteds = data.map((n) => n.idUsuario);
@@ -142,6 +149,7 @@ export default function UserPage() {
     }
     setSelected([]);
   };
+
   const handleClick = (event, idUsuario) => {
     const selectedIndex = selected.indexOf(idUsuario);
     let newSelected = [];
@@ -156,17 +164,21 @@ export default function UserPage() {
     }
     setSelected(newSelected);
   };
+
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
+
   const handleChangeRowsPerPage = (event) => {
     setPage(0);
     setRowsPerPage(parseInt(event.target.value, 10));
   };
+
   const handleFilterByName = (event) => {
     setPage(0);
     setFilterName(event.target.value);
   };
+  
   const handleEditar = (idSelectedUser) => {
     setSelectedUser(idSelectedUser);
     setModalShow(true);
@@ -180,8 +192,7 @@ export default function UserPage() {
   const handleCloseModal = () => {
     setOpenModal(false);
   };
-
-
+  
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0;
   const filteredUsers = applySortFilter(data, getComparator(order, orderBy), filterName);
   const isNotFound = !filteredUsers.length && !!filterName;

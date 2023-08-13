@@ -140,9 +140,9 @@ function UsuariosFormulario2({ open, onClose, refreshList }) {
           left: '50%',
           transform: 'translate(-50%, -50%)',
           backgroundColor: 'white',
-          padding: '24px',
+          padding: '24px',  
           borderRadius: '8px',
-          width: '90%', // Ajusta el ancho de acuerdo a tus necesidades
+          width: '100%', // Ajusta el ancho de acuerdo a tus necesidades
           maxWidth: '800px', // Establece un ancho máximo si es necesario
         }}
       >
@@ -256,7 +256,7 @@ function UsuariosFormulario2({ open, onClose, refreshList }) {
                 onClose();
               }}
             >
-              Guardar Cambios
+              Crear Usuario
             </Button>
             <Button
               variant="contained"

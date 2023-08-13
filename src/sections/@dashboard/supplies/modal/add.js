@@ -1,19 +1,14 @@
 import React, { useState, useEffect } from "react";
-import Modal from 'react-bootstrap/Modal';
-import { Button } from "react-bootstrap";
 import Swal from 'sweetalert2';
 import axios from "axios";
+import { Modal, TextField, Button, DialogActions, Grid } from '@mui/material';
+import "../../../../styles/modal.css";
 
-//------------------------------------------------------------------------------------------------
+function AddInsumo({ open, onClose, fetchData }) {
+    const [nombreError, setNombreError] = useState('');
+    const [descripcionError, setDescripcionError] = useState('');
+    const [precioError, setPrecioError] = useState('');
 
-import {valnombre} from '../validations/valnombre'
-import {valdesc} from '../validations/valdesc'
-import {valprecio} from '../validations/valprecio'
-
-
-
-function AddInsumo(props) {
-    const { onHide, show } = props;
 
     /* Definición de una variable de estado llamada `values` y una función para actualizarla llamada `setValues`. El
     valor inicial de `valores` es un objeto con cuatro propiedades: `NombreInsumo`, `Descripcion`,
@@ -26,6 +21,14 @@ function AddInsumo(props) {
         ID_Estado: '2'
     });
 
+    const handleCloseModal = () => {
+        onClose(); // Cerrar la modal
+        setValues(initialValues); //Establece los valores de los input a sus valores iniciales
+        setNombreError(''); // Elimina la validación al cerrar el modal
+        setDescripcionError(''); // Elimina la validación al cerrar el modal
+        setPrecioError(''); // Elimina la validación al cerrar el modal
+      };
+      
     /* `valoresiniciales` es una constante que contiene un objeto con los valores iniciales para los campos de entrada en
     la forma. Estos valores son cadenas vacías para `NombreInsumo`, `Descripcion` y `PrecioUnitario`,
     y la cadena `'2'` para `ID_Estado`. Esta constante se utiliza para comprobar si el formulario ha sido modificado.
@@ -37,11 +40,6 @@ function AddInsumo(props) {
         PrecioUnitario: '',
         ID_Estado: '2'
     };
-
-    /* Estas líneas de código definen variables de estado y una referencia para el componente `CrearInsumo`. */
-    const [errorname, setErrorname] = useState({});
-    const [errordesc, setErrordesc] = useState({});
-    const [errorprice, setErrorprice] = useState({});
 
     /* Este bloque de código utiliza el enlace `useEffect` para actualizar el estado de la variable `isChecked` según
     sobre el valor de `valores.ID_Estado`. Se activa cada vez que cambia el estado de los `valores`. El propósito
@@ -59,34 +57,31 @@ function AddInsumo(props) {
     const handleInput = (event) => {
         const { name, value } = event.target;
         setValues(prev => ({ ...prev, [name]: value }));
-    };
-
-    /**
-    * La función `handleBlurname` establece un mensaje de error para un campo de entrada de nombre en función de su valor.
-      * @param event: el parámetro de evento es un objeto que contiene información sobre el evento que
-      * activó la función.
-     */
-    const handleBlurname = (event) => {
-        setErrorname(valnombre(values));
-    };
-
-    /**
-* La función maneja el evento de desenfoque y establece un mensaje de error basado en el valor de entrada.
-  * @param event: el parámetro de evento es un objeto que contiene información sobre el evento que
-  * activó la función.
- */
-    const handleBlurdesc = (event) => {
-        setErrordesc(valdesc(values));
-    };
-
-    /**
-    * La función `handleBlurprice` establece un mensaje de error basado en el valor de `valprecio(values)` cuando
-      * un campo de entrada pierde el foco.
-      * @param event: el parámetro de evento es un objeto que contiene información sobre el evento que
-      * activó la función.
-     */
-    const handleBlurprice = (event) => {
-        setErrorprice(valprecio(values));
+        if (name === 'NombreInsumo') {
+            if (!value) {
+                setNombreError('El nombre es requerido');
+            } else if (!/^[^<>%$"!#&/=]*$/.test(value)) {
+                setNombreError('Por favor ingrese un nombre válido');
+            } else {
+                setNombreError('');
+            }
+        } else if (name === 'Descripcion') {
+            if (!value) {
+                setDescripcionError('La descripción es requerida');
+            } else if (!/^[^<>%$!#&/]*$/.test(value)) {
+                setDescripcionError('Por favor ingrese una descripción válida');
+            } else {
+                setDescripcionError('');
+            }
+        } else if (name === 'PrecioUnitario') {
+            if (!value) {
+                setPrecioError('El precio es requerido');
+            } else if (!/^[0-9\s]*$/.test(value)) {
+                setPrecioError('Ingrese un precio válido');
+            } else {
+                setPrecioError('');
+            }
+        }
     };
 
     /**
@@ -101,11 +96,7 @@ function AddInsumo(props) {
  */
     const handleSubmit = (event) => {
         event.preventDefault();
-        if (
-            errorname.NombreInsumo === "" &&
-            errordesc.Descripcion === "" &&
-            errorprice.PrecioUnitario === ""
-        ) {
+        if ( nombreError === "" && descripcionError === "" && precioError === "") {
             if (
                 JSON.stringify(values) === JSON.stringify(initialValues) ||
                 !values.NombreInsumo ||
@@ -125,7 +116,8 @@ function AddInsumo(props) {
                             showConfirmButton: false,
                             timer: 1500
                         });
-                        setTimeout(function () { window.location = "supplies"; }, 670);
+                        onClose();
+                        fetchData();
                     } else {
                         Swal.fire({
                             title: 'Error!',
@@ -139,58 +131,30 @@ function AddInsumo(props) {
         }
     };
 
-    /**
-  * La función `handleReset` establece los valores de una variable de estado a sus valores iniciales.
-  */
-    const handleReset = () => {
-        setValues(initialValues);
-    };
-
     return (
-        <Modal
-            onHide={onHide}
-            show={show}
-            size="lg"
-            aria-labelledby="contained-modal-title-vcenter"
-            centered
-        >
-            <Modal.Header>
-                <Modal.Title id="contained-modal-title-vcenter" className="text-black">
-                    Agregar Insumo
-                </Modal.Title>
-                <Button variant="secondary" onClick={props.onHide} className="close">
-                    <span aria-hidden="true">&times;</span>
-                </Button>
-            </Modal.Header>
-            <Modal.Body>
-
-                <div>
-                    <form onSubmit={handleSubmit} onReset={handleReset}>
-                        &nbsp;
-                        <h2 className="text-black" id="title">Crear Insumo</h2>
-                        <div className="form-group">
-                            <label htmlFor="NombreInsumo">Nombre</label>
-                            <input type="text" className="form-control" id="NombreInsumo" name="NombreInsumo" value={values.NombreInsumo} onChange={handleInput} onBlur={handleBlurname} />
-                            {errorname.NombreInsumo && <span className="text-danger"> {errorname.NombreInsumo}</span>}
-                        </div>
-                        <div className="form-group">
-                            <label htmlFor="Descripcion">Descripción</label>
-                            <input type="text" className="form-control" id="Descripcion" name="Descripcion" value={values.Descripcion} onChange={handleInput} onBlur={handleBlurdesc} />
-                            {errordesc.Descripcion && <span className="text-danger"> {errordesc.Descripcion}</span>}
-                        </div>
-                        <div className="form-group">
-                            <label htmlFor="PrecioUnitario">Precio</label>
-                            <input type="text" className="form-control" id="PrecioUnitario" name="PrecioUnitario" value={values.PrecioUnitario} onChange={handleInput} onBlur={handleBlurprice} />
-                            {errorprice.PrecioUnitario && <span className="text-danger"> {errorprice.PrecioUnitario}</span>}
-                        </div>
-                        <button type="submit" className="btn btn-primary" id="crearInsumo">Crear</button> &nbsp;
-                        <button type="reset" className="btn btn-dark" id="cancelarInsumo" >Cancelar</button>
-                    </form>
-                </div>
-
-            </Modal.Body>
+        <Modal open={open} onClose={handleCloseModal}>
+            <div className="modal-container">
+                <h2 className="modal-title">Crear Insumo</h2>
+                <form onSubmit={handleSubmit}>
+                    <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                            <TextField fullWidth label="Nombre" variant="outlined" id="NombreInsumo" name="NombreInsumo" value={values.NombreInsumo} onChange={handleInput} error={nombreError !== ''}  helperText={nombreError}/>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField fullWidth label="Descripción" variant="outlined" id="Descripcion" name="Descripcion" value={values.Descripcion} onChange={handleInput} error={descripcionError !== ''}  helperText={descripcionError}/>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField fullWidth label="Precio" variant="outlined" id="PrecioUnitario" name="PrecioUnitario" value={values.PrecioUnitario} onChange={handleInput} error={precioError !== ''}  helperText={precioError}/>
+                        </Grid>
+                    </Grid>
+                    <DialogActions> 
+                        <Button type="submit" variant="contained" color="primary" fullWidth style={{ marginTop: '8px' }}>Crear Insumo</Button>
+                        <Button variant="contained" color="secondary" fullWidth onClick={handleCloseModal} style={{marginTop: '8px'}}>Cancelar</Button>
+                    </DialogActions> 
+                </form>           
+            </div>        
         </Modal>
-    );
+    );   
 }
 
 export { AddInsumo };
