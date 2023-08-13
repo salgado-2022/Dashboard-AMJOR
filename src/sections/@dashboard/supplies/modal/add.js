@@ -155,7 +155,7 @@ function AddInsumo({ open, onClose, fetchData }) {
             </div>        
         </Modal>
     );
-    
+    //Que le pasa a esta mamada de git   
 }
 
 export { AddInsumo };
