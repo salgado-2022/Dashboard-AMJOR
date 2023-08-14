@@ -23,12 +23,12 @@ import {
   IconButton,
   TableContainer,
   TablePagination,
+  Skeleton,
 } from '@mui/material';
 // components
 import Iconify from '../components/iconify';
 import Scrollbar from '../components/scrollbar';
 import Label from '../components/label';
-
 // sections
 import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
 
@@ -94,6 +94,8 @@ export default function SuppliesPage() {
 
   const [data, setData] = useState([]);
 
+  const [loading, setLoading] = useState(true);
+
   const [selectedInsumo, setSelectedInsumo] = useState(null);
 
   //Modal Editar Usuario
@@ -103,6 +105,7 @@ export default function SuppliesPage() {
   const [openModal, setOpenModal] = useState(false);
 
   useEffect(() => {
+    setLoading(true);
     fetchData();
   }, []);
 
@@ -119,6 +122,9 @@ export default function SuppliesPage() {
       .get('http://localhost:4000/api/admin/insumos')
       .then((res) => {
         setData(res.data);
+        setTimeout(() => {
+          setLoading(false);
+        }, 1000)
       })
       .catch((err) => console.log(err));
   };
@@ -206,6 +212,9 @@ export default function SuppliesPage() {
 
   const isNotFound = !filteredUsers.length && !!filterName;
 
+
+
+
   return (
     <>
       <Helmet>
@@ -230,113 +239,166 @@ export default function SuppliesPage() {
           />
 
           <Scrollbar>
-            <TableContainer sx={{ minWidth: 800 }}>
-              <Table>
-                <UserListHead
-                  order={order}
-                  orderBy={orderBy}
-                  headLabel={TABLE_HEAD}
-                  rowCount={data.length}
-                  numSelected={selected.length}
-                  onRequestSort={handleRequestSort}
-                  onSelectAllClick={handleSelectAllClick}
-                />
-                <TableBody>
-                  {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { ID_Insumo, NombreInsumo, Descripcion, PrecioUnitario, Estado } = row;
-                    const selectedUser = selected.indexOf(ID_Insumo) !== -1;
 
-                    return (
-                      <TableRow hover key={ID_Insumo} tabIndex={-1} role="checkbox" selected={selectedUser}>
+            {loading ? ( // Mostrar un mensaje de carga si los datos aún están cargando
+              <TableContainer sx={{ minWidth: 800 }}>
+                <Table>
+                  <UserListHead
+                    order={order}
+                    orderBy={orderBy}
+                    headLabel={TABLE_HEAD}
+                    rowCount={data.length}
+                    numSelected={selected.length}
+                    onRequestSort={handleRequestSort}
+                    onSelectAllClick={handleSelectAllClick}
+                  />
+                  <TableBody>
+
+                    {Array.from({ length: rowsPerPage }).map((_, index) => (
+
+                      <TableRow key={index} hover role="checkbox" >
                         <TableCell padding="checkbox">
-                          <Checkbox checked={selectedUser} onChange={(event) => handleClick(event, ID_Insumo)} />
+                          <Checkbox />
                         </TableCell>
-
-                        <TableCell key={ID_Insumo}>
+                        <TableCell >
                           <Typography variant="subtitle2" noWrap>
-                            #{ID_Insumo}
+                            <Skeleton variant="rounded" width={45} height={22}/>
                           </Typography>
                         </TableCell>
 
-                        <TableCell align="left">{NombreInsumo}</TableCell>
-                        <TableCell align="left">{Descripcion}</TableCell>
-                        <TableCell align="left">{PrecioUnitario}</TableCell>
-                        <TableCell align="left">
-                          <Label color={(Estado === 'Agotado' && 'error') || 'success'}>{sentenceCase(Estado)}</Label>
-                        </TableCell>
+                        <TableCell align="left"><Skeleton variant="rounded" width={166} height={22} /></TableCell>
+                        <TableCell align="left"><Skeleton variant="rounded" width={165} height={22}/></TableCell>
+                        <TableCell align="left"><Skeleton variant="rounded" width={48} height={22}/></TableCell>
 
                         <TableCell align="left">
+                          <Label ><Skeleton variant="rounded" width={66} height={22} /></Label>
+                        </TableCell>
+
+                        <TableCell align="left" width={118}  >
                           <IconButton
                             size="large"
                             color="inherit"
-                            onClick={(event) => handleOpenMenu(event, ID_Insumo)}
+
                           >
                             <Iconify icon={'eva:more-vertical-fill'} />
                           </IconButton>
                         </TableCell>
-                        <Popover
-                          open={Boolean(open) && selectedInsumo === ID_Insumo}
-                          anchorEl={open}
-                          onClose={handleCloseMenu}
-                          anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-                          transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-                          PaperProps={{
-                            sx: {
-                              p: 1,
-                              width: 140,
-                              '& .MuiMenuItem-root': {
-                                px: 1,
-                                typography: 'body2',
-                                borderRadius: 0.75,
-                              },
-                            },
-                          }}
-                        >
-                          <MenuItem sx={{ color: 'warning.main' }} onClick={() => handleEditar(selectedInsumo)}>
-                            <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
-                            Editar
-                          </MenuItem>
-
-                          <MenuItem sx={{ color: 'error.main' }} onClick={() => handleDelete(selectedInsumo)}>
-                            <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
-                            Eliminar
-                          </MenuItem>
-                        </Popover>
                       </TableRow>
-                    );
-                  })}
-                  {emptyRows > 0 && (
-                    <TableRow style={{ height: 53 * emptyRows }}>
-                      <TableCell colSpan={6} />
-                    </TableRow>
-                  )}
-                </TableBody>
+                    ))}
 
-                {isNotFound && (
-                  <TableBody>
-                    <TableRow>
-                      <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
-                        <Paper
-                          sx={{
-                            textAlign: 'center',
-                          }}
-                        >
-                          <Typography variant="h6" paragraph>
-                            No encontrado
-                          </Typography>
-
-                          <Typography variant="body2">
-                            No se encontraron resultados para &nbsp;
-                            <strong>&quot;{filterName}&quot;</strong>.
-                            <br /> Intente verificar errores tipográficos o usar palabras completas.
-                          </Typography>
-                        </Paper>
-                      </TableCell>
-                    </TableRow>
                   </TableBody>
-                )}
-              </Table>
-            </TableContainer>
+                </Table>
+              </TableContainer>
+            ) : (
+              <TableContainer sx={{ minWidth: 800 }}>
+                <Table>
+                  <UserListHead
+                    order={order}
+                    orderBy={orderBy}
+                    headLabel={TABLE_HEAD}
+                    rowCount={data.length}
+                    numSelected={selected.length}
+                    onRequestSort={handleRequestSort}
+                    onSelectAllClick={handleSelectAllClick}
+                  />
+                  <TableBody>
+                    {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+                      const { ID_Insumo, NombreInsumo, Descripcion, PrecioUnitario, Estado } = row;
+                      const selectedUser = selected.indexOf(ID_Insumo) !== -1;
+
+                      return (
+                        <TableRow hover key={ID_Insumo} tabIndex={-1} role="checkbox" selected={selectedUser}>
+                          <TableCell padding="checkbox">
+                            <Checkbox checked={selectedUser} onChange={(event) => handleClick(event, ID_Insumo)} />
+                          </TableCell>
+
+                          <TableCell key={ID_Insumo}>
+                            <Typography variant="subtitle2" noWrap>
+                              #{ID_Insumo}
+                            </Typography>
+                          </TableCell>
+
+                          <TableCell align="left">{NombreInsumo}</TableCell>
+                          <TableCell align="left">{Descripcion}</TableCell>
+                          <TableCell align="left">{PrecioUnitario}</TableCell>
+                          <TableCell align="left">
+                            <Label color={(Estado === 'Agotado' && 'error') || 'success'}>{sentenceCase(Estado)}</Label>
+                          </TableCell>
+
+                          <TableCell align="left">
+                            <IconButton
+                              size="large"
+                              color="inherit"
+                              onClick={(event) => handleOpenMenu(event, ID_Insumo)}
+                            >
+                              <Iconify icon={'eva:more-vertical-fill'} />
+                            </IconButton>
+                          </TableCell>
+                          <Popover
+                            open={Boolean(open) && selectedInsumo === ID_Insumo}
+                            anchorEl={open}
+                            onClose={handleCloseMenu}
+                            anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
+                            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                            PaperProps={{
+                              sx: {
+                                p: 1,
+                                width: 140,
+                                '& .MuiMenuItem-root': {
+                                  px: 1,
+                                  typography: 'body2',
+                                  borderRadius: 0.75,
+                                },
+                              },
+                            }}
+                          >
+                            <MenuItem sx={{ color: 'warning.main' }} onClick={() => handleEditar(selectedInsumo)}>
+                              <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
+                              Editar
+                            </MenuItem>
+
+                            <MenuItem sx={{ color: 'error.main' }} onClick={() => handleDelete(selectedInsumo)}>
+                              <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
+                              Eliminar
+                            </MenuItem>
+                          </Popover>
+                        </TableRow>
+                      );
+                    })}
+                    {emptyRows > 0 && (
+                      <TableRow style={{ height: 53 * emptyRows }}>
+                        <TableCell colSpan={6} />
+                      </TableRow>
+                    )}
+                  </TableBody>
+
+                  {isNotFound && (
+                    <TableBody>
+                      <TableRow>
+                        <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
+                          <Paper
+                            sx={{
+                              textAlign: 'center',
+                            }}
+                          >
+                            <Typography variant="h6" paragraph>
+                              No encontrado
+                            </Typography>
+
+                            <Typography variant="body2">
+                              No se encontraron resultados para &nbsp;
+                              <strong>&quot;{filterName}&quot;</strong>.
+                              <br /> Intente verificar errores tipográficos o usar palabras completas.
+                            </Typography>
+                          </Paper>
+                        </TableCell>
+                      </TableRow>
+                    </TableBody>
+                  )}
+                </Table>
+              </TableContainer>
+            )}
+
           </Scrollbar>
 
           <TablePagination
@@ -356,4 +418,5 @@ export default function SuppliesPage() {
       <EditInsumo show={modalShow} onHide={() => setModalShow(false)} selectedInsumoID={selectedInsumo} fetchData={fetchData} />
     </>
   );
+
 }

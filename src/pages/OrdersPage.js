@@ -108,7 +108,6 @@ export default function AnchetasPage() {
             [ID_Ancheta]: !prevOpen[ID_Ancheta],
         }));
         setSelectedAncheta((prevSelected) => (prevSelected === ID_Ancheta ? null : ID_Ancheta));
-        console.log(ID_Ancheta)
     };
 
     const handleRequestSort = (event, property) => {

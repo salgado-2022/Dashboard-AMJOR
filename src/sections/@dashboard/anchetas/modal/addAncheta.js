@@ -41,7 +41,6 @@ function AddAncheta(props) {
     const Globalstate = useContext(Insumoscontext);
     const state = Globalstate.state;
     const dispatch = Globalstate.dispatch;
-    console.log(Globalstate)
 
     const states = state.map(obj => ({ idInsumo: obj.ID_Insumo, cantidad: obj.Cantidad, precio: obj.PrecioUnitario * obj.Cantidad }));
 
@@ -170,7 +169,6 @@ function AddAncheta(props) {
         setIsImageUploaded(false);
         dispatch({ type: 'ResetInsumos' });
     };
-    console.log(states)
 
 
     return (

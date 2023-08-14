@@ -114,7 +114,7 @@ function ConfiFormulario( {onClose} ) {
         onClick={handleOpenModal}
         style={{ marginBottom: '16px', float: 'right' }}
       >
-        Crear Rol y Permisos
+        Crear Rol
       </Button>
       <Dialog open={modalOpen} onClose={handleCloseModal} fullWidth>
         <DialogTitle>Crear un nuevo rol y permisos</DialogTitle>

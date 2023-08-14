@@ -4,6 +4,8 @@ import Swal from 'sweetalert2';
 import { Helmet } from 'react-helmet-async';
 import { filter } from 'lodash';
 import { ConfiFormulario } from '../sections/@dashboard/configuracion/modal/crearte';
+
+// @mui
 import {
   Card,
   Table,
@@ -20,12 +22,21 @@ import {
   Typography,
   IconButton,
   TablePagination,
+  TableContainer,
+  Skeleton,
 } from '@mui/material';
 
+// components
 import Iconify from '../components/iconify';
 import Scrollbar from '../components/scrollbar';
+import Label from '../components/label';
 import { EditarConfi } from '../sections/@dashboard/configuracion/modal/edita';
+
+// sections
 import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
+
+// ----------------------------------------------------------------------
+
 
 const TABLE_HEAD = [
   { id: 'ID_Rol', label: 'ID', alignRight: false },
@@ -64,19 +75,33 @@ function applySortFilter(array, comparator, query) {
 }
 
 export default function ListaConfiguracion() {
+
   const [open, setOpen] = useState(null);
+
   const [page, setPage] = useState(0);
+
   const [order, setOrder] = useState('desc');
+
   const [selected, setSelected] = useState([]);
+
   const [orderBy, setOrderBy] = useState('ID_Rol');
+
   const [filterName, setFilterName] = useState('');
+
   const [rowsPerPage, setRowsPerPage] = useState(5);
+
   const [data, setData] = useState([]);
+
   const [selectedConfiguracionID, setSelectedConfiguracionID] = useState(null);
+
   const [modalShow, setModalShow] = useState(false);
+
   const [openModal, setOpenModal] = useState(false);
 
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
+    setLoading(true);
     fetchData();
   }, []);
 
@@ -85,6 +110,9 @@ export default function ListaConfiguracion() {
       .get('http://localhost:4000/api/admin/configuracion')
       .then((res) => {
         setData(res.data);
+        setTimeout(() => {
+          setLoading(false);
+        }, 1000)
       })
       .catch((err) => console.log(err));
   };
@@ -194,110 +222,167 @@ export default function ListaConfiguracion() {
           />
 
           <Scrollbar>
-            <Table>
-              <UserListHead
-                order={order}
-                orderBy={orderBy}
-                headLabel={TABLE_HEAD}
-                rowCount={data.length}
-                numSelected={selected.length}
-                onRequestSort={handleRequestSort}
-                onSelectAllClick={handleSelectAllClick}
-              />
-              <TableBody>
-                {filteredRoles.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                  const { ID_Rol, Nombre_Rol } = row;
-                  return (
-                    <TableRow
-                      hover
-                      key={ID_Rol}
-                      tabIndex={-1}
-                      role="checkbox"
-                      selected={selected.indexOf(ID_Rol) !== -1}
-                    >
-                      <TableCell padding="checkbox">
-                        <Checkbox
-                          checked={selected.indexOf(ID_Rol) !== -1}
-                          onClick={(event) => handleClick(event, ID_Rol)}
-                        />
-                      </TableCell>
-                      <TableCell component="th" scope="row" padding="none">
-                        <Stack direction="row" alignItems="center" spacing={2}>
-                          <Avatar alt="" src="" />
-                          <Typography variant="subtitle2" noWrap>
-                            {ID_Rol}
-                          </Typography>
-                        </Stack>
-                      </TableCell>
-                      <TableCell align="left">{Nombre_Rol}</TableCell>
-                      <TableCell align="left">
-                        <IconButton size="large" color="inherit" onClick={(event) => handleOpenMenu(event, ID_Rol)}>
-                          <Iconify icon={'eva:more-vertical-fill'} />
-                        </IconButton>
-                        <Popover
-                          open={Boolean(open) && selectedConfiguracionID === ID_Rol}
-                          anchorEl={open}
-                          onClose={handleCloseMenu}
-                          anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-                          transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-                          PaperProps={{
-                            sx: {
-                              p: 1,
-                              width: 140,
-                              '& .MuiMenuItem-root': {
-                                px: 1,
-                                typography: 'body2',
-                                borderRadius: 0.75,
+
+            {loading ? ( // Mostrar un mensaje de carga si los datos aún están cargando
+              <TableContainer sx={{ minWidth: 800 }}>
+                <Table>
+                  <UserListHead
+                    order={order}
+                    orderBy={orderBy}
+                    headLabel={TABLE_HEAD}
+                    rowCount={data.length}
+                    numSelected={selected.length}
+                    onRequestSort={handleRequestSort}
+                    onSelectAllClick={handleSelectAllClick}
+                  />
+                  <TableBody>
+
+                    {Array.from({ length: rowsPerPage }).map((_, index) => (
+
+                      <TableRow key={index} hover role="checkbox" >
+                        <TableCell padding="checkbox">
+                          <Checkbox />
+                        </TableCell>
+                        <TableCell component="th" scope="row" padding="none">
+                          <Stack direction="row" alignItems="center" spacing={2}>
+                            <Skeleton variant="circular" width={40} height={40} />
+                            <Typography variant="subtitle2" noWrap>
+                              <Skeleton variant="rounded" width={23} height={10} />
+                            </Typography>
+                          </Stack>
+                        </TableCell>
+
+                        <TableCell align="left" width={310}><Skeleton variant="rounded" width={170} height={22} /></TableCell>
+
+                        <TableCell align="left" width={266}>
+                          <Label ><Skeleton variant="rounded" width={100} height={22} /></Label>
+                        </TableCell>
+
+                        <TableCell align="left" width={295} >
+                          <IconButton
+                            size="large"
+                            color="inherit"
+
+                          >
+                            <Iconify icon={'eva:more-vertical-fill'} />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            ) : (
+              <Table>
+                <UserListHead
+                  order={order}
+                  orderBy={orderBy}
+                  headLabel={TABLE_HEAD}
+                  rowCount={data.length}
+                  numSelected={selected.length}
+                  onRequestSort={handleRequestSort}
+                  onSelectAllClick={handleSelectAllClick}
+                />
+                <TableBody>
+                  {filteredUsers.map((row) => {
+                    const { ID_Rol, Nombre_Rol, estado } = row;
+                    const estadoText = estado === 1 ? 'Activo' : 'Inactivo';
+
+                    return (
+                      <TableRow
+                        hover
+                        key={ID_Rol}
+                        tabIndex={-1}
+                        role="checkbox"
+                        selected={selected.indexOf(ID_Rol) !== -1}
+                      >
+                        <TableCell padding="checkbox">
+                          <Checkbox
+                            checked={selected.indexOf(ID_Rol) !== -1}
+                            onClick={(event) => handleClick(event, ID_Rol)}
+                          />
+                        </TableCell>
+                        <TableCell component="th" scope="row" padding="none">
+                          <Stack direction="row" alignItems="center" spacing={2}>
+                            <Avatar alt="" src="" />
+                            <Typography variant="subtitle2" noWrap>
+                              {ID_Rol}
+                            </Typography>
+                          </Stack>
+                        </TableCell>
+                        <TableCell align="left">{Nombre_Rol}</TableCell>
+                        <TableCell align="left">{estadoText}</TableCell>
+                        <TableCell align="left">
+                          <IconButton size="large" color="inherit" onClick={(event) => handleOpenMenu(event, ID_Rol)}>
+                            <Iconify icon={'eva:more-vertical-fill'} />
+                          </IconButton>
+                          <Popover
+                            open={Boolean(open) && selectedConfiguracionID === ID_Rol}
+                            anchorEl={open}
+                            onClose={handleCloseMenu}
+                            anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
+                            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                            PaperProps={{
+                              sx: {
+                                p: 1,
+                                width: 140,
+                                '& .MuiMenuItem-root': {
+                                  px: 1,
+                                  typography: 'body2',
+                                  borderRadius: 0.75,
+                                },
                               },
-                            },
+                            }}
+                          >
+                            <MenuItem
+                              sx={{ color: 'warning.main' }}
+                              onClick={() => handleEditar(selectedConfiguracionID)}
+                            >
+                              <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
+                              Editar
+                            </MenuItem>
+                            <MenuItem sx={{ color: 'error.main' }} onClick={() => handleDelete(selectedConfiguracionID)}>
+                              <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
+                              Eliminar
+                            </MenuItem>
+                          </Popover>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                  {emptyRows > 0 && (
+                    <TableRow style={{ height: 53 * emptyRows }}>
+                      <TableCell colSpan={5} />
+                    </TableRow>
+                  )}
+                </TableBody>
+                {isNotFound && (
+                  <TableBody>
+                    <TableRow>
+                      <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
+                        <Paper
+                          sx={{
+                            textAlign: 'center',
                           }}
                         >
-                          <MenuItem
-                            sx={{ color: 'warning.main' }}
-                            onClick={() => handleEditar(selectedConfiguracionID)}
-                          >
-                            <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
-                            Editar
-                          </MenuItem>
-                          <MenuItem sx={{ color: 'error.main' }} onClick={() => handleDelete(selectedConfiguracionID)}>
-                            <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
-                            Eliminar
-                          </MenuItem>
-                        </Popover>
+                          <Typography variant="h6" paragraph>
+                            No encontrado
+                          </Typography>
+
+                          <Typography variant="body2">
+                            No se encontraron resultados para &nbsp;
+                            <strong>&quot;{filterName}&quot;</strong>.
+                            <br /> Intente verificar errores tipográficos o usar palabras completas.
+                          </Typography>
+                        </Paper>
                       </TableCell>
                     </TableRow>
-                  );
-                })}
-                {emptyRows > 0 && (
-                  <TableRow style={{ height: 53 * emptyRows }}>
-                    <TableCell colSpan={5} />
-                  </TableRow>
+                  </TableBody>
                 )}
-              </TableBody>
-              {isNotFound && (
-                <TableBody>
-                  <TableRow>
-                    <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
-                      <Paper
-                        sx={{
-                          textAlign: 'center',
-                        }}
-                      >
-                        <Typography variant="h6" paragraph>
-                          No encontrado
-                        </Typography>
+              </Table>
+            )}
 
-                        <Typography variant="body2">
-                          No se encontraron resultados para &nbsp;
-                          <strong>&quot;{filterName}&quot;</strong>.
-                          <br /> Intente verificar errores tipográficos o usar palabras completas.
-                        </Typography>
-                      </Paper>
-                    </TableCell>
-                  </TableRow>
-                </TableBody>
-              )}
-            </Table>
           </Scrollbar>
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
