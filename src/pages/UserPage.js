@@ -24,6 +24,7 @@ import {
   IconButton,
   TableContainer,
   TablePagination,
+  Skeleton,
 } from '@mui/material';
 // components
 import Iconify from '../components/iconify';
@@ -85,11 +86,14 @@ export default function UserPage() {
   const [selectedUser1, setSelectedUser] = useState(null);
   const [showDeleteMenu, setShowDeleteMenu] = useState(false);
   const [openModal, setOpenModal] = useState(false);
-  
+
+  const [loading, setLoading] = useState(true);
+
   //Modal Editar Usuario
   const [modalShow, setModalShow] = useState(false);
 
   useEffect(() => {
+    setLoading(true);
     fetchData();
   }, []);
 
@@ -98,6 +102,9 @@ export default function UserPage() {
       .get('http://localhost:4000/api/admin/usuario')
       .then((res) => {
         setData(res.data);
+        setTimeout(() => {
+          setLoading(false);
+        }, 1000)
       })
       .catch((err) => console.log(err));
   };
@@ -178,7 +185,7 @@ export default function UserPage() {
     setPage(0);
     setFilterName(event.target.value);
   };
-  
+
   const handleEditar = (idSelectedUser) => {
     setSelectedUser(idSelectedUser);
     setModalShow(true);
@@ -192,7 +199,7 @@ export default function UserPage() {
   const handleCloseModal = () => {
     setOpenModal(false);
   };
-  
+
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0;
   const filteredUsers = applySortFilter(data, getComparator(order, orderBy), filterName);
   const isNotFound = !filteredUsers.length && !!filterName;
@@ -208,9 +215,9 @@ export default function UserPage() {
             Usuarios
           </Typography>
           <Button variant="contained" onClick={handleOpenModal}>
-        Crear nuevo usuario
-      </Button>
-      <UsuariosFormulario2 open={openModal} onClose={handleCloseModal} />
+            Crear nuevo usuario
+          </Button>
+          <UsuariosFormulario2 open={openModal} onClose={handleCloseModal} />
         </Stack>
         <Card>
           <UserListToolbar
@@ -221,115 +228,171 @@ export default function UserPage() {
           />
 
           <Scrollbar>
-            <TableContainer sx={{ minWidth: 800 }}>
-              <Table>
-                <UserListHead
-                  order={order}
-                  orderBy={orderBy}
-                  headLabel={TABLE_HEAD}
-                  rowCount={data.length}
-                  numSelected={selected.length}
-                  onRequestSort={handleRequestSort}
-                  onSelectAllClick={handleSelectAllClick}
-                />
-                <TableBody>
-                  {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { idUsuario, correo, Estado } = row;
-                    const selectedUser = selected.indexOf(idUsuario) !== -1;
-                    const estadoText = Estado === 1 ? 'Activo' : 'Inactivo'; // Texto del estado según el valor
-                    return (
-                      <TableRow hover key={idUsuario} tabIndex={-1} role="checkbox" selected={selectedUser}>
+
+            {loading ? ( // Mostrar un mensaje de carga si los datos aún están cargando
+              <TableContainer sx={{ minWidth: 800 }}>
+                <Table>
+                  <UserListHead
+                    order={order}
+                    orderBy={orderBy}
+                    headLabel={TABLE_HEAD}
+                    rowCount={data.length}
+                    numSelected={selected.length}
+                    onRequestSort={handleRequestSort}
+                    onSelectAllClick={handleSelectAllClick}
+                  />
+                  <TableBody>
+
+                    {Array.from({ length: rowsPerPage }).map((_, index) => (
+
+                      <TableRow key={index} hover role="checkbox" >
                         <TableCell padding="checkbox">
-                          <Checkbox checked={selectedUser} onChange={(event) => handleClick(event, idUsuario)} />
+                          <Checkbox />
                         </TableCell>
                         <TableCell component="th" scope="row" padding="none">
                           <Stack direction="row" alignItems="center" spacing={2}>
-                            <Avatar alt="" src="" />
+                            <Skeleton variant="circular" width={40} height={40} />
                             <Typography variant="subtitle2" noWrap>
-                              {idUsuario}
+                              <Skeleton variant="rounded" width={23} height={10}/>
                             </Typography>
                           </Stack>
                         </TableCell>
-                        <TableCell key={correo} align="left">
-                          {correo}
-                        </TableCell>
+
+                        <TableCell align="left"><Skeleton variant="rounded" width={280} height={22} /></TableCell>
 
                         <TableCell align="left">
-                          <Label color={(estadoText === 'Activo' && 'success') || 'error' }>{sentenceCase(estadoText)}</Label>
+                          <Label ><Skeleton variant="rounded" width={40} height={22} /></Label>
                         </TableCell>
-                        
 
-                        <TableCell align="left">
+                        <TableCell align="left" width={184} >
                           <IconButton
                             size="large"
                             color="inherit"
-                            onClick={(event) => handleOpenMenu(event, idUsuario)}
+
                           >
                             <Iconify icon={'eva:more-vertical-fill'} />
                           </IconButton>
-                          <Popover
-                            open={Boolean(open) && showDeleteMenu}
-                            anchorEl={open}
-                            onClose={handleCloseMenu}
-                            anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-                            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-                            PaperProps={{
-                              sx: {
-                                p: 1,
-                                width: 140,
-                                '& .MuiMenuItem-root': {
-                                  px: 1,
-                                  typography: 'body2',
-                                  borderRadius: 0.75,
-                                },
-                              },
-                            }}
-                          >
-                            <MenuItem sx={{ color: 'warning.main' }} onClick={() => handleEditar(selectedUser1)}>
-                              <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
-                              Editar
-                            </MenuItem>
-                            <MenuItem sx={{ color: 'error.main' }} onClick={() => handleDelete(selectedUser1)}>
-                              <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
-                              Eliminar
-                            </MenuItem>
-                          </Popover>
                         </TableCell>
                       </TableRow>
-                    );
-                  })}
-                  {emptyRows > 0 && (
-                    <TableRow style={{ height: 53 * emptyRows }}>
-                      <TableCell colSpan={5} />{' '} 
-                    </TableRow>
-                  )}
-                </TableBody>
+                    ))}
 
-                {isNotFound && (
-                  <TableBody>
-                    <TableRow>
-                      <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
-                        <Paper
-                          sx={{
-                            textAlign: 'center',
-                          }}
-                        >
-                          <Typography variant="h6" paragraph>
-                            No encontrado
-                          </Typography>
-
-                          <Typography variant="body2">
-                            No se encontraron resultados para &nbsp;
-                            <strong>&quot;{filterName}&quot;</strong>.
-                            <br /> Intente verificar errores tipográficos o usar palabras completas.
-                          </Typography>
-                        </Paper>
-                      </TableCell>
-                    </TableRow>
                   </TableBody>
-                )}
-              </Table>
-            </TableContainer>
+                </Table>
+              </TableContainer>
+            ) : (
+
+              <TableContainer sx={{ minWidth: 800 }}>
+                <Table>
+                  <UserListHead
+                    order={order}
+                    orderBy={orderBy}
+                    headLabel={TABLE_HEAD}
+                    rowCount={data.length}
+                    numSelected={selected.length}
+                    onRequestSort={handleRequestSort}
+                    onSelectAllClick={handleSelectAllClick}
+                  />
+                  <TableBody>
+                    {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+                      const { idUsuario, correo, Estado } = row;
+                      const selectedUser = selected.indexOf(idUsuario) !== -1;
+                      const estadoText = Estado === 1 ? 'Activo' : 'Inactivo'; // Texto del estado según el valor
+                      return (
+                        <TableRow hover key={idUsuario} tabIndex={-1} role="checkbox" selected={selectedUser}>
+                          <TableCell padding="checkbox">
+                            <Checkbox checked={selectedUser} onChange={(event) => handleClick(event, idUsuario)} />
+                          </TableCell>
+                          <TableCell component="th" scope="row" padding="none">
+                            <Stack direction="row" alignItems="center" spacing={2}>
+                              <Avatar alt="" src="" />
+                              <Typography variant="subtitle2" noWrap>
+                                {idUsuario}
+                              </Typography>
+                            </Stack>
+                          </TableCell>
+                          <TableCell key={correo} align="left">
+                            {correo}
+                          </TableCell>
+
+                          <TableCell align="left">
+                            <Label color={(estadoText === 'Activo' && 'success') || 'error'}>{sentenceCase(estadoText)}</Label>
+                          </TableCell>
+
+
+                          <TableCell align="left">
+                            <IconButton
+                              size="large"
+                              color="inherit"
+                              onClick={(event) => handleOpenMenu(event, idUsuario)}
+                            >
+                              <Iconify icon={'eva:more-vertical-fill'} />
+                            </IconButton>
+                            <Popover
+                              open={Boolean(open) && showDeleteMenu}
+                              anchorEl={open}
+                              onClose={handleCloseMenu}
+                              anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
+                              transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                              PaperProps={{
+                                sx: {
+                                  p: 1,
+                                  width: 140,
+                                  '& .MuiMenuItem-root': {
+                                    px: 1,
+                                    typography: 'body2',
+                                    borderRadius: 0.75,
+                                  },
+                                },
+                              }}
+                            >
+                              <MenuItem sx={{ color: 'warning.main' }} onClick={() => handleEditar(selectedUser1)}>
+                                <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
+                                Editar
+                              </MenuItem>
+                              <MenuItem sx={{ color: 'error.main' }} onClick={() => handleDelete(selectedUser1)}>
+                                <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
+                                Eliminar
+                              </MenuItem>
+                            </Popover>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                    {emptyRows > 0 && (
+                      <TableRow style={{ height: 53 * emptyRows }}>
+                        <TableCell colSpan={5} />{' '}
+                      </TableRow>
+                    )}
+                  </TableBody>
+
+                  {isNotFound && (
+                    <TableBody>
+                      <TableRow>
+                        <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
+                          <Paper
+                            sx={{
+                              textAlign: 'center',
+                            }}
+                          >
+                            <Typography variant="h6" paragraph>
+                              No encontrado
+                            </Typography>
+
+                            <Typography variant="body2">
+                              No se encontraron resultados para &nbsp;
+                              <strong>&quot;{filterName}&quot;</strong>.
+                              <br /> Intente verificar errores tipográficos o usar palabras completas.
+                            </Typography>
+                          </Paper>
+                        </TableCell>
+                      </TableRow>
+                    </TableBody>
+                  )}
+                </Table>
+              </TableContainer>
+
+            )}
+
           </Scrollbar>
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
