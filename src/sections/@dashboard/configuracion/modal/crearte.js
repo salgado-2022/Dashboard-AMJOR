@@ -20,10 +20,10 @@ import {
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
-function ConfiFormulario( onClose ) {
+function ConfiFormulario( {onClose} ) {
   const [rol, setRol] = useState('');
   const [selectedPermisos, setSelectedPermisos] = useState([]);
-  const [permisos, setPermisos] = useState([]);
+  const [permisos ] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [errorMessages, setErrorMessages] = useState({ rol: '', permisos: '' });
 
@@ -57,7 +57,7 @@ function ConfiFormulario( onClose ) {
 
     if (Object.keys(errors).length === 0) {
       axios
-        .post('http://localhost:4000/api/crearRol', { rol, permisos: selectedPermisos })
+        .post('http://localhost:4000/api/crearRol', { rol: selectedPermisos })
         .then((res) => {
           if (res.data.Status === 'Success') {
             Swal.fire({
@@ -97,11 +97,11 @@ function ConfiFormulario( onClose ) {
   
   fetchData()
 
-  const handleCheckboxChange = (permiso) => {
-    if (selectedPermisos.includes(permiso)) {
-      setSelectedPermisos(selectedPermisos.filter((item) => item !== permiso));
+  const handleCheckboxChange = (permisos) => {
+    if (selectedPermisos.includes(permisos)) {
+      setSelectedPermisos(selectedPermisos.filter((item) => item !== permisos));
     } else {
-      setSelectedPermisos([...selectedPermisos, permiso]);
+      setSelectedPermisos([...selectedPermisos, permisos]);
     }
   };
 
@@ -139,13 +139,13 @@ function ConfiFormulario( onClose ) {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {permisos.map((permiso) => (
-                  <TableRow key={permiso}>
-                    <TableCell>{permiso}</TableCell>
+                {permisos.map((permisos) => (
+                  <TableRow key={permisos}>
+                    <TableCell>{permisos}</TableCell>
                     <TableCell align="center">
                       <Checkbox
-                        checked={selectedPermisos.includes(permiso)}
-                        onChange={() => handleCheckboxChange(permiso)}
+                        checked={selectedPermisos.includes(permisos)}
+                        onChange={() => handleCheckboxChange(permisos)}
                       />
                     </TableCell>
                   </TableRow>

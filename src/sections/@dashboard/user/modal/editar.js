@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import Swal from 'sweetalert2';
 import axios from 'axios';
-
 import {
   Button,
   Table,
@@ -16,6 +15,7 @@ import {
   TextField,
   Modal,
   Grid,
+  MenuItem,
 } from '@mui/material';
 
 function EditarUsuario(props) {
@@ -23,6 +23,8 @@ function EditarUsuario(props) {
   const id = selectedUsuarioID;
   const [selectedPermisos, setSelectedPermisos] = useState([]);
   const permisos = ['Usuarios', 'Insumos', 'Anchetas', 'Pedidos'];
+  const [roles, setRoles] = useState([]);
+  const [selectedRol, setSelectedRol] = useState('');
 
   const handleCheckboxChange = (permiso) => {
     setSelectedPermisos((prevSelectedPermisos) =>
@@ -62,11 +64,11 @@ function EditarUsuario(props) {
       axios
         .get(`http://localhost:4000/api/admin/usuario/usullamada/${id}`)
         .then((res) => {
-          console.log('Valores', res);
           setValues((prevValues) => ({
             ...prevValues,
             correo: res.data[0].correo,
           }));
+          setSelectedRol(res.data[0].ID_Rol);
           setIsChecked(res.data[0].idUsuario === 1);
         })
         .catch((err) => console.log(err));
@@ -79,18 +81,25 @@ function EditarUsuario(props) {
       setShowPassword(false);
       setCorreoError(false);
       setContrasenaError(false);
-      setGuardadoExitoso(false); // Reiniciar el estado de guardado exitoso
+      setGuardadoExitoso(false);
     }
   }, [id, show]);
+
+  useEffect(() => {
+    axios
+      .get(`http://localhost:4000/api/admin/configuracion`)
+      .then((res) => {
+        setRoles(res.data);
+      })
+      .catch((err) => console.log(err));
+  }, []);
 
   const handleUpdate = (event) => {
     event.preventDefault();
 
-    // Validar correo electrónico
     const correoValido = validateEmail(values.correo);
     setCorreoError(!correoValido);
 
-    // Validar contraseña solo si se ha ingresado una nueva
     if (values.contrasena) {
       const contrasenaValida = validatePassword(values.contrasena);
       setContrasenaError(!contrasenaValida);
@@ -105,8 +114,7 @@ function EditarUsuario(props) {
     axios
       .put(`http://localhost:4000/api/admin/usuario/usuariarioedit/${id}`, values)
       .then((res) => {
-        console.log(res);
-        setGuardadoExitoso(true); // Establecer el estado de guardado exitoso
+        setGuardadoExitoso(true);
         Swal.fire({
           title: 'Modificado Correctamente',
           text: 'Tu Usuario se ha sido modificado correctamente',
@@ -133,87 +141,104 @@ function EditarUsuario(props) {
 
   useEffect(() => {
     if (guardadoExitoso && show) {
-      onHide(); // Cerrar la modal si el guardado fue exitoso
+      onHide();
     }
   });
 
   return (
     <Modal onClose={onHide} open={show} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
-      <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: 'white', padding: '16px', borderRadius: '8px', width: '450px' }}>
-        <h2 style={{ textAlign: 'center' }}>Editar datos de Usuario</h2>
-        <form onSubmit={handleUpdate} id="editarUsuario">
-          <TextField
-            fullWidth
-            label="Cambia tu correo"
-            variant="outlined"
-            name="correo"
-            value={values.correo}
-            onChange={handleInput}
-            error={correoError}
-            helperText={correoError ? 'Por favor, ingresa un correo electrónico válido.' : ''}
-            style={{ marginBottom: '16px', borderRadius: '8px' }}
-          />
-          <TextField
-            fullWidth
-            label="Cambia tu Contraseña"
-            variant="outlined"
-            type={showPassword ? 'text' : 'password'}
-            name="contrasena"
-            value={values.contrasena}
-            onChange={handleInput}
-            error={contrasenaError}
-            helperText={
-              contrasenaError
-                ? 'La contraseña debe tener al menos 5 caracteres, la primera letra debe ser mayúscula y debe contener al menos 2 números sin espacios.'
-                : ''
-            }
-            style={{ marginBottom: '10px', borderRadius: '8px' }}
-            InputProps={{
-              endAdornment: (
-                <Button onClick={toggleShowPassword}>
-                  {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
-                </Button>
-              ),
-            }}                                                                   //EDITAR DE USUARIOS - CORREO - CONTRASEÑA- ROL 
-          />
-          <br></br>                                                                   
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Permiso</TableCell>
-                  <TableCell align="center">Seleccionar</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {permisos.map((permiso) => (
-                  <TableRow key={permiso}>
-                    <TableCell>{permiso}</TableCell>
-                    <TableCell align="center">
-                      <Checkbox
-                        checked={selectedPermisos.includes(permiso)}
-                        onChange={() => handleCheckboxChange(permiso)}
-                      />
-                    </TableCell>
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+        <div style={{ backgroundColor: 'white', padding: '16px', borderRadius: '8px', width: '100%', maxWidth: '450px' }}>
+          <h2 style={{ textAlign: 'center' }}>Editar datos de Usuario</h2>
+          <form onSubmit={handleUpdate} id="editarUsuario">
+            <TextField
+              fullWidth
+              label="Cambia tu correo"
+              variant="outlined"
+              name="correo"
+              value={values.correo}
+              onChange={handleInput}
+              error={correoError}
+              helperText={correoError ? 'Por favor, ingresa un correo electrónico válido.' : ''}
+              style={{ marginBottom: '16px', borderRadius: '8px' }}
+            />
+            <TextField
+              fullWidth
+              label="Cambia tu Contraseña"
+              variant="outlined"
+              type={showPassword ? 'text' : 'password'}
+              name="contrasena"
+              value={values.contrasena}
+              onChange={handleInput}
+              error={contrasenaError}
+              helperText={
+                contrasenaError
+                  ? 'La contraseña debe tener al menos 5 caracteres, la primera letra debe ser mayúscula y debe contener al menos 2 números sin espacios.'
+                  : ''
+              }
+              style={{ marginBottom: '10px', borderRadius: '8px' }}
+              InputProps={{
+                endAdornment: (
+                  <Button onClick={toggleShowPassword}>
+                    {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
+                  </Button>
+                ),
+              }}
+            />
+            <TextField
+              select
+              fullWidth
+              label="Seleccionar Rol"
+              variant="outlined"
+              name="ID_Rol"
+              value={selectedRol}
+              onChange={(event) => setSelectedRol(event.target.value)}
+              style={{ marginBottom: '16px', borderRadius: '8px' }}
+            >
+              {roles.map((rol) => (
+                <MenuItem key={rol.ID_Rol} value={rol.ID_Rol}>
+                  {rol.nombreRol}
+                </MenuItem>
+              ))}
+            </TextField>
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Permiso</TableCell>
+                    <TableCell align="center">Seleccionar</TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <br></br>
-          <Grid container spacing={1}>
-            <Grid item xs={12} md={6}>
-              <Button type="submit" variant="contained" color="primary" fullWidth >
-              Guardar cambios
-              </Button>
+                </TableHead>
+                <TableBody>
+                  {permisos.map((permiso) => (
+                    <TableRow key={permiso}>
+                      <TableCell>{permiso}</TableCell>
+                      <TableCell align="center">
+                        <Checkbox
+                          checked={selectedPermisos.includes(permiso)}
+                          onChange={() => handleCheckboxChange(permiso)}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <br />
+            <Grid container spacing={1}>
+              <Grid item xs={12} md={6}>
+                <Button type="submit" variant="contained" color="primary" fullWidth>
+                  Guardar cambios
+                </Button>
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Button variant="contained" color="secondary" fullWidth onClick={onHide}>
+                  Cancelar
+                </Button>
+              </Grid>
             </Grid>
-            <Grid item xs={12} md={6}>
-              <Button  variant="contained" color="secondary" fullWidth onClick={onHide}>
-                Cancelar
-              </Button>
-            </Grid>
-          </Grid>
-        </form>
+          </form>
+        </div>
       </div>
     </Modal>
   );

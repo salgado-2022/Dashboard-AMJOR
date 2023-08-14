@@ -1,7 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 import { filter } from 'lodash';
 import { useState, useEffect } from 'react';
-import { sentenceCase } from 'change-case';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { UsuariosFormulario2 } from '../sections/@dashboard/user/modal/create';
@@ -28,7 +27,6 @@ import {
 // components
 import Iconify from '../components/iconify';
 import Scrollbar from '../components/scrollbar';
-import Label from '../components/label';
 import { EditarUsuario } from '../sections/@dashboard/user/modal/editar';
 
 // sections
@@ -237,7 +235,6 @@ export default function UserPage() {
 
                     const { idUsuario, correo, Estado } = row;
                     const selectedUser = selected.indexOf(idUsuario) !== -1;
-                    const EstadoText = Estado === 1 ? 'Ina' : 'activo'; // Texto del Estado según el valor
                     console.log(row)
                     const estadoText = Estado === 1 ? 'Activo' : 'Inactivo'; // Texto del estado según el valor
                     return (
