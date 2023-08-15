@@ -1,6 +1,7 @@
 import { Helmet } from 'react-helmet-async';
 import { filter } from 'lodash';
 import { useState, useEffect } from 'react';
+import { sentenceCase } from 'change-case';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { UsuariosFormulario2 } from '../sections/@dashboard/user/modal/create';
@@ -28,6 +29,7 @@ import {
 // components
 import Iconify from '../components/iconify';
 import Scrollbar from '../components/scrollbar';
+import Label from '../components/label';
 import { EditarUsuario } from '../sections/@dashboard/user/modal/editar';
 
 // sections
@@ -38,7 +40,7 @@ import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
 const TABLE_HEAD = [
   { id: 'idUsuario', label: 'ID', alignRight: false },
   { id: 'correo', label: 'Correo', alignRight: false },
-  { id: 'Estado', label: 'Estado', alignRight: false }, 
+  { id: 'estado', label: 'Estado', alignRight: false }, // Nuevo campo para el estado
   { id: 'Acciones', label: 'Acciones', alignRight: false },
 ];
 

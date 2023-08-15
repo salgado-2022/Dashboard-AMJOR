@@ -198,8 +198,8 @@ export default function ListaConfiguracion() {
   };
 
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0;
-  const filteredRoles = applySortFilter(data, getComparator(order, orderBy), filterName);
-  const isNotFound = !filteredRoles.length && !!filterName;
+  const filteredUsers = applySortFilter(data, getComparator(order, orderBy), filterName);
+  const isNotFound = !filteredUsers.length && !!filterName;
 
   return (
     <>
