@@ -16,6 +16,7 @@ import {
   Modal,
   Grid,
   MenuItem,
+  Typography
 } from '@mui/material';
 
 function EditarUsuario(props) {
@@ -92,7 +93,7 @@ function EditarUsuario(props) {
         setRoles(res.data);
       })
       .catch((err) => console.log(err));
-  }, []);
+  }, [id]);
 
   const handleUpdate = (event) => {
     event.preventDefault();
@@ -185,22 +186,24 @@ function EditarUsuario(props) {
                 ),
               }}
             />
-            <TextField
-              select
-              fullWidth
-              label="Seleccionar Rol"
-              variant="outlined"
-              name="ID_Rol"
-              value={selectedRol}
-              onChange={(event) => setSelectedRol(event.target.value)}
-              style={{ marginBottom: '16px', borderRadius: '8px' }}
-            >
-              {roles.map((rol) => (
-                <MenuItem key={rol.ID_Rol} value={rol.ID_Rol}>
-                  {rol.nombreRol}
-                </MenuItem>
-              ))}
-            </TextField>
+<TextField
+      select
+      fullWidth
+      label="Seleccionar Rol"
+      variant="outlined"
+      name="ID_Rol"
+      value={selectedRol}
+      onChange={(event) => setSelectedRol(event.target.value)}
+      style={{ marginBottom: '16px', borderRadius: '8px' }}
+    >
+      {console.table(roles)}
+      {roles.map((rol, index) => (
+        <MenuItem key={index} value={rol.ID_Rol}>
+          <Typography>{rol.Nombre_Rol}</Typography>
+        </MenuItem>
+      ))}
+    </TextField>
+
             <TableContainer component={Paper}>
               <Table>
                 <TableHead>

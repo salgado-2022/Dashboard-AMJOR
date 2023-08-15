@@ -59,6 +59,12 @@ function EditInsumo(props) {
     };
 
     useEffect(() => {
+        const initialValues = {
+            NombreInsumo: '',
+            Descripcion: '',
+            PrecioUnitario: ''
+        };
+        
         if (show) {
             axios.get('http://localhost:4000/api/admin/insumos/insullamada/' + id)
                 .then(res => {
@@ -75,6 +81,7 @@ function EditInsumo(props) {
                 .catch(err => console.log(err));
         }
         if (!show) {
+            setValues(initialValues);
             setNombreError('');
             setDescripcionError('');
             setPrecioError('');
