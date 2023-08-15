@@ -23,6 +23,9 @@ import {
     TablePagination,
     TableHead,
     Collapse,
+    ListItemText,
+    ListItem,
+    List,
 } from '@mui/material';
 
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -39,13 +42,13 @@ import OrderListHead from '../sections/@dashboard/pedidos/OrderListHead';
 
 const TABLE_HEAD = [
     { id: '' },
-    { id: 'a' },
     { id: 'ID_Ancheta', label: 'ID', alignRight: false },
     { id: 'NombreAncheta', label: 'Nombre', alignRight: false },
     { id: 'Descripcion', label: 'Descripcion', alignRight: false },
     { id: 'PrecioUnitario', label: 'Precio', alignRight: false },
     { id: 'Estado', label: 'Estado', alignRight: false },
     { id: 'blanck' },
+    { id: 'a' },
 ];
 
 function descendingComparator(a, b, orderBy) {
@@ -81,7 +84,7 @@ export default function AnchetasPage() {
     const [open, setOpen] = useState({});
     const [page, setPage] = useState(0);
     const [order, setOrder] = useState('desc');
-    const [selected, setSelected ] = useState([]);
+    const [selected, setSelected] = useState([]);
     const [orderBy, setOrderBy] = useState('ID_Ancheta');
     const [filterName, setFilterName] = useState('');
     const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -154,7 +157,7 @@ export default function AnchetasPage() {
                 </Stack>
 
                 <Card style={{ backgroundColor: '' }}>
-                    <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} placeholder="Buscar Ancheta..." />
+                    <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} placeholder="Buscar pedido..." />
 
                     <Scrollbar>
                         <TableContainer sx={{ minWidth: 800 }}>
@@ -178,20 +181,30 @@ export default function AnchetasPage() {
                                                     <TableCell padding="checkbox">
                                                     </TableCell>
 
-                                                    <TableCell component="th" scope="row" padding="none">
+                                                    <TableCell>
+                                                        <Typography variant="body1" fontSize={16} noWrap>
+                                                            #6010
+                                                        </Typography>
+                                                    </TableCell>
+                                                    <TableCell >
+
                                                         <Stack direction="row" alignItems="center" spacing={2}>
                                                             <Avatar alt='' src={`http://localhost:4000/anchetas/` + image} />
+                                                            <ListItemText
+                                                                style={{marginTop: '0.4rem'}}
+                                                                primaryTypographyProps={{ style: { fontSize: 14 } }}
+                                                                secondaryTypographyProps={{ style: { fontSize: 14 } }}
+                                                                primary="Juan David Salgado"
+                                                                secondary="salgadojuandavid419@gmail.com"
+                                                            />
                                                         </Stack>
-                                                    </TableCell>
 
-                                                    <TableCell>
-                                                        <Typography variant="subtitle2" noWrap>
-                                                            #{ID_Ancheta}
-                                                        </Typography>
                                                     </TableCell>
 
                                                     <TableCell align="left">{NombreAncheta}</TableCell>
-                                                    <TableCell align="left">{Descripcion}</TableCell>
+                                                    <TableCell align="left">
+
+                                                    </TableCell>
                                                     <TableCell align="left">{PrecioUnitario}</TableCell>
                                                     <TableCell align="left">
                                                         <Label color={(Estado === 'Agotado' && 'error') || 'success'}>{sentenceCase(Estado)}</Label>
@@ -212,10 +225,10 @@ export default function AnchetasPage() {
 
                                                 <TableRow>
                                                     <TableCell style={{ padding: 0, backgroundColor: "#F4F6F8" }} colSpan={8} size='medium'>
-                                                        <Collapse in={open[ID_Ancheta]} timeout="auto" unmountOnExit > 
-                                                            <Card sx={{margin:1.5}} style={{padding: 0}}>
+                                                        <Collapse in={open[ID_Ancheta]} timeout="auto" unmountOnExit >
+                                                            <Card sx={{ margin: 1.5 }} style={{ padding: 0 }}>
                                                                 <Box sx={{ margin: 2 }}>
-                                                                    
+
                                                                     <Typography variant="h5" gutterBottom component="div">
                                                                         Anchetas pedidas
                                                                     </Typography>
