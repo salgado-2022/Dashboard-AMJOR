@@ -17,7 +17,7 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 import Swal from 'sweetalert2';
 // Importa tus funciones de validación aquí
 
-function UsuariosFormulario2({ open, onClose, refreshList }) {
+function UsuariosFormulario2({ open, onClose, fetchData }) {
   const [values, setValues] = useState({
     nombre: '',
     correo: '',
@@ -92,8 +92,8 @@ function UsuariosFormulario2({ open, onClose, refreshList }) {
           icon: 'success',
         }).then(() => {
           onClose();
-          window.location.reload();
         });
+        fetchData();
       } else if (res.data.Error === 'El correo ya está registrado.') {
         setExistingEmailError('El correo ya está registrado.');
       } else {
@@ -122,8 +122,11 @@ function UsuariosFormulario2({ open, onClose, refreshList }) {
           width: '100%',
           maxWidth: '800px',
         }}
+        
       >
-        <h2 style={{ marginBottom: '16px', textAlign: 'center' }}>Crear un nuevo usuario</h2>
+        
+        <h2 style={{ marginBottom: '16px', textAlign: 'center' }}>
+          Crear un nuevo usuario</h2>
         <form onSubmit={handleSubmit}>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>

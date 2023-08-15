@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Iconify from "../../../../components/iconify";
 import {
   Button,
   Container,
@@ -26,11 +27,12 @@ function ConfiFormulario( {onClose} ) {
   const [permisos ] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [errorMessages, setErrorMessages] = useState({ rol: '', permisos: '' });
+  
 
   useEffect(() => {
     console.log('entro')
     fetchData();
-  }, []);
+  }, );
 
 
   const handleOpenModal = () => {
@@ -67,6 +69,7 @@ function ConfiFormulario( {onClose} ) {
             }).then(() => {
               onClose();
               handleCloseModal();
+              fetchData();
          
             });
           } else {
@@ -87,15 +90,11 @@ function ConfiFormulario( {onClose} ) {
     axios
       .get('http://localhost:4000/api/admin/listpermisos')
       .then((res) => {
-        //setPermisos(res.data);
-        console.log(res.data)
-        console.log('error')
+        console.log(res.data); // Verifica la respuesta de la solicitud en la consola
       })
-      .catch((err) => console.log('perro'));
+      .catch((err) => console.log('Error al obtener permisos', err));
   };
 
-  
-  fetchData()
 
   const handleCheckboxChange = (permisos) => {
     if (selectedPermisos.includes(permisos)) {
@@ -112,9 +111,10 @@ function ConfiFormulario( {onClose} ) {
         variant="contained"
         color="primary"
         onClick={handleOpenModal}
-        style={{ marginBottom: '16px', float: 'right' }}
+        style={{  marginBottom: '16px', float: 'right' }}
+        startIcon={<Iconify icon="eva:plus-fill" />}
       >
-        Crear Rol
+        Crear nuevo rol y permiso
       </Button>
       <Dialog open={modalOpen} onClose={handleCloseModal} fullWidth>
         <DialogTitle>Crear un nuevo rol y permisos</DialogTitle>

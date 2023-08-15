@@ -203,7 +203,6 @@ function EditarUsuario(props) {
         </MenuItem>
       ))}
     </TextField>
-
             <TableContainer component={Paper}>
               <Table>
                 <TableHead>
