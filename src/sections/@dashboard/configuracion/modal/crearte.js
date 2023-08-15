@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Button,
   Container,
@@ -15,15 +15,23 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  Alert,
 } from '@mui/material';
-import Swal from 'sweetalert2';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
-function ConfiFormulario() {
+function ConfiFormulario( {onClose} ) {
   const [rol, setRol] = useState('');
   const [selectedPermisos, setSelectedPermisos] = useState([]);
+  const [permisos ] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
-  const permisos = ['Usuarios', 'Insumos', 'Anchetas', 'Pedidos'];
+  const [errorMessages, setErrorMessages] = useState({ rol: '', permisos: '' });
+
+  useEffect(() => {
+    console.log('entro')
+    fetchData();
+  }, []);
+
 
   const handleOpenModal = () => {
     setModalOpen(true);
@@ -33,65 +41,70 @@ function ConfiFormulario() {
     setModalOpen(false);
     setRol('');
     setSelectedPermisos([]);
+    setErrorMessages({ rol: '', permisos: '' });
   };
 
   const validarRolPermiso = () => {
+    const errors = {};
+
     if (!rol.trim()) {
-      Swal.fire({
-        title: 'Validación fallida',
-        text: 'Debes ingresar un rol.',
-        icon: 'error',
-      });
-    } else if (selectedPermisos.length === 0) {
-      Swal.fire({
-        title: 'Validación fallida',
-        text: 'Debes seleccionar al menos 1 permiso.',
-        icon: 'error',
-      });
-    } else {
+      errors.rol = 'Debes ingresar un rol.';
+    }
+
+    if (selectedPermisos.length === 0) {
+      errors.permisos = 'Debes seleccionar al menos 1 permiso.';
+    }
+
+    if (Object.keys(errors).length === 0) {
       axios
-        .post('http://localhost:4000/api/crearRol', { rol, permisos: selectedPermisos })
+        .post('http://localhost:4000/api/crearRol', { rol: selectedPermisos })
         .then((res) => {
           if (res.data.Status === 'Success') {
             Swal.fire({
-              title: 'Creado Correctamente',
-              text: 'El Rol y los permisos se han creado correctamente',
+              title: 'Rol y permisos agregados correctamente',
+              text: 'El rol y permisos han sido creados exitosamente.',
               icon: 'success',
-              showConfirmButton: false,
-              timer: 1500,
+            }).then(() => {
+              onClose();
+              handleCloseModal();
+         
             });
-            handleCloseModal(); // Cerrar el modal inmediatamente después de crear
-            setTimeout(function () {
-              window.location = 'confi';
-            }, 670);
           } else {
-            Swal.fire({
-              title: 'Error!',
-              text: 'Hubo un problema al crear el rol.',
-              icon: 'error',
-              confirmButtonText: 'OK',
-            });
+            setErrorMessages({ ...errorMessages, general: 'Error al crear el rol.' });
           }
+          window.location.reload();
         })
         .catch((err) => {
           console.log(err);
-          Swal.fire({
-            title: 'Error!',
-            text: 'Hubo un problema al crear el rol.',
-            icon: 'error',
-            confirmButtonText: 'OK',
-          });
+          setErrorMessages({ ...errorMessages, general: 'Error en la solicitud.' });
         });
+    } else {
+      setErrorMessages(errors);
+    }
+  };
+  
+  const fetchData = () => {
+    axios
+      .get('http://localhost:4000/api/admin/listpermisos')
+      .then((res) => {
+        //setPermisos(res.data);
+        console.log(res.data)
+        console.log('error')
+      })
+      .catch((err) => console.log('perro'));
+  };
+
+  
+  fetchData()
+
+  const handleCheckboxChange = (permisos) => {
+    if (selectedPermisos.includes(permisos)) {
+      setSelectedPermisos(selectedPermisos.filter((item) => item !== permisos));
+    } else {
+      setSelectedPermisos([...selectedPermisos, permisos]);
     }
   };
 
-  const handleCheckboxChange = (permiso) => {
-    if (selectedPermisos.includes(permiso)) {
-      setSelectedPermisos(selectedPermisos.filter((item) => item !== permiso));
-    } else {
-      setSelectedPermisos([...selectedPermisos, permiso]);
-    }
-  };
 
   return (
     <Container>
@@ -106,15 +119,17 @@ function ConfiFormulario() {
       <Dialog open={modalOpen} onClose={handleCloseModal} fullWidth>
         <DialogTitle>Crear un nuevo rol y permisos</DialogTitle>
         <DialogContent dividers>
-          <TextField                                                                      //CREAR DE CONFIGURACIÓN - ROLES Y PERMISOS 
+          <TextField
             label="Nuevo rol"
             fullWidth
             variant="outlined"
             required
             value={rol}
             onChange={(e) => setRol(e.target.value)}
+            error={Boolean(errorMessages.rol)}
+            helperText={errorMessages.rol}
           />
-          <br></br><br></br>
+          <br /><br />
           <TableContainer component={Paper}>
             <Table>
               <TableHead>
@@ -124,13 +139,13 @@ function ConfiFormulario() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {permisos.map((permiso) => (
-                  <TableRow key={permiso}>
-                    <TableCell>{permiso}</TableCell>
+                {permisos.map((permisos) => (
+                  <TableRow key={permisos}>
+                    <TableCell>{permisos}</TableCell>
                     <TableCell align="center">
                       <Checkbox
-                        checked={selectedPermisos.includes(permiso)}
-                        onChange={() => handleCheckboxChange(permiso)}
+                        checked={selectedPermisos.includes(permisos)}
+                        onChange={() => handleCheckboxChange(permisos)}
                       />
                     </TableCell>
                   </TableRow>
@@ -141,13 +156,17 @@ function ConfiFormulario() {
         </DialogContent>
         <DialogActions>
           <Button
-            type="submit"
-            variant="contained"
-            color="primary"
-            id="modRol"
-            fullWidth
-            style={{ marginTop: '8px' }}
-            onClick={validarRolPermiso}
+           type="submit"
+           variant="contained"
+           color="primary"
+           id="modRol"
+           fullWidth
+           style={{ marginTop: '8px' }}
+           onClick={() => {
+             validarRolPermiso();
+             handleCloseModal();
+             onClose();
+           }}
           >
             Crear el rol y permiso
           </Button>
@@ -163,6 +182,16 @@ function ConfiFormulario() {
           </Button>
         </DialogActions>
       </Dialog>
+      {Boolean(errorMessages.permisos) && (
+        <Alert severity="error" style={{ marginTop: '8px' }}>
+          {errorMessages.permisos}
+        </Alert>
+      )}
+      {Boolean(errorMessages.general) && (
+        <Alert severity="error" style={{ marginTop: '8px' }}>
+          {errorMessages.general}
+        </Alert>
+      )}
     </Container>
   );
 }
