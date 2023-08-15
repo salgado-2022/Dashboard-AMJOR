@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Container, Grid, Button, TextField, Typography, Stack } from "@mui/material";
+import { Container, Grid, Button, TextField, Typography, Stack, Card, CardHeader, CardContent } from "@mui/material";
 import { Link } from 'react-router-dom';
 import Iconify from "../../../../components/iconify";
 import Swal from 'sweetalert2';
@@ -36,6 +36,19 @@ function AddAncheta() {
     const Globalstate = useContext(Insumoscontext);
     const state = Globalstate.state;
     const dispatch = Globalstate.dispatch;
+    const { state: insumosState } = useContext(Insumoscontext);
+    const insumosAgregados = insumosState.map((insumo) => insumo.ID_Insumo);
+
+    const [data, setData] = useState([]);
+
+    const fetchData = () => {
+        axios
+            .get("http://localhost:4000/api/admin/insumos")
+            .then((res) => {
+                setData(res.data);
+            })
+            .catch((err) => console.log(err));
+    };
 
     const states = state.map(obj => ({ idInsumo: obj.ID_Insumo, cantidad: obj.Cantidad, precio: obj.PrecioUnitario * obj.Cantidad }));
 
@@ -50,9 +63,9 @@ function AddAncheta() {
             minimumFractionDigits: 0,
         });
     };
-
-
+    
     useEffect(() => {
+        fetchData();
         return () => {
             dispatch({ type: 'ResetInsumos' });
         };
@@ -156,81 +169,108 @@ function AddAncheta() {
     return (
             <Container>
                 <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-          <Typography variant="h4" gutterBottom>
-            Crear Ancheta
-          </Typography>
-          <Link to="/dashboard/anchetas">
-            <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />}>
-              Volver
-            </Button>
-          </Link>
-        </Stack>
-                        <form onSubmit={handleSubmit} onReset={handleReset} encType="multipart/form-data">
+                    <Link to="/dashboard/anchetas">
+                        <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />}>
+                        Volver
+                        </Button>
+                    </Link>
+                </Stack>
+                <form onSubmit={handleSubmit} onReset={handleReset} encType="multipart/form-data">
+                    <Typography variant="h3" gutterBottom>
+                        Crear Ancheta
+                    </Typography>
                             <Grid container spacing={2}>
                                 <Grid item md={5}>
                                     <TextField fullWidth style={{ marginBottom: '16px' }} label="Nombre" variant="outlined" id="NombreAncheta" name="NombreAncheta" value={values.NombreAncheta} onChange={handleInput} />
                                     <TextField fullWidth style={{ marginBottom: '16px' }} label="Descripción" variant="outlined" id="Descripcion" name="Descripcion" value={values.Descripcion} onChange={handleInput}/>
+                                    <Card elevation={3}>
+                                    <CardHeader component="label" sx={{backgroundColor: isImageUploaded ? "#f5f5f5" : "#f5f5f5", cursor: isImageUploaded ? "auto" : "pointer", textAlign: "center", padding: "24px", marginBottom: "0px"}}
+                                        title={isImageUploaded ? (<img src={imageUrl} alt="" />
+                                        ) : (
+                                            <div style={{fontSize: "62px", marginBottom: "21px"}}>
+                                                <input type="file" className="form-control" id="image" name="image" accept=".jpg, .png" onChange={handleInput} style={{ display: "none" }} />
+                                                <Iconify icon="ion:image-outline" class="big-icon" />
+                                            </div>  
+                                        )}/>
+                                    <CardContent >
+        {state.length === 0 ? (
+          <Typography variant="body1">Sin Insumos</Typography>
+        ) : (
+            <ul className="list-group">
+            {state.map((insumo, index) => {
+                return (
+                    <li key={insumo.ID_Insumo} className="list-group-item">
+                        <div className="row">
+                            <div className="col-md-auto d-flex align-items-center">
+                                <a href="#!" className="icon-trash-o" style={{ fontSize: "18px" }} onClick={() => dispatch({ type: 'RemoveInsumo', payload: insumo })}> </a>
+                            </div>
+                            <div className="col-6">
+                                {insumo.NombreInsumo}
+                                <div style={{ fontWeight: "600", fontSize: "14px" }}>{formatPrice(insumo.Precio * insumo.Cantidad)}</div>
+                            </div>
+                            <div className="col d-flex align-items-center" >
+                                <div className="input-group">
+                                    <div className="input-group-prepend">
+                                        <button className="btn btn-outline-primary btn-counter" type="button" onClick={() => dispatch({ type: 'Decrement', payload: insumo })}>&minus;</button>
+                                    </div>
+                                    <input
+                                        type="text"
+                                        className="form-control sm text-center"
+                                        value={insumo.Cantidad}
+                                        placeholder=""
+                                        onChange={(event) =>
+                                            dispatch({
+                                                type: "SetCantidad",
+                                                payload: { idInsumo: insumo.ID_Insumo, cantidad: event.target.value },
+                                            })
+                                        }
+                                    />
+                                    <div className="input-group-append">
+                                        <button className="btn btn-outline-primary btn-counter" type="button" onClick={() => dispatch({ type: 'Increment', payload: insumo })}>&#43;</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                )
+            })}
+        </ul>
+        )}
+      </CardContent>
+    </Card>
                                 </Grid>
                                 <Grid item md={7}>
-                                <div className="card-header d-flex justify-content-center">
-                                    {isImageUploaded ? (
-                                        <img src={imageUrl} alt="" style={{ marginTop: "10px", maxWidth: "200px", marginBottom: "10px" }} />
-                                    ) : (
-                                        <div className="card-body d-flex justify-content-center align-items-center"><i className="icon-image" style={{ fontSize: "32px" }}></i>&nbsp;</div>
-                                    )}
+                                <div id="site-section">
+                
+                <ul className="list-group list-group-flush">
+                    {data && data.map((insumo) => {
+
+                        if (insumosAgregados.includes(insumo.ID_Insumo)) {
+                            return null;
+                        }
+
+                        if (insumo.Estado === 'Agotado') {
+                            return null;
+                        }
+
+                        insumo.Cantidad = 1;
+                        insumo.Precio = insumo.PrecioUnitario;
+
+                        return (
+                            <li key={insumo.ID_Insumo} className="list-group-item">
+                                <div className="row">
+                                    <div className="col-8" style={{ display: "flex", alignItems: "center", fontSize: "18px" }}><a href="#!" className="icon-plus" style={{ fontSize: "24px" }} onClick={() => dispatch({ type: 'AddInsumo', payload: insumo })}> </a>&nbsp; &nbsp;{insumo.NombreInsumo}</div>
+                                    <div className="col-md-auto" style={{ fontSize: "18px", display: "flex", alignItems: "center" }}>{formatPrice(insumo.Precio)}</div>
                                 </div>
-                                {state.length === 0 ? (
-                                    <div className="card">
-                                        <div className=" card-body d-flex justify-content-center">Sin Insumos</div>
-                                    </div>
-                                ) : (
-                                    <ul className="list-group">
-                                        {state.map((insumo, index) => {
-                                            return (
-                                                <li key={insumo.ID_Insumo} className="list-group-item">
-                                                    <div className="row">
-                                                        <div className="col-md-auto d-flex align-items-center">
-                                                            <a href="#!" className="icon-trash-o" style={{ fontSize: "18px" }} onClick={() => dispatch({ type: 'RemoveInsumo', payload: insumo })}> </a>
-                                                        </div>
-                                                        <div className="col-6">
-                                                            {insumo.NombreInsumo}
-                                                            <div style={{ fontWeight: "600", fontSize: "14px" }}>{formatPrice(insumo.Precio * insumo.Cantidad)}</div>
-                                                        </div>
-                                                        <div className="col d-flex align-items-center" >
-                                                            <div className="input-group">
-                                                                <div className="input-group-prepend">
-                                                                    <button className="btn btn-outline-primary btn-counter" type="button" onClick={() => dispatch({ type: 'Decrement', payload: insumo })}>&minus;</button>
-                                                                </div>
-                                                                <input
-                                                                    type="text"
-                                                                    className="form-control sm text-center"
-                                                                    value={insumo.Cantidad}
-                                                                    placeholder=""
-                                                                    onChange={(event) =>
-                                                                        dispatch({
-                                                                            type: "SetCantidad",
-                                                                            payload: { idInsumo: insumo.ID_Insumo, cantidad: event.target.value },
-                                                                        })
-                                                                    }
-                                                                />
-                                                                <div className="input-group-append">
-                                                                    <button className="btn btn-outline-primary btn-counter" type="button" onClick={() => dispatch({ type: 'Increment', payload: insumo })}>&#43;</button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                            )
-                                        })}
-                                    </ul>
-                                )}
+                            </li>
+                        );
+                    })}
+                </ul>
+            </div>
                                 </Grid>
                             </Grid>
                             
                             <div className="row">
-                                <div className="form-group col-4">
-                                    <button type="button" className="btn btn-add" id="agregarInsumo">Agregar Insumos</button>
-                                </div>&nbsp; &nbsp;&nbsp;
                                 <div className="form-group col-6">
                                     <input type="file" className="form-control" id="image" name="image" accept=".jpg, .png" onChange={handleInput} style={{ display: "none" }} />
                                     <label htmlFor="image" className="btn btn-image">
