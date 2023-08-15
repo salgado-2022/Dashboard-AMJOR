@@ -286,9 +286,8 @@ export default function ListaConfiguracion() {
                 />
                 <TableBody>
                   {filteredUsers.map((row) => {
-                    const { ID_Rol, Nombre_Rol, estado } = row;
-                    const estadoText = estado === 1 ? 'Activo' : 'Inactivo';
-
+                    const { ID_Rol, Nombre_Rol } = row;
+        
                     return (
                       <TableRow
                         hover
@@ -312,7 +311,6 @@ export default function ListaConfiguracion() {
                           </Stack>
                         </TableCell>
                         <TableCell align="left">{Nombre_Rol}</TableCell>
-                        <TableCell align="left">{estadoText}</TableCell>
                         <TableCell align="left">
                           <IconButton size="large" color="inherit" onClick={(event) => handleOpenMenu(event, ID_Rol)}>
                             <Iconify icon={'eva:more-vertical-fill'} />
@@ -398,7 +396,7 @@ export default function ListaConfiguracion() {
       {/* Ventana modal */}
       <EditarConfi
         show={modalShow}
-        onHide={() => setModalShow(false)}
+        onHide={() => setModalShow(false)} fetchData = {fetchData}
         selectedConfiguracionID={selectedConfiguracionID}
       />
     </>
