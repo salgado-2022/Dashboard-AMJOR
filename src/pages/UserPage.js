@@ -40,6 +40,7 @@ import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
 const TABLE_HEAD = [
   { id: 'idUsuario', label: 'ID', alignRight: false },
   { id: 'correo', label: 'Correo', alignRight: false },
+  { id: 'rol', label: 'Rol del Usuario', alignRight: false },
   { id: 'estado', label: 'Estado', alignRight: false }, // Nuevo campo para el estado
   { id: 'Acciones', label: 'Acciones', alignRight: false },
 ];
@@ -214,7 +215,8 @@ export default function UserPage() {
           <Typography variant="h4" gutterBottom>
             Usuarios
           </Typography>
-          <Button variant="contained" onClick={handleOpenModal}>
+          <Button variant="contained" onClick={handleOpenModal}startIcon={<Iconify icon="eva:plus-fill" />}>
+            
             Crear nuevo usuario
           </Button>
           <UsuariosFormulario2 open={openModal} onClose={handleCloseModal} />
@@ -294,7 +296,7 @@ export default function UserPage() {
                   />
                   <TableBody>
                     {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                      const { idUsuario, correo, Estado } = row;
+                      const { idUsuario, correo, Nombre_Rol, Estado } = row;
                       const selectedUser = selected.indexOf(idUsuario) !== -1;
                       const estadoText = Estado === 1 ? 'Activo' : 'Inactivo'; // Texto del estado según el valor
                       return (
@@ -313,12 +315,12 @@ export default function UserPage() {
                           <TableCell key={correo} align="left">
                             {correo}
                           </TableCell>
-
+                          <TableCell key={Nombre_Rol} align="left">
+                    {row.Nombre_Rol}
+                  </TableCell>
                           <TableCell align="left">
                             <Label color={(estadoText === 'Activo' && 'success') || 'error'}>{sentenceCase(estadoText)}</Label>
                           </TableCell>
-
-
                           <TableCell align="left">
                             <IconButton
                               size="large"
@@ -405,7 +407,7 @@ export default function UserPage() {
           />
         </Card>
       </Container>
-      <EditarUsuario show={modalShow} onHide={() => setModalShow(false)} selectedUsuarioID={selectedUser1} />
+      <EditarUsuario show={modalShow} onHide={() => setModalShow(false)} fetchData={fetchData} selectedUsuarioID={selectedUser1} />
     </>
   );
 }

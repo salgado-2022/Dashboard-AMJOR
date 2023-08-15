@@ -19,7 +19,7 @@ import {
 } from '@mui/material';
 
 function EditarConfi(props) {
-  const { selectedConfiguracionID, onHide, show } = props;
+  const { selectedConfiguracionID, onHide, show, fetchData } = props;
   const id = selectedConfiguracionID;
   const [selectedPermisos, setSelectedPermisos] = useState([]);
   const permisos = ['Usuarios', 'Insumos', 'Anchetas', 'Pedidos'];
@@ -77,6 +77,7 @@ function EditarConfi(props) {
         showConfirmButton: false,
         timer: 1500,
       });
+      fetchData();
       setTimeout(() => {
         window.location = 'confi';
       }, 670);
@@ -89,6 +90,7 @@ function EditarConfi(props) {
         confirmButtonColor: '#3085d6',
         confirmButtonText: 'Aceptar',
       });
+
     }                                                                  //EDITAR DE CONFIGURACIÓN- ROL Y PERMISOS
   };
 
