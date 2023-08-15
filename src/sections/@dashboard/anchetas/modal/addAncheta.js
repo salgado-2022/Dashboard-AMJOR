@@ -1,17 +1,14 @@
 import React, { useState, useEffect, useContext } from "react";
-import Modal from 'react-bootstrap/Modal';
-import { Button } from "react-bootstrap";
+import { Container, Grid, Button, TextField, Typography, Stack } from "@mui/material";
+import { Link } from 'react-router-dom';
+import Iconify from "../../../../components/iconify";
 import Swal from 'sweetalert2';
 import axios from "axios";
 
 //-----------------------------------------------------------------------------------------------------------
 import { Insumoscontext } from '../context/Context'
-import { ListarInsumos } from '../modal/listarInsumos'
-import { valdescanch } from '../validations/valdescanch'
-import { valnomanch } from '../validations/valnomanch'
 
-function AddAncheta(props) {
-    const { onHide, show } = props;
+function AddAncheta() {
 
     const [values, setValues] = useState({
         NombreAncheta: '',
@@ -35,8 +32,6 @@ function AddAncheta(props) {
     const [imageUrl, setImageUrl] = useState(null);
     const [imageHolder, setImageHolder] = useState(null);
     const [isImageUploaded, setIsImageUploaded] = useState(false);
-
-    const [modalShow3, setModalShow3] = React.useState(false);
 
     const Globalstate = useContext(Insumoscontext);
     const state = Globalstate.state;
@@ -63,10 +58,6 @@ function AddAncheta(props) {
         };
     }, [dispatch]);
 
-    const handleInsumoClick = () => {
-        setModalShow3(true);
-    };
-
     const handleInput = (event) => {
         const { name, value, type } = event.target;
         setValues(prev => ({ ...prev, [name]: value }));
@@ -85,14 +76,6 @@ function AddAncheta(props) {
                 setImageUrl(URL.createObjectURL(imageHolder));
             }
         }
-    };
-
-    const handleBlurname = (event) => {
-        setErrorname(valnomanch(values));
-    };
-
-    const handleBlurdesc = (event) => {
-        setErrordesc(valdescanch(values));
     };
 
     const handleSubmit = (event) => {
@@ -149,7 +132,6 @@ function AddAncheta(props) {
                                 popup: 'custom-swal-alert' // Aquí pasamos la clase personalizada
                             }
                         });
-                        props.onHide()
                     } else {
                         Swal.fire({
                             title: 'Error!',
@@ -172,39 +154,24 @@ function AddAncheta(props) {
 
 
     return (
-        <Modal
-            onHide={onHide}
-            show={show}
-            size="lg"
-            aria-labelledby="contained-modal-title-vcenter"
-            centered
-            style={{ zIndex: "2000" }}
-        >
-            <Modal.Header>
-                <Modal.Title id="contained-modal-title-vcenter" className="text-black">
-                    Agregar Ancheta
-                </Modal.Title>
-                <Button variant="secondary" onClick={props.onHide} className="close">
-                    <span aria-hidden="true">&times;</span>
-                </Button>
-            </Modal.Header>
-            <Modal.Body>
-                <>
-                    <div className="">
+            <Container>
+                <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+          <Typography variant="h4" gutterBottom>
+            Crear Ancheta
+          </Typography>
+          <Link to="/dashboard/anchetas">
+            <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />}>
+              Volver
+            </Button>
+          </Link>
+        </Stack>
                         <form onSubmit={handleSubmit} onReset={handleReset} encType="multipart/form-data">
-                            &nbsp;
-                            <h2 className="text-black" id="title">Crear Ancheta</h2>
-                            <div className="form-group">
-                                <label htmlFor="nombreAncheta">Nombre</label>
-                                <input type="text" className="form-control" id="NombreAncheta" name="NombreAncheta" value={values.NombreAncheta} onChange={handleInput} onBlur={handleBlurname} />
-                                {errorname.NombreAncheta && <span className="text-danger"> {errorname.NombreAncheta}</span>}
-                            </div>
-                            <div className="form-group">
-                                <label htmlFor="descAncheta">Descripción</label>
-                                <input type="text" className="form-control" id="Descripcion" name="Descripcion" value={values.Descripcion} onChange={handleInput} onBlur={handleBlurdesc} />
-                                {errordesc.Descripcion && <span className="text-danger"> {errordesc.Descripcion}</span>}
-                            </div>
-                            <div>
+                            <Grid container spacing={2}>
+                                <Grid item md={5}>
+                                    <TextField fullWidth style={{ marginBottom: '16px' }} label="Nombre" variant="outlined" id="NombreAncheta" name="NombreAncheta" value={values.NombreAncheta} onChange={handleInput} />
+                                    <TextField fullWidth style={{ marginBottom: '16px' }} label="Descripción" variant="outlined" id="Descripcion" name="Descripcion" value={values.Descripcion} onChange={handleInput}/>
+                                </Grid>
+                                <Grid item md={7}>
                                 <div className="card-header d-flex justify-content-center">
                                     {isImageUploaded ? (
                                         <img src={imageUrl} alt="" style={{ marginTop: "10px", maxWidth: "200px", marginBottom: "10px" }} />
@@ -257,10 +224,12 @@ function AddAncheta(props) {
                                         })}
                                     </ul>
                                 )}
-                            </div> &nbsp;
+                                </Grid>
+                            </Grid>
+                            
                             <div className="row">
                                 <div className="form-group col-4">
-                                    <button type="button" className="btn btn-add" id="agregarInsumo" onClick={() => { handleInsumoClick() }}>Agregar Insumos</button>
+                                    <button type="button" className="btn btn-add" id="agregarInsumo">Agregar Insumos</button>
                                 </div>&nbsp; &nbsp;&nbsp;
                                 <div className="form-group col-6">
                                     <input type="file" className="form-control" id="image" name="image" accept=".jpg, .png" onChange={handleInput} style={{ display: "none" }} />
@@ -273,17 +242,9 @@ function AddAncheta(props) {
                             </div>
                             <div className="total"><h5 id="totalAncheta">Total: {formatPrice(Precio)}</h5></div>
                             <button type="submit" className="btn btn-primary" id="crearAncheta">Crear</button> &nbsp;
-                            <button type="reset" className="btn btn-dark" id="cancelarAncheta" onClick={props.onHide}>Cancelar</button>
+                            <button type="reset" className="btn btn-dark" id="cancelarAncheta">Cancelar</button>
                         </form>
-                    </div>
-
-                    <ListarInsumos
-                        show={modalShow3}
-                        onHide={() => setModalShow3(false)}
-                    />
-                </>
-            </Modal.Body>
-        </Modal>
+            </Container>
     );
 }
 

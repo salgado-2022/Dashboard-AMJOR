@@ -41,7 +41,6 @@ import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
 const TABLE_HEAD = [
   { id: 'ID_Rol', label: 'ID', alignRight: false },
   { id: 'Nombre_Rol', label: 'Rol', alignRight: false },
-  { id: 'estado', label: 'Estado', alignRight: false },
   { id: 'Acciones', label: 'Acciones', alignRight: false },
 ];
 

@@ -2,6 +2,7 @@ import { Helmet } from 'react-helmet-async';
 import { filter } from 'lodash';
 import { sentenceCase } from 'change-case';
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
@@ -103,9 +104,6 @@ export default function AnchetasPage() {
   //Modal Editar Ancheta
   const [modalShow, setModalShow] = useState(false);
 
-  //Modal Crear Ancheta
-  const [modalShowNew, setModaShowNew] = useState(false);
-
   //Modal Ver Detalle
   const [modalShowDetalle, setModaShowDetalle] = useState(false);
 
@@ -115,12 +113,7 @@ export default function AnchetasPage() {
   useEffect(() => {
     setLoading(true);
     fetchData();
-
-    if (!modalShowNew) {
-      setLoading(true);
-      fetchData();
-    }
-  }, [modalShowNew]);
+  }, []);
 
   const fetchData = () => {
     axios
@@ -219,10 +212,6 @@ export default function AnchetasPage() {
     setOpen(null);
   };
 
-  const handleCreateAncheta = () => {
-    setModaShowNew(true);
-  };
-
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0;
 
   const filteredUsers = applySortFilter(data, getComparator(order, orderBy), filterName);
@@ -240,9 +229,11 @@ export default function AnchetasPage() {
           <Typography variant="h4" gutterBottom>
             Anchetas
           </Typography>
-          <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleCreateAncheta}>
-            Crear Ancheta
-          </Button>
+          <Link to="/dashboard/anchetas/crearancheta">
+            <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />}>
+              Crear Ancheta
+            </Button>
+          </Link>
         </Stack>
 
         <Card>
@@ -456,7 +447,6 @@ export default function AnchetasPage() {
       />
 
       <EditInsumo show={modalShow} onHide={() => setModalShow(false)} selectedAnchetaID={selectedAncheta} />
-      <AddAncheta show={modalShowNew} onHide={() => setModaShowNew(false)} />
     </>
   );
 }

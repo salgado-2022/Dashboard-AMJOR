@@ -18,10 +18,75 @@ import {
   AppConversionRates,
 } from '../sections/@dashboard/app';
 
+import Cookies from "js-cookie";
+import axios from 'axios';
+import { useState, useEffect } from 'react';
+
+import { useLocation } from 'react-router-dom';
+
 // ----------------------------------------------------------------------
 
+
+
 export default function DashboardAppPage() {
+
+  const [totalPedidos, setTotalPedidos] = useState(0);
+  const [totalUsuarios, setTotalUsuarios] = useState(0);
+
+  useEffect(() => {
+    axios.get('http://localhost:4000/api/admin/getinfo/totalpedidos')
+      .then((response) => {
+        const totalPedidos = response.data[0]?.total_pedidos;
+        if (totalPedidos !== undefined) {
+          setTotalPedidos(totalPedidos);
+        } else {
+          console.error('Datos de cantidad de pedidos no encontrados en la respuesta de la API.');
+        }
+      })
+      .catch((error) => {
+        console.error('Error al obtener la cantidad total de pedidos:', error);
+      });
+
+      axios.get('http://localhost:4000/api/admin/getinfo/totalusuarios')
+      .then((response) => {
+        const totalUsuarios = response.data[0]?.total_usuarios;
+        if (totalUsuarios !== undefined) {
+          setTotalUsuarios(totalUsuarios);
+        } else {
+          console.error('Datos de cantidad de usuarios no encontrados en la respuesta de la API.');
+        }
+      })
+      .catch((error) => {
+        console.error('Error al obtener la cantidad total de usuarios:', error);
+      });
+
+    }, [] );
+
+  
+
+  
+  
+  
+
+
   const theme = useTheme();
+
+  const { pathname } = useLocation();
+  const token = Cookies.get("token");
+  const [nombre, setNombre] = useState(null);
+  const [rol, setRol] = useState(null);
+
+  useEffect(() => {
+    if(token) {
+      axios.get(`http://localhost:4000/api/search/${token}`)
+      .then((res) =>{
+          const {Nombre, Nombre_Rol} = res.data[0]
+          setNombre(Nombre);
+          setRol(Nombre_Rol);
+      })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
 
   return (
     <>
@@ -29,22 +94,22 @@ export default function DashboardAppPage() {
         <title> Dashboard | AMJOR </title>
       </Helmet>
 
-      <Container maxWidth="xl">
-        <Typography variant="h4" sx={{ mb: 5 }}>
-          Bienvenido! 
+      <Container maxWidth="xl" >
+        <Typography variant="h4" sx={{ mb: 5 }} align="center">
+          ¡Bienvenido {nombre} a la pestaña administrativa!
         </Typography>
 
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Weekly Sales" total={714000} icon={'ant-design:android-filled'} />
+            <AppWidgetSummary title="Pedidos por aceptar" total={1} icon={'ant-design:android-filled'} />
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="New Users" total={1352831} color="info" icon={'ant-design:apple-filled'} />
+            <AppWidgetSummary title="Usuarios registrados" total={totalUsuarios} color="info" icon={'ant-design:apple-filled'} />
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Item Orders" total={1723315} color="warning" icon={'ant-design:windows-filled'} />
+            <AppWidgetSummary title="Pedidos totales" total={totalPedidos} color="warning" icon={'ant-design:windows-filled'} />
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>

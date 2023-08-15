@@ -21,6 +21,13 @@ function AddInsumo({ open, onClose, fetchData }) {
         ID_Estado: '2'
     });
 
+    const initialValues = {
+        NombreInsumo: '',
+        Descripcion: '',
+        PrecioUnitario: '',
+        ID_Estado: '2'
+    };
+
     const handleCloseModal = () => {
         onClose(); // Cerrar la modal
         setValues(initialValues); //Establece los valores de los input a sus valores iniciales
@@ -34,12 +41,7 @@ function AddInsumo({ open, onClose, fetchData }) {
     y la cadena `'2'` para `ID_Estado`. Esta constante se utiliza para comprobar si el formulario ha sido modificado.
     por el usuario antes de enviarlo, y restablecer el formulario a sus valores iniciales cuando el usuario hace clic
     el botón "Reiniciar".*/
-    const initialValues = {
-        NombreInsumo: '',
-        Descripcion: '',
-        PrecioUnitario: '',
-        ID_Estado: '2'
-    };
+
 
     /* Este bloque de código utiliza el enlace `useEffect` para actualizar el estado de la variable `isChecked` según
     sobre el valor de `valores.ID_Estado`. Se activa cada vez que cambia el estado de los `valores`. El propósito
