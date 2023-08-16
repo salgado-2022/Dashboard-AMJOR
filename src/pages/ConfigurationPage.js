@@ -3,6 +3,7 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 import { Helmet } from 'react-helmet-async';
 import { filter } from 'lodash';
+import { sentenceCase } from 'change-case';
 import { ConfiFormulario } from '../sections/@dashboard/configuracion/modal/crearte';
 
 // @mui
@@ -41,6 +42,7 @@ import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
 const TABLE_HEAD = [
   { id: 'ID_Rol', label: 'ID', alignRight: false },
   { id: 'Nombre_Rol', label: 'Rol', alignRight: false },
+  { id: 'estado', label: 'Estado del Rol', alignRight: false },
   { id: 'Acciones', label: 'Acciones', alignRight: false },
 ];
 
@@ -198,8 +200,8 @@ export default function ListaConfiguracion() {
   };
 
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0;
-  const filteredUsers = applySortFilter(data, getComparator(order, orderBy), filterName);
-  const isNotFound = !filteredUsers.length && !!filterName;
+  const filteredRol = applySortFilter(data, getComparator(order, orderBy), filterName);
+  const isNotFound = !filteredRol.length && !!filterName;
 
   return (
     <>
@@ -285,16 +287,17 @@ export default function ListaConfiguracion() {
                   onSelectAllClick={handleSelectAllClick}
                 />
                 <TableBody>
-                  {filteredUsers.map((row) => {
-                    const { ID_Rol, Nombre_Rol } = row;
-        
+                  {filteredRol.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+                    const { ID_Rol, Nombre_Rol, estado } = row;
+                    const selectedConfiguracionID = selected.indexOf(ID_Rol) !== -1;
+                    const estadoText = estado === 1 ? 'Activo' : 'Inactivo';
                     return (
                       <TableRow
-                        hover
-                        key={ID_Rol}
-                        tabIndex={-1}
-                        role="checkbox"
-                        selected={selected.indexOf(ID_Rol) !== -1}
+                      hover
+                      key={ID_Rol}
+                      tabIndex={-1}
+                      role="checkbox"
+                      selected={selected.indexOf(ID_Rol) !== -1}
                       >
                         <TableCell padding="checkbox">
                           <Checkbox
@@ -311,6 +314,9 @@ export default function ListaConfiguracion() {
                           </Stack>
                         </TableCell>
                         <TableCell align="left">{Nombre_Rol}</TableCell>
+                        <TableCell align="left">
+                            <Label color={(estadoText === 'Activo' && 'success') || 'error'}>{sentenceCase(estadoText)}</Label>
+                          </TableCell>
                         <TableCell align="left">
                           <IconButton size="large" color="inherit" onClick={(event) => handleOpenMenu(event, ID_Rol)}>
                             <Iconify icon={'eva:more-vertical-fill'} />
@@ -396,7 +402,7 @@ export default function ListaConfiguracion() {
       {/* Ventana modal */}
       <EditarConfi
         show={modalShow}
-        onHide={() => setModalShow(false)} fetchData = {fetchData}
+        onHide={() => setModalShow(false)}
         selectedConfiguracionID={selectedConfiguracionID}
       />
     </>
