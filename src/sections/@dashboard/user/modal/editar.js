@@ -4,14 +4,6 @@ import Swal from 'sweetalert2';
 import axios from 'axios';
 import {
   Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Checkbox,
   TextField,
   Modal,
   Grid,
@@ -22,18 +14,8 @@ import {
 function EditarUsuario(props) {
   const { selectedUsuarioID, onHide, show } = props;
   const id = selectedUsuarioID;
-  const [selectedPermisos, setSelectedPermisos] = useState([]);
-  const permisos = ['Usuarios', 'Insumos', 'Anchetas', 'Pedidos'];
   const [roles, setRoles] = useState([]);
   const [selectedRol, setSelectedRol] = useState('');
-
-  const handleCheckboxChange = (permiso) => {
-    setSelectedPermisos((prevSelectedPermisos) =>
-      prevSelectedPermisos.includes(permiso)
-        ? prevSelectedPermisos.filter((selected) => selected !== permiso)
-        : [...prevSelectedPermisos, permiso]
-    );
-  };
 
   const [, setIsChecked] = useState(false);
   const [values, setValues] = useState({
@@ -203,29 +185,6 @@ function EditarUsuario(props) {
         </MenuItem>
       ))}
     </TextField>
-            <TableContainer component={Paper}>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Permiso</TableCell>
-                    <TableCell align="center">Seleccionar</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {permisos.map((permiso) => (
-                    <TableRow key={permiso}>
-                      <TableCell>{permiso}</TableCell>
-                      <TableCell align="center">
-                        <Checkbox
-                          checked={selectedPermisos.includes(permiso)}
-                          onChange={() => handleCheckboxChange(permiso)}
-                        />
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
             <br />
             <Grid container spacing={1}>
               <Grid item xs={12} md={6}>

@@ -93,7 +93,6 @@ function UsuariosFormulario2({ open, onClose, fetchData }) {
         }).then(() => {
           onClose();
         });
-        fetchData();
       } else if (res.data.Error === 'El correo ya está registrado.') {
         setExistingEmailError('El correo ya está registrado.');
       } else {
@@ -102,6 +101,7 @@ function UsuariosFormulario2({ open, onClose, fetchData }) {
     } catch (err) {
       setExistingEmailError('Hubo un problema al registrar.');
     }
+    fetchData();
   };
 
   return (
@@ -121,10 +121,8 @@ function UsuariosFormulario2({ open, onClose, fetchData }) {
           borderRadius: '8px',
           width: '100%',
           maxWidth: '800px',
-        }}
-        
-      >
-        
+        }} 
+      > 
         <h2 style={{ marginBottom: '16px', textAlign: 'center' }}>
           Crear un nuevo usuario</h2>
         <form onSubmit={handleSubmit}>
@@ -133,7 +131,7 @@ function UsuariosFormulario2({ open, onClose, fetchData }) {
               <TextField
                 label="Documento"
                 name="documento"
-                type="document"
+                type="number"
                 value={values.documento}
                 onChange={handleInputChange}
                 margin="dense"

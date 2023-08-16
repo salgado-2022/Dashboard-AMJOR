@@ -34,6 +34,7 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import Iconify from '../components/iconify';
 import Scrollbar from '../components/scrollbar';
 import Label from '../components/label';
+import socket from '../socket/config'
 
 import { UserListToolbar } from '../sections/@dashboard/user';
 import { EditInsumo } from '../sections/@dashboard/supplies/modal/edit';
@@ -43,12 +44,12 @@ import OrderListHead from '../sections/@dashboard/pedidos/OrderListHead';
 const TABLE_HEAD = [
     { id: '' },
     { id: 'ID_Ancheta', label: 'ID', alignRight: false },
-    { id: 'NombreAncheta', label: 'Nombre', alignRight: false },
-    { id: 'Descripcion', label: 'Descripcion', alignRight: false },
-    { id: 'PrecioUnitario', label: 'Precio', alignRight: false },
+    { id: 'NombreAncheta', label: 'Cliente', alignRight: false },
+    { id: 'Descripcion', label: 'Dirección', alignRight: false },
+    { id: 'as', label: 'Fecha de entrega', alignRight: false },
+    { id: 'PrecioUnitario', label: 'Total', alignRight: false },
     { id: 'Estado', label: 'Estado', alignRight: false },
     { id: 'blanck' },
-    { id: 'a' },
 ];
 
 function descendingComparator(a, b, orderBy) {
@@ -94,16 +95,10 @@ export default function AnchetasPage() {
     const [modalShowDetalle, setModalShowDetalle] = useState(false);
 
     useEffect(() => {
-        fetchData();
-    }, []);
-
-    const fetchData = () => {
-        axios.get('http://localhost:4000/api/admin/anchetas')
-            .then(res => {
-                setData(res.data)
-            })
-            .catch(err => console.log(err));
-    };
+        socket.on('Pedidos', datosActualizados => {
+            setData(datosActualizados)
+        })
+    }, [data]);
 
     const handleOpenMenu = (ID_Ancheta) => {
         setOpen((prevOpen) => ({
@@ -134,9 +129,13 @@ export default function AnchetasPage() {
         setFilterName(event.target.value);
     };
 
-
-
-
+    const formatPrice = (price) => {
+        return price.toLocaleString('es-CO', {
+            style: 'currency',
+            currency: 'COP',
+            minimumFractionDigits: 0,
+        });
+    };
     const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0;
 
     const filteredUsers = applySortFilter(data, getComparator(order, orderBy), filterName);
@@ -156,11 +155,11 @@ export default function AnchetasPage() {
                     </Typography>
                 </Stack>
 
-                <Card style={{ backgroundColor: '' }}>
+                <Card >
                     <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} placeholder="Buscar pedido..." />
 
                     <Scrollbar>
-                        <TableContainer sx={{ minWidth: 800 }}>
+                        <TableContainer sx={{ minWidth: 1000 }}>
                             <Table>
                                 <OrderListHead
                                     order={order}
@@ -172,18 +171,18 @@ export default function AnchetasPage() {
                                 />
                                 <TableBody>
                                     {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                                        const { ID_Ancheta, NombreAncheta, Descripcion, PrecioUnitario, Estado, image } = row;
-                                        const selectedUser = selected.indexOf(ID_Ancheta) !== -1;
+                                        const { ID_Pedido, ID_Cliente, Nombre_Cliente, Direccion_Entrega, Fecha_Entrega, Precio_Total,correo,image } = row;
+                                        const selectedUser = selected.indexOf(ID_Pedido) !== -1;
 
                                         return (
-                                            <React.Fragment key={ID_Ancheta}>
+                                            <React.Fragment key={ID_Pedido}>
                                                 <TableRow hover tabIndex={-1} role="checkbox" selected={selectedUser}>
                                                     <TableCell padding="checkbox">
                                                     </TableCell>
 
                                                     <TableCell>
                                                         <Typography variant="body1" fontSize={16} noWrap>
-                                                            #6010
+                                                            #{ID_Pedido}
                                                         </Typography>
                                                     </TableCell>
                                                     <TableCell >
@@ -191,31 +190,31 @@ export default function AnchetasPage() {
                                                         <Stack direction="row" alignItems="center" spacing={2}>
                                                             <Avatar alt='' src={`http://localhost:4000/anchetas/` + image} />
                                                             <ListItemText
-                                                                style={{marginTop: '0.4rem'}}
+                                                                style={{ marginTop: '0.4rem' }}
                                                                 primaryTypographyProps={{ style: { fontSize: 14 } }}
                                                                 secondaryTypographyProps={{ style: { fontSize: 14 } }}
-                                                                primary="Juan David Salgado"
-                                                                secondary="salgadojuandavid419@gmail.com"
+                                                                primary={Nombre_Cliente}
+                                                                secondary={correo}
                                                             />
                                                         </Stack>
 
                                                     </TableCell>
 
-                                                    <TableCell align="left">{NombreAncheta}</TableCell>
-                                                    <TableCell align="left">
+                                                    <TableCell align="left">{Direccion_Entrega}</TableCell>
 
-                                                    </TableCell>
-                                                    <TableCell align="left">{PrecioUnitario}</TableCell>
+                                                    <TableCell align="left">{Fecha_Entrega}</TableCell>
+
+                                                    <TableCell align="left">{formatPrice(Precio_Total)}</TableCell>
                                                     <TableCell align="left">
-                                                        <Label color={(Estado === 'Agotado' && 'error') || 'success'}>{sentenceCase(Estado)}</Label>
+                                                        {/* <Label color={(Estado === 'Agotado' && 'error') || 'success'}>{sentenceCase(Estado)}</Label> */}
                                                     </TableCell>
 
                                                     <TableCell>
                                                         <IconButton
                                                             aria-label="expand row"
                                                             size="small"
-                                                            onClick={() => handleOpenMenu(ID_Ancheta)}>
-                                                            {open[ID_Ancheta] ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                                                            onClick={() => handleOpenMenu(ID_Pedido)}>
+                                                            {open[ID_Pedido] ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
 
                                                         </IconButton>
                                                     </TableCell>
@@ -225,7 +224,7 @@ export default function AnchetasPage() {
 
                                                 <TableRow>
                                                     <TableCell style={{ padding: 0, backgroundColor: "#F4F6F8" }} colSpan={8} size='medium'>
-                                                        <Collapse in={open[ID_Ancheta]} timeout="auto" unmountOnExit >
+                                                        <Collapse in={open[ID_Pedido]} timeout="auto" unmountOnExit >
                                                             <Card sx={{ margin: 1.5 }} style={{ padding: 0 }}>
                                                                 <Box sx={{ margin: 2 }}>
 
@@ -244,7 +243,7 @@ export default function AnchetasPage() {
                                                                         <TableBody>
                                                                             <TableRow>
                                                                                 <TableCell component="th" scope="row">
-                                                                                    {ID_Ancheta}
+                                                                                    {ID_Pedido}
                                                                                 </TableCell>
                                                                             </TableRow>
                                                                         </TableBody>
