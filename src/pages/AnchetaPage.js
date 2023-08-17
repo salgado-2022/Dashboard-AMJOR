@@ -117,7 +117,7 @@ export default function AnchetasPage() {
 
   const fetchData = () => {
     axios
-      .get('${apiUrl}/api/admin/anchetas')
+      .get('http://localhost:4000/api/admin/anchetas')
       .then((res) => {
         setData(res.data);
         setTimeout(() => {
@@ -129,7 +129,7 @@ export default function AnchetasPage() {
 
   const handleDelete = (id) => {
     axios
-      .delete('${apiUrl}/api/admin/anchetas/anchetadel/' + id)
+      .delete('http://localhost:4000/api/admin/anchetas/anchetadel/' + id)
       .then((res) => {
         console.log(res);
         Swal.fire({
@@ -328,7 +328,7 @@ export default function AnchetasPage() {
 
                           <TableCell component="th" scope="row" padding="none">
                             <Stack direction="row" alignItems="center" spacing={2}>
-                              <Avatar alt="" src={`${apiUrl}/anchetas/` + image} />
+                              <Avatar alt="" src={`http://localhost:4000/anchetas/` + image} />
                             </Stack>
                           </TableCell>
 
