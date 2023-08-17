@@ -113,17 +113,11 @@ function EditInsumo(props) {
             <div className="modal-container">
                 <h2 className= "modal-title">Editar Insumo</h2>
                 <form onSubmit={handleUpdate} id="editarInsumo">
-                    <Grid container spacing={2}>
+                    <Grid container spacing={2}>  
                         <Grid item xs={12}>
-                            <TextField fullWidth label="Nombre" variant="outlined" id="NombreInsumo" name="NombreInsumo" value={values.NombreInsumo} onChange={handleInput} error={nombreError !== ''}  helperText={nombreError}/>
-                        </Grid>
-                        <Grid item xs={12}>
-                            <TextField fullWidth label="Descripción" variant="outlined" id="Descripcion" name="Descripcion" value={values.Descripcion} onChange={handleInput} error={descripcionError !== ''}  helperText={descripcionError}/>
-                        </Grid>
-                        <Grid item xs={12}>
-                            <TextField fullWidth label="Precio" variant="outlined" id="PrecioUnitario" name="PrecioUnitario" value={values.PrecioUnitario} onChange={handleInput} error={precioError !== ''}  helperText={precioError}/>
-                        </Grid>
-                        <Grid item xs={12}>
+                            <TextField fullWidth label="Nombre" style={{ marginBottom: '16px' }} variant="outlined" id="NombreInsumo" name="NombreInsumo" value={values.NombreInsumo} onChange={handleInput} error={nombreError !== ''}  helperText={nombreError}/>
+                            <TextField fullWidth label="Descripción" style={{ marginBottom: '16px' }} variant="outlined" id="Descripcion" name="Descripcion" value={values.Descripcion} onChange={handleInput} error={descripcionError !== ''}  helperText={descripcionError}/>
+                            <TextField fullWidth label="Precio" style={{ marginBottom: '16px' }} variant="outlined" id="PrecioUnitario" name="PrecioUnitario" value={values.PrecioUnitario} onChange={handleInput} error={precioError !== ''}  helperText={precioError}/>
                             <Grid container alignItems="center" spacing={1}>
                                 <Switch color="switch" id="ID_Estado" name="ID_Estado" checked={isChecked}onChange={handleInput}/>
                                 <Typography>Disponible</Typography>
