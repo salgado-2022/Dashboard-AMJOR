@@ -24,8 +24,7 @@ import {
     TableHead,
     Collapse,
     ListItemText,
-    ListItem,
-    List,
+    CircularProgress
 } from '@mui/material';
 
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -43,11 +42,11 @@ import OrderListHead from '../sections/@dashboard/pedidos/OrderListHead';
 
 const TABLE_HEAD = [
     { id: '' },
-    { id: 'ID_Ancheta', label: 'ID', alignRight: false },
+    { id: 'ID_Pedido', label: 'ID', alignRight: false },
     { id: 'NombreAncheta', label: 'Cliente', alignRight: false },
     { id: 'Descripcion', label: 'Dirección', alignRight: false },
     { id: 'as', label: 'Fecha de entrega', alignRight: false },
-    { id: 'PrecioUnitario', label: 'Total', alignRight: false },
+    { id: 'Precio_Total', label: 'Total', alignRight: false },
     { id: 'Estado', label: 'Estado', alignRight: false },
     { id: 'blanck' },
 ];
@@ -82,31 +81,66 @@ function applySortFilter(array, comparator, query) {
 }
 
 export default function AnchetasPage() {
-    const [open, setOpen] = useState({});
-    const [page, setPage] = useState(0);
-    const [order, setOrder] = useState('desc');
-    const [selected, setSelected] = useState([]);
-    const [orderBy, setOrderBy] = useState('ID_Ancheta');
-    const [filterName, setFilterName] = useState('');
-    const [rowsPerPage, setRowsPerPage] = useState(5);
-    const [data, setData] = useState([]);
-    const [selectedAncheta, setSelectedAncheta] = useState(null);
-    const [modalShow, setModalShow] = useState(false);
-    const [modalShowDetalle, setModalShowDetalle] = useState(false);
 
+    const [open, setOpen] = useState({});
+
+    const [page, setPage] = useState(0);
+
+    const [order, setOrder] = useState('desc');
+
+    const [selected, setSelected] = useState([]);
+
+    const [orderBy, setOrderBy] = useState('ID_Pedido');
+
+    const [filterName, setFilterName] = useState('');
+
+    const [rowsPerPage, setRowsPerPage] = useState(5);
+
+    const [data, setData] = useState([]);
+
+    const [anchetas, setAnchetas] = useState([])
+
+    const [selectedAncheta, setSelectedAncheta] = useState(null);
+
+    const [totalPrecio, setTotalPrecio] = useState(0);
+
+    const [modalShow, setModalShow] = useState(false);
+
+
+
+    /* The above code is a useEffect hook in JavaScript. It is used to handle side effects in functional
+    components in React. */
     useEffect(() => {
+        /* El código anterior está escuchando un evento 'Pedidos' en una conexión de socket. 
+        Cuando se activa el evento, recibe datos actualizados y los establece mediante la función `setData`. */
         socket.on('Pedidos', datosActualizados => {
             setData(datosActualizados)
-        })
+        });
+
     }, [data]);
 
-    const handleOpenMenu = (ID_Ancheta) => {
+
+    const handleOpenMenu = async (ID_Ancheta) => {
         setOpen((prevOpen) => ({
             ...prevOpen,
             [ID_Ancheta]: !prevOpen[ID_Ancheta],
         }));
+
         setSelectedAncheta((prevSelected) => (prevSelected === ID_Ancheta ? null : ID_Ancheta));
+
+        if (!anchetas[ID_Ancheta]) {
+            try {
+                const res = await axios.get(`http://localhost:4000/api/admin/pedidos/detalle/` + ID_Ancheta);
+                setAnchetas((prevAnchetas) => ({
+                    ...prevAnchetas,
+                    [ID_Ancheta]: res.data,
+                }));
+            } catch (err) {
+                console.log(err);
+            }
+        }
     };
+
 
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -171,7 +205,7 @@ export default function AnchetasPage() {
                                 />
                                 <TableBody>
                                     {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                                        const { ID_Pedido, ID_Cliente, Nombre_Cliente, Direccion_Entrega, Fecha_Entrega, Precio_Total,correo,image } = row;
+                                        const { ID_Pedido, ID_Cliente, Nombre_Cliente, Direccion_Entrega, Fecha_Entrega, Precio_Total, correo, image } = row;
                                         const selectedUser = selected.indexOf(ID_Pedido) !== -1;
 
                                         return (
@@ -215,41 +249,59 @@ export default function AnchetasPage() {
                                                             size="small"
                                                             onClick={() => handleOpenMenu(ID_Pedido)}>
                                                             {open[ID_Pedido] ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-
                                                         </IconButton>
                                                     </TableCell>
                                                 </TableRow>
 
                                                 {/* Detalles desplegables */}
-
                                                 <TableRow>
                                                     <TableCell style={{ padding: 0, backgroundColor: "#F4F6F8" }} colSpan={8} size='medium'>
                                                         <Collapse in={open[ID_Pedido]} timeout="auto" unmountOnExit >
-                                                            <Card sx={{ margin: 1.5 }} style={{ padding: 0 }}>
-                                                                <Box sx={{ margin: 2 }}>
-
-                                                                    <Typography variant="h5" gutterBottom component="div">
-                                                                        Anchetas pedidas
-                                                                    </Typography>
-                                                                    <Table size="small" aria-label="purchases">
-                                                                        <TableHead>
-                                                                            <TableRow>
-                                                                                <TableCell>Date</TableCell>
-                                                                                <TableCell>Customer</TableCell>
-                                                                                <TableCell align="right">Amount</TableCell>
-                                                                                <TableCell align="right">Total price ($)</TableCell>
-                                                                            </TableRow>
-                                                                        </TableHead>
-                                                                        <TableBody>
-                                                                            <TableRow>
-                                                                                <TableCell component="th" scope="row">
-                                                                                    {ID_Pedido}
-                                                                                </TableCell>
-                                                                            </TableRow>
-                                                                        </TableBody>
-                                                                    </Table>
+                                                            {anchetas[ID_Pedido] ? (
+                                                                <Card sx={{ margin: 1.5 }} style={{ padding: 0 }}>
+                                                                    <Box sx={{ margin: 2 }}>
+                                                                        <Typography variant="h5" gutterBottom component="div">
+                                                                            Anchetas pedidas
+                                                                        </Typography>
+                                                                        <Table size="small" aria-label="purchases">
+                                                                            <TableHead>
+                                                                                <TableRow>
+                                                                                    <TableCell>Date</TableCell>
+                                                                                    <TableCell>Customer</TableCell>
+                                                                                    <TableCell align="right">Amount</TableCell>
+                                                                                    <TableCell align="right">Total price ($)</TableCell>
+                                                                                </TableRow>
+                                                                            </TableHead>
+                                                                            <TableBody>
+                                                                                {anchetas[ID_Pedido].map((ancheta, index) => {
+                                                                                    return (
+                                                                                        <TableRow key={index}>
+                                                                                            <TableCell component="th" scope="row">
+                                                                                                {ancheta.ID_PedidoAnch}
+                                                                                            </TableCell>
+                                                                                            <TableCell>
+                                                                                                {ancheta.NombreAncheta}
+                                                                                            </TableCell>
+                                                                                        </TableRow>
+                                                                                    )
+                                                                                })}
+                                                                            </TableBody>
+                                                                        </Table>
+                                                                    </Box>
+                                                                </Card>
+                                                            ) : (
+                                                                <Box
+                                                                    sx={{
+                                                                        display: 'flex',
+                                                                        justifyContent: 'center', // Centrar horizontalmente
+                                                                        alignItems: 'center', // Centrar verticalmente
+                                                                        height: '26vh', // Puedes ajustar la altura según tus necesidades
+                                                                    }}
+                                                                >
+                                                                    <CircularProgress />
                                                                 </Box>
-                                                            </Card>
+
+                                                            )}
                                                         </Collapse>
                                                     </TableCell>
                                                 </TableRow>
@@ -304,17 +356,6 @@ export default function AnchetasPage() {
                 </Card>
             </Container>
 
-            <VerInsumos
-                show={modalShowDetalle}
-                onHide={() => setModalShowDetalle(false)}
-                selectedAnchetaID={selectedAncheta}
-            />
-
-            <EditInsumo
-                show={modalShow}
-                onHide={() => setModalShow(false)}
-                selectedAnchetaID={selectedAncheta}
-            />
         </>
     );
 }
