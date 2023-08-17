@@ -234,7 +234,6 @@ function UsuariosFormulario2({ open, onClose, fetchData }) {
               style={{ marginTop: '8px' }}
               onClick={(event) => {
                 handleSubmit(event);
-                onClose();
               }}
             >
               Crear Usuario
