@@ -38,7 +38,6 @@ import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
 
 // ----------------------------------------------------------------------
 
-
 const TABLE_HEAD = [
   { id: 'ID_Rol', label: 'ID', alignRight: false },
   { id: 'Nombre_Rol', label: 'Rol', alignRight: false },
@@ -71,37 +70,23 @@ function applySortFilter(array, comparator, query) {
   });
   if (query) {
     return filter(array, (_Rol) => _Rol.Nombre_Rol.toLowerCase().indexOf(query.toLowerCase()) !== -1);
-
   }
   return stabilizedThis.map((el) => el[0]);
 }
 
 export default function ListaConfiguracion() {
-
   const [open, setOpen] = useState(null);
-
   const [page, setPage] = useState(0);
-
   const [order, setOrder] = useState('desc');
-
   const [selected, setSelected] = useState([]);
-
   const [orderBy, setOrderBy] = useState('ID_Rol');
-
   const [filterName, setFilterName] = useState('');
-
   const [rowsPerPage, setRowsPerPage] = useState(5);
-
   const [data, setData] = useState([]);
-
   const [selectedConfiguracionID, setSelectedConfiguracionID] = useState(null);
-
   const [modalShow, setModalShow] = useState(false);
-
-  const [openModal, setOpenModal] = useState(false);
-
   const [loading, setLoading] = useState(true);
-
+  const [showDeleteMenu, setShowDeleteMenu] = useState(false);
   useEffect(() => {
     setLoading(true);
     fetchData();
@@ -114,7 +99,7 @@ export default function ListaConfiguracion() {
         setData(res.data);
         setTimeout(() => {
           setLoading(false);
-        }, 1000)
+        }, 1000);
       })
       .catch((err) => console.log(err));
   };
@@ -124,7 +109,7 @@ export default function ListaConfiguracion() {
       .delete(`http://localhost:4000/api/admin/configuracion/Confidel/${id}`)
       .then((res) => {
         console.log(res);
-        fetchData(); // Actualiza los datos después de la eliminación
+        fetchData();
         Swal.fire({
           title: 'Eliminado Correctamente',
           text: 'El rol se ha sido eliminado correctamente',
@@ -139,10 +124,13 @@ export default function ListaConfiguracion() {
   const handleOpenMenu = (event, ID_Rol) => {
     setOpen(event.currentTarget);
     setSelectedConfiguracionID(ID_Rol);
+    setShowDeleteMenu(true);
   };
 
   const handleCloseMenu = () => {
     setOpen(null);
+    setSelectedConfiguracionID(null);
+    setShowDeleteMenu(false);
   };
 
   const handleRequestSort = (event, property) => {
@@ -161,7 +149,7 @@ export default function ListaConfiguracion() {
   };
 
   const handleCloseModal = () => {
-    setOpenModal(false);
+    setModalShow(false);
   };
 
   const handleClick = (event, ID_Rol) => {
@@ -193,8 +181,8 @@ export default function ListaConfiguracion() {
     setFilterName(event.target.value);
   };
 
-  const handleEditar = (idSelectedUser) => {
-    setSelectedConfiguracionID(idSelectedUser);
+  const handleEditar = (ID_Rol) => {
+    setSelectedConfiguracionID(ID_Rol);
     setModalShow(true);
     setOpen(null);
   };
@@ -213,7 +201,7 @@ export default function ListaConfiguracion() {
           <Typography variant="h4" gutterBottom>
             Configuración
           </Typography>
-          <ConfiFormulario open={openModal} onClose={handleCloseModal} />
+          <ConfiFormulario open={modalShow} onClose={handleCloseModal} />
         </Stack>
         <Card>
           <UserListToolbar
@@ -224,8 +212,7 @@ export default function ListaConfiguracion() {
           />
 
           <Scrollbar>
-
-            {loading ? ( // Mostrar un mensaje de carga si los datos aún están cargando
+            {loading ? (
               <TableContainer sx={{ minWidth: 800 }}>
                 <Table>
                   <UserListHead
@@ -238,10 +225,8 @@ export default function ListaConfiguracion() {
                     onSelectAllClick={handleSelectAllClick}
                   />
                   <TableBody>
-
                     {Array.from({ length: rowsPerPage }).map((_, index) => (
-
-                      <TableRow key={index} hover role="checkbox" >
+                      <TableRow key={index} hover role="checkbox">
                         <TableCell padding="checkbox">
                           <Checkbox />
                         </TableCell>
@@ -253,25 +238,21 @@ export default function ListaConfiguracion() {
                             </Typography>
                           </Stack>
                         </TableCell>
-
-                        <TableCell align="left" width={310}><Skeleton variant="rounded" width={170} height={22} /></TableCell>
-
-                        <TableCell align="left" width={266}>
-                          <Label ><Skeleton variant="rounded" width={100} height={22} /></Label>
+                        <TableCell align="left" width={310}>
+                          <Skeleton variant="rounded" width={170} height={22} />
                         </TableCell>
-
-                        <TableCell align="left" width={295} >
-                          <IconButton
-                            size="large"
-                            color="inherit"
-
-                          >
+                        <TableCell align="left" width={266}>
+                          <Label>
+                            <Skeleton variant="rounded" width={100} height={22} />
+                          </Label>
+                        </TableCell>
+                        <TableCell align="left" width={295}>
+                          <IconButton size="large" color="inherit">
                             <Iconify icon={'eva:more-vertical-fill'} />
                           </IconButton>
                         </TableCell>
                       </TableRow>
                     ))}
-
                   </TableBody>
                 </Table>
               </TableContainer>
@@ -293,11 +274,11 @@ export default function ListaConfiguracion() {
                     const estadoText = estado === 1 ? 'Activo' : 'Inactivo';
                     return (
                       <TableRow
-                      hover
-                      key={ID_Rol}
-                      tabIndex={-1}
-                      role="checkbox"
-                      selected={selected.indexOf(ID_Rol) !== -1}
+                        hover
+                        key={ID_Rol}
+                        tabIndex={-1}
+                        role="checkbox"
+                        selected={selected.indexOf(ID_Rol) !== -1}
                       >
                         <TableCell padding="checkbox">
                           <Checkbox
@@ -315,14 +296,20 @@ export default function ListaConfiguracion() {
                         </TableCell>
                         <TableCell align="left">{Nombre_Rol}</TableCell>
                         <TableCell align="left">
-                            <Label color={(estadoText === 'Activo' && 'success') || 'error'}>{sentenceCase(estadoText)}</Label>
-                          </TableCell>
+                          <Label color={(estadoText === 'Activo' && 'success') || 'error'}>
+                            {sentenceCase(estadoText)}
+                          </Label>
+                        </TableCell>
                         <TableCell align="left">
-                          <IconButton size="large" color="inherit" onClick={(event) => handleOpenMenu(event, ID_Rol)}>
+                          <IconButton
+                            size="large"
+                            color="inherit"
+                            onClick={(event) => handleOpenMenu(event, ID_Rol)}
+                          >
                             <Iconify icon={'eva:more-vertical-fill'} />
                           </IconButton>
                           <Popover
-                            open={Boolean(open) && selectedConfiguracionID === ID_Rol}
+                            open={Boolean(open) && showDeleteMenu}
                             anchorEl={open}
                             onClose={handleCloseMenu}
                             anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
@@ -339,17 +326,14 @@ export default function ListaConfiguracion() {
                               },
                             }}
                           >
-                            <MenuItem
-                              sx={{ color: 'warning.main' }}
-                              onClick={() => handleEditar(selectedConfiguracionID)}
-                            >
-                              <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
-                              Editar
-                            </MenuItem>
-                            <MenuItem sx={{ color: 'error.main' }} onClick={() => handleDelete(selectedConfiguracionID)}>
-                              <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
-                              Eliminar
-                            </MenuItem>
+                            <MenuItem sx={{ color: 'warning.main' }} onClick={() => handleEditar(ID_Rol)}>
+                                <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
+                                Editar
+                              </MenuItem>
+                              <MenuItem sx={{ color: 'error.main' }} onClick={() => handleDelete(ID_Rol)}>
+                                <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
+                                Eliminar
+                              </MenuItem>
                           </Popover>
                         </TableCell>
                       </TableRow>
@@ -373,7 +357,6 @@ export default function ListaConfiguracion() {
                           <Typography variant="h6" paragraph>
                             No encontrado
                           </Typography>
-
                           <Typography variant="body2">
                             No se encontraron resultados para &nbsp;
                             <strong>&quot;{filterName}&quot;</strong>.
@@ -386,7 +369,6 @@ export default function ListaConfiguracion() {
                 )}
               </Table>
             )}
-
           </Scrollbar>
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
@@ -399,11 +381,14 @@ export default function ListaConfiguracion() {
           />
         </Card>
       </Container>
-      {/* Ventana modal */}
       <EditarConfi
         show={modalShow}
         onHide={() => setModalShow(false)}
         selectedConfiguracionID={selectedConfiguracionID}
+        onEditSuccess={() => {
+          setModalShow(false);
+          fetchData();
+        }}
       />
     </>
   );

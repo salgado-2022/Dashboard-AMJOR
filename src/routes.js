@@ -11,7 +11,7 @@ import OrdersPage from './pages/OrdersPage';
 import DashboardAppPage from './pages/DashboardAppPage';
 import SuppliesPage from './pages/SuppliesPage';
 import AnchetasPage from './pages/AnchetaPage';
-import { AddAncheta } from './sections/@dashboard/anchetas/modal/addAncheta';
+import { AddAncheta } from './sections/@dashboard/anchetas/addAncheta';
 import { ConfiFormulario } from './sections/@dashboard/configuracion/modal/crearte';
 
 function checkTokenInCookies() {

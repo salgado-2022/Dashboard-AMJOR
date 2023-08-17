@@ -27,7 +27,7 @@ function EditarConfi(props) {
   const [, setIsChecked] = useState(false);
   const [values, setValues] = useState({
     Nombre_Rol: '',
-    ID_Estado: '',
+    estado: '',
     Permisos: [],
   });
 
@@ -69,7 +69,12 @@ function EditarConfi(props) {
 
   const handleUpdate = async () => {
     try {
-      await axios.put(`http://localhost:4000/api/admin/configuracion/confiedit/${id}`, values);
+      const updatedData = {
+        Nombre_Rol: values.Nombre_Rol,
+        estado: values.estado,
+        Permisos: selectedPermisos,
+      };
+      await axios.put(`http://localhost:4000/api/admin/configuracion/editarRol/${id}`, updatedData);
       Swal.fire({
         title: 'Modificado Correctamente',
         text: 'Tu rol se ha sido modificado correctamente',
@@ -90,8 +95,7 @@ function EditarConfi(props) {
         confirmButtonColor: '#3085d6',
         confirmButtonText: 'Aceptar',
       });
-
-    }                                                                  //EDITAR DE CONFIGURACIÓN- ROL Y PERMISOS
+    }
   };
 
   useEffect(() => {
@@ -99,12 +103,12 @@ function EditarConfi(props) {
       axios
         .get(`http://localhost:4000/api/admin/configuracion/confillamada/${id}`)
         .then((res) => {
-          console.log(res);
+          console.log(res); // Agrega esta línea para imprimir la respuesta
           setValues((prevValues) => ({
             ...prevValues,
             Nombre_Rol: res.data[0].Nombre_Rol,
           }));
-          setIsChecked(res.data[0].ID_Estado === 1);
+          setIsChecked(res.data[0].estado === 1);
         })
         .catch((err) => console.log(err));
     }
@@ -126,7 +130,7 @@ function EditarConfi(props) {
           <Stack spacing={3}>
             <TextField
               fullWidth
-              id="rol"
+              id="Nombre_Rol"
               name="Nombre_Rol"
               label="Nombre del Rol"
               value={values.Nombre_Rol}
