@@ -36,7 +36,6 @@ import Label from '../components/label';
 import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
 
 import { EditInsumo } from '../sections/@dashboard/supplies/modal/edit';
-import { AddAncheta } from '../sections/@dashboard/anchetas/modal/addAncheta';
 import { VerInsumos } from '../sections/@dashboard/anchetas/modal/details';
 
 // ----------------------------------------------------------------------
