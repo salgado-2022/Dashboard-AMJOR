@@ -81,6 +81,7 @@ function applySortFilter(array, comparator, query) {
 }
 
 export default function AnchetasPage() {
+    const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
 
     const [open, setOpen] = useState({});
 
@@ -130,7 +131,7 @@ export default function AnchetasPage() {
 
         if (!anchetas[ID_Ancheta]) {
             try {
-                const res = await axios.get(`http://localhost:4000/api/admin/pedidos/detalle/` + ID_Ancheta);
+                const res = await axios.get(`${apiUrl}/api/admin/pedidos/detalle/` + ID_Ancheta);
                 setAnchetas((prevAnchetas) => ({
                     ...prevAnchetas,
                     [ID_Ancheta]: res.data,
@@ -222,7 +223,7 @@ export default function AnchetasPage() {
                                                     <TableCell >
 
                                                         <Stack direction="row" alignItems="center" spacing={2}>
-                                                            <Avatar alt='' src={`http://localhost:4000/anchetas/` + image} />
+                                                            <Avatar alt='' src={`${apiUrl}/anchetas/` + image} />
                                                             <ListItemText
                                                                 style={{ marginTop: '0.4rem' }}
                                                                 primaryTypographyProps={{ style: { fontSize: 14 } }}

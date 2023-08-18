@@ -76,6 +76,8 @@ function applySortFilter(array, comparator, query) {
   return stabilizedThis.map((el) => el[0]);
 }
 export default function UserPage() {
+  const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
+
   const [open, setOpen] = useState(null);
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('desc');
@@ -100,7 +102,7 @@ export default function UserPage() {
 
   const fetchData = () => {
     axios
-      .get('http://localhost:4000/api/admin/usuario')
+      .get(`${apiUrl}/api/admin/usuario`)
       .then((res) => {
         setData(res.data);
         setTimeout(() => {
@@ -115,7 +117,7 @@ export default function UserPage() {
       return;
     }
     axios
-      .delete('http://localhost:4000/api/admin/usuarios/Usuariodel/' + selectedUser1)
+      .delete(`${apiUrl}/api/admin/usuarios/Usuariodel/` + selectedUser1)
       .then((res) => {
         console.log(res);
         Swal.fire({

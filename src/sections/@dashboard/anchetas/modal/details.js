@@ -4,6 +4,8 @@ import Modal from 'react-bootstrap/Modal';
 import axios from "axios";
 
 function VerInsumos(props) {
+    const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
+
     const { selectedAnchetaID, onHide, show } = props;
     const id = selectedAnchetaID;
 
@@ -30,7 +32,7 @@ function VerInsumos(props) {
         if (id) {
             const fetchData = async () => {
                 try {
-                    const res = await axios.get(`http://localhost:4000/api/admin/anchetas/insancheta/` + id);
+                    const res = await axios.get(`${apiUrl}/api/admin/anchetas/insancheta/` + id);
                     setInsumo(res.data);
                     setIsLoading(false);
                 } catch (err) {
@@ -39,7 +41,7 @@ function VerInsumos(props) {
                 }
             };
 
-            axios.get('http://localhost:4000/api/admin/anchetas/anchellamada/' + id)
+            axios.get(`${apiUrl}/api/admin/anchetas/anchellamada/` + id)
                 .then(res => {
                     setDataA(prevValues => ({
                         ...prevValues,
@@ -89,7 +91,7 @@ function VerInsumos(props) {
                                 <h1 style={{ margin: "0", fontSize: '24px' }}>{dataA.NombreAncheta}</h1>
                                 <p style={{ marginRight: "10px", fontSize: '15px' }}>{dataA.Descripcion}</p>
                             </div>
-                            <img src={`http://localhost:4000/anchetas/` + dataA.image} alt="" style={{ marginTop: "30px", maxWidth: "300px" }} />
+                            <img src={`${apiUrl}/anchetas/` + dataA.image} alt="" style={{ marginTop: "30px", maxWidth: "300px" }} />
                         </div>
                         <div style={{ padding: "10px" }}>
                             <br />

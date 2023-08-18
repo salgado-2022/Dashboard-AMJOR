@@ -1,5 +1,5 @@
 import io from "socket.io-client";
 
-let socket = io('//localhost:4000');
+let socket = io('//api.amjor.shop');
 
 export default socket;

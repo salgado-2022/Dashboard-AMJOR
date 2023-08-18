@@ -94,7 +94,7 @@ export default function ListaConfiguracion() {
 
   const fetchData = () => {
     axios
-      .get('http://localhost:4000/api/admin/configuracion')
+      .get(`${apiUrl}/api/admin/configuracion`)
       .then((res) => {
         setData(res.data);
         setTimeout(() => {
@@ -106,7 +106,7 @@ export default function ListaConfiguracion() {
 
   const handleDelete = (id) => {
     axios
-      .delete(`http://localhost:4000/api/admin/configuracion/Confidel/${id}`)
+      .delete(`${apiUrl}/api/admin/configuracion/Confidel/${id}`)
       .then((res) => {
         console.log(res);
         fetchData();

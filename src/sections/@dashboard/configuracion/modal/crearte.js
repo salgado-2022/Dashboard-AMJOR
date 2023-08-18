@@ -14,6 +14,8 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 
 function ConfiFormulario({ onClose }) {
+  const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
+  
   const [rol, setRol] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const [errorMessages, setErrorMessages] = useState({ rol: '', general: '' });
@@ -37,7 +39,7 @@ function ConfiFormulario({ onClose }) {
 
     if (Object.keys(errors).length === 0) {
       axios
-        .post('http://localhost:4000/api/crearRol', { rol })
+        .post(`${apiUrl}/api/crearRol`, { rol })
         .then((res) => {
           if (res.data.Status === 'Success') {
             Swal.fire({
