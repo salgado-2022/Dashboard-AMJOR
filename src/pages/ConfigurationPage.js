@@ -75,6 +75,8 @@ function applySortFilter(array, comparator, query) {
 }
 
 export default function ListaConfiguracion() {
+  const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
+
   const [open, setOpen] = useState(null);
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('desc');
