@@ -24,7 +24,8 @@ import {
     TableHead,
     Collapse,
     ListItemText,
-    CircularProgress
+    CircularProgress,
+    Divider,
 } from '@mui/material';
 
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -80,7 +81,7 @@ function applySortFilter(array, comparator, query) {
     return stabilizedThis.map((el) => el[0]);
 }
 
-export default function AnchetasPage() {
+export default function OrderPage() {
 
     const [open, setOpen] = useState({});
 
@@ -170,6 +171,13 @@ export default function AnchetasPage() {
             minimumFractionDigits: 0,
         });
     };
+
+    const formatDate = (dateString) => {
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        const date = new Date(dateString);
+        return date.toLocaleDateString(undefined, options);
+    };
+    
     const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0;
 
     const filteredUsers = applySortFilter(data, getComparator(order, orderBy), filterName);
@@ -236,7 +244,7 @@ export default function AnchetasPage() {
 
                                                     <TableCell align="left">{Direccion_Entrega}</TableCell>
 
-                                                    <TableCell align="left">{Fecha_Entrega}</TableCell>
+                                                    <TableCell align="left">{formatDate(Fecha_Entrega)}</TableCell>
 
                                                     <TableCell align="left">{formatPrice(Precio_Total)}</TableCell>
                                                     <TableCell align="left">
@@ -258,37 +266,39 @@ export default function AnchetasPage() {
                                                     <TableCell style={{ padding: 0, backgroundColor: "#F4F6F8" }} colSpan={8} size='medium'>
                                                         <Collapse in={open[ID_Pedido]} timeout="auto" unmountOnExit >
                                                             {anchetas[ID_Pedido] ? (
-                                                                <Card sx={{ margin: 1.5 }} style={{ padding: 0 }}>
-                                                                    <Box sx={{ margin: 2 }}>
-                                                                        <Typography variant="h5" gutterBottom component="div">
-                                                                            Anchetas pedidas
-                                                                        </Typography>
-                                                                        <Table size="small" aria-label="purchases">
-                                                                            <TableHead>
-                                                                                <TableRow>
-                                                                                    <TableCell>Date</TableCell>
-                                                                                    <TableCell>Customer</TableCell>
-                                                                                    <TableCell align="right">Amount</TableCell>
-                                                                                    <TableCell align="right">Total price ($)</TableCell>
-                                                                                </TableRow>
-                                                                            </TableHead>
-                                                                            <TableBody>
-                                                                                {anchetas[ID_Pedido].map((ancheta, index) => {
-                                                                                    return (
-                                                                                        <TableRow key={index}>
-                                                                                            <TableCell component="th" scope="row">
-                                                                                                {ancheta.ID_PedidoAnch}
-                                                                                            </TableCell>
-                                                                                            <TableCell>
-                                                                                                {ancheta.NombreAncheta}
-                                                                                            </TableCell>
-                                                                                        </TableRow>
-                                                                                    )
-                                                                                })}
-                                                                            </TableBody>
-                                                                        </Table>
+                                                                <Card sx={{ margin: 1.5 }}>
+                                                                    <Box sx={{ padding: 2 }}>
+                                                                        {anchetas[ID_Pedido].map((ancheta, index) => (
+                                                                            <React.Fragment key={index}>
+                                                                                <Stack direction="row" alignItems="center" spacing={2}>
+
+                                                                                    <Avatar
+                                                                                        alt=''
+                                                                                        src={`http://localhost:4000/anchetas/` + ancheta.image}
+                                                                                        variant="rounded"
+                                                                                        sx={{ width: 52, height: 52, borderRadius: "10px" }}
+                                                                                    />
+                                                                                    <ListItemText
+                                                                                        primaryTypographyProps={{ style: { fontSize: 14 } }}
+                                                                                        secondaryTypographyProps={{ style: { fontSize: 14 } }}
+                                                                                        primary={ancheta.NombreAncheta}
+                                                                                        secondary='asdaslkdjlaksdjlaksdjlkajsd'
+                                                                                    />
+
+                                                                                    <Box >
+                                                                                        x1
+                                                                                    </Box>
+
+                                                                                    <Box sx={{ width: 110, height: 22, textAlign: 'right' }}  >
+                                                                                        $400.000
+                                                                                    </Box>
+                                                                                </Stack>
+                                                                                {index !== anchetas[ID_Pedido].length - 1 && <Divider sx={{ my: 2 }} />}
+                                                                            </React.Fragment>
+                                                                        ))}
                                                                     </Box>
                                                                 </Card>
+
                                                             ) : (
                                                                 <Box
                                                                     sx={{
