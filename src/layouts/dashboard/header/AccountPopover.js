@@ -49,7 +49,7 @@ export default function AccountPopover() {
     axios
       .get(`${apiUrl}/api/logout`)
       .then((res) => {
-        window.location.href = `${landingUrl}`;
+        window.location.href = `https://amjor.shop/`;
         let timerInterval;
         Swal.fire({
           title: 'Cerrando sesión...',
@@ -65,7 +65,7 @@ export default function AccountPopover() {
           },
           willClose: () => {
             clearInterval(timerInterval);
-            window.location.reload(true);
+            //window.location.reload(true);
           },
         }).then((result) => {
           /* Read more about handling dismissals below */

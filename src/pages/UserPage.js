@@ -98,7 +98,7 @@ export default function UserPage() {
   useEffect(() => {
     setLoading(true);
     fetchData();
-  }, []);
+  }, [apiUrl]);
 
   const fetchData = () => {
     axios

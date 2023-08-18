@@ -27,7 +27,6 @@ import { useLocation } from 'react-router-dom';
 // ----------------------------------------------------------------------
 
 
-
 export default function DashboardAppPage() {
   const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
 
