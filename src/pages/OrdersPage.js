@@ -81,7 +81,7 @@ function applySortFilter(array, comparator, query) {
     return stabilizedThis.map((el) => el[0]);
 }
 
-export default function AnchetasPage() {
+export default function OrderPage() {
 
     const [open, setOpen] = useState({});
 
