@@ -123,19 +123,19 @@ export default function DashboardAppPage() {
 
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Pedidos por aceptar" total={totalPedidosPendientes} icon={'ant-design:android-filled'} />
+            <AppWidgetSummary title="Pedidos por aceptar" total={totalPedidosPendientes} icon={'mdi:cart'} />
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Usuarios registrados" total={totalUsuarios} color="info" icon={'ant-design:apple-filled'} />
+            <AppWidgetSummary title="Usuarios registrados" total={totalUsuarios} color="info" icon={'mdi:user'} />
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Pedidos totales" total={totalPedidos} color="warning" icon={'ant-design:windows-filled'} />
+            <AppWidgetSummary title="Pedidos totales" total={totalPedidos} color="warning" icon={'uil:cart'} />
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Dinero de ventas" total={totalVentas} color="error" icon={'ant-design:bug-filled'} />
+            <AppWidgetSummary title="Dinero de" total={totalVentas} color="error" icon={'mdi:cash'} />
           </Grid>
 
           <Grid item xs={12} md={6} lg={8}>
