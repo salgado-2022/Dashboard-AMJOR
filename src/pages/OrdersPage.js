@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from "axios";
 import { Helmet } from 'react-helmet-async';
-import { filter } from 'lodash';
 import { sentenceCase } from 'change-case';
 // import Swal from 'sweetalert2';
+import Swal from 'sweetalert2';
 
 import {
     Box,
@@ -21,11 +21,14 @@ import {
     IconButton,
     TableContainer,
     TablePagination,
-    TableHead,
     Collapse,
     ListItemText,
     CircularProgress,
     Divider,
+    Popover,
+    Tabs,
+    Tab,
+    Badge,
 } from '@mui/material';
 
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -37,8 +40,6 @@ import Label from '../components/label';
 import socket from '../socket/config'
 
 import { UserListToolbar } from '../sections/@dashboard/user';
-import { EditInsumo } from '../sections/@dashboard/supplies/modal/edit';
-import { VerInsumos } from '../sections/@dashboard/anchetas/modal/details';
 import OrderListHead from '../sections/@dashboard/pedidos/OrderListHead';
 
 const TABLE_HEAD = [
@@ -50,6 +51,7 @@ const TABLE_HEAD = [
     { id: 'Precio_Total', label: 'Total', alignRight: false },
     { id: 'Estado', label: 'Estado', alignRight: false },
     { id: 'blanck' },
+    { id: 'blanck2' },
 ];
 
 function descendingComparator(a, b, orderBy) {
@@ -68,22 +70,30 @@ function getComparator(order, orderBy) {
         : (a, b) => -descendingComparator(a, b, orderBy);
 }
 
-function applySortFilter(array, comparator, query) {
+function applySortFilter(array, comparator, filters) {
     const stabilizedThis = array.map((el, index) => [el, index]);
     stabilizedThis.sort((a, b) => {
         const order = comparator(a[0], b[0]);
         if (order !== 0) return order;
         return a[1] - b[1];
     });
-    if (query) {
-        return filter(array, (_nombre) => _nombre.NombreAncheta.toLowerCase().indexOf(query.toLowerCase()) !== -1);
+
+    if (filters && filters.length > 0) {
+        return stabilizedThis.filter(([_item]) => {
+            return filters.some(filterFn => {
+                return filterFn(_item);
+            });
+        }).map(([_filteredItem]) => _filteredItem);
     }
-    return stabilizedThis.map((el) => el[0]);
+
+    return stabilizedThis.map(([_item]) => _item);
 }
 
 export default function OrderPage() {
 
     const [open, setOpen] = useState({});
+
+    const [openMenu, setOpenMenu] = useState(null);
 
     const [page, setPage] = useState(0);
 
@@ -105,8 +115,11 @@ export default function OrderPage() {
 
     const [totalPrecio, setTotalPrecio] = useState(0);
 
-    const [modalShow, setModalShow] = useState(false);
+    const [selectedTab, setSelectedTab] = useState(0);
 
+    const [selectedMenuID, setSelectedMenuID] = useState(null);
+    
+    const [selectedMenuIdCliente, setSelectedMenuIdCliente] = useState(null);
 
 
     /* The above code is a useEffect hook in JavaScript. It is used to handle side effects in functional
@@ -119,7 +132,6 @@ export default function OrderPage() {
         });
 
     }, [data]);
-
 
     const handleOpenMenu = async (ID_Ancheta) => {
         setOpen((prevOpen) => ({
@@ -142,6 +154,47 @@ export default function OrderPage() {
         }
     };
 
+    const handleOpenMenu2 = (event, ID_Pedido, ID_Cliente) => {
+        setOpenMenu(event.currentTarget);
+        setSelectedMenuID(ID_Pedido);
+        setSelectedMenuIdCliente(ID_Cliente)
+    };
+
+    const handleSuccessOrder = (pedido,cliente) => {
+        setOpenMenu(null);
+        const data = {
+            pedido: pedido,
+            cliente: cliente
+        }
+
+        axios.get('http://localhost:4000/api/admin/pedidos/success', { params: data })
+            .then(res => {
+                if (res.data.Success === true) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Pedido aceptado correctamente',
+                        confirmButtonText: 'OK'
+                    })
+                }
+            })
+            .catch(err => {
+                Swal.fire({ // Muestra la alerta de SweetAlert2
+                    title: 'Error!',
+                    text: err,
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            })
+    }
+
+
+    const handleCloseMenu = () => {
+        setOpenMenu(null);
+    };
+
+    const handleChangeTab = (event, newValue) => {
+        setSelectedTab(newValue);
+    };
 
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -172,15 +225,49 @@ export default function OrderPage() {
         });
     };
 
+    /**
+      * La función `formatDate` toma una cadena de fecha como entrada y devuelve una cadena de fecha formateada en el
+      * formato "Mes día, año".
+      * @param dateString - El parámetro `dateString` es una cadena que representa una fecha. puede estar en cualquier
+      * formato de fecha válido, como "2021-01-01" o "1 de enero de 2021".
+      * @returns La función `formatDate` devuelve una cadena de fecha formateada en el formato "día, Mes, año".
+    */
     const formatDate = (dateString) => {
         const options = { year: 'numeric', month: 'long', day: 'numeric' };
         const date = new Date(dateString);
         return date.toLocaleDateString(undefined, options);
     };
-    
+
+
+    // Aquí calcula la cantidad de pedidos en cada estado
+    const countPendientes = data.filter(item => item.Estado === 3).length;
+    const countAceptados = data.filter(item => item.Estado === 4).length;
+    const countRechazados = data.filter(item => item.Estado !== 3 && item.Estado !== 4).length;
+
+    const filters = [
+        (_item) => _item.ID_Pedido === parseInt(filterName), // Convertimos a string antes de comparar
+        (_item) => _item.Nombre_Cliente.toLowerCase().includes(filterName.toLowerCase()),
+        (_item) => _item.Direccion_Entrega.toLowerCase().includes(filterName.toLowerCase()),
+        // Agrega más funciones de filtro para otras propiedades si es necesario
+    ];
+
     const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0;
 
-    const filteredUsers = applySortFilter(data, getComparator(order, orderBy), filterName);
+    const filteredUsers = applySortFilter(
+        data.filter(item => {
+            if (selectedTab === 0) {
+                return item.Estado === 3; // Pendientes
+            } else if (selectedTab === 1) {
+                return item.Estado === 4; // Aceptados
+            } else if (selectedTab === 2) {
+                return item.Estado !== 3 && item.Estado !== 4; // Rechazados
+            }
+            return true; // Mostrar todos si no se ajusta a los casos anteriores
+        }),
+        getComparator(order, orderBy),
+        filters
+    );
+
 
     const isNotFound = !filteredUsers.length && !!filterName;
 
@@ -196,11 +283,54 @@ export default function OrderPage() {
                         Pedidos
                     </Typography>
                 </Stack>
-
                 <Card >
+
+                    <Tabs
+                        value={selectedTab}
+                        onChange={handleChangeTab}
+                        variant="scrollable"
+                        textColor="secondary"
+                        aria-label="Order Tabs"
+                    >
+                        <Tab
+                            value={0}
+                            iconPosition="end"
+                            label="Pendientes"
+                            icon={
+                                <Label color={'warning'}>
+                                    {countPendientes}
+                                </Label>}
+                            sx={{ paddingBottom: 0, paddingTop: 0 }}
+                        />
+                        <Tab
+                            value={1}
+                            iconPosition='end'
+                            label="Aceptados"
+                            icon={
+                                <Label color={'success'}>
+                                    {countAceptados}
+                                </Label>
+                                // <Badge badgeContent={countAceptados} color="success" sx={{paddingLeft:1.3}}  />
+                            }
+                        />
+                        <Tab
+                            value={2}
+                            iconPosition='end'
+                            label="Rechazados"
+                            icon={
+                                <Label color={'error'}>
+                                    {countRechazados}
+                                </Label>
+                                // <Badge badgeContent={countAceptados} color="success" sx={{paddingLeft:1.3}}  />
+                            }
+                        />
+                    </Tabs>
+                    <Divider />
+
                     <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} placeholder="Buscar pedido..." />
 
                     <Scrollbar>
+
                         <TableContainer sx={{ minWidth: 1000 }}>
                             <Table>
                                 <OrderListHead
@@ -213,24 +343,28 @@ export default function OrderPage() {
                                 />
                                 <TableBody>
                                     {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                                        const { ID_Pedido, ID_Cliente, Nombre_Cliente, Direccion_Entrega, Fecha_Entrega, Precio_Total, correo, image } = row;
+                                        const { ID_Pedido, ID_Cliente, Nombre_Cliente, Direccion_Entrega, Fecha_Entrega, Precio_Total, correo, image, Estado } = row;
                                         const selectedUser = selected.indexOf(ID_Pedido) !== -1;
-
+                                        const estadoText = Estado === 3 ? 'Pendiente' : Estado === 4 ? 'Aceptado' : 'Rechazado'
                                         return (
                                             <React.Fragment key={ID_Pedido}>
-                                                <TableRow hover tabIndex={-1} role="checkbox" selected={selectedUser}>
-                                                    <TableCell padding="checkbox">
+                                                <TableRow hover tabIndex={-1} role="checkbox" selected={selectedUser} >
+                                                    <TableCell>
+
                                                     </TableCell>
 
                                                     <TableCell>
                                                         <Typography variant="body1" fontSize={16} noWrap>
-                                                            #{ID_Pedido}
+                                                            # {ID_Pedido}
                                                         </Typography>
                                                     </TableCell>
                                                     <TableCell >
 
                                                         <Stack direction="row" alignItems="center" spacing={2}>
                                                             <Avatar alt='' src={`http://localhost:4000/anchetas/` + image} />
+                                                            <Typography hidden={true}>
+                                                                {ID_Cliente}
+                                                            </Typography>
                                                             <ListItemText
                                                                 style={{ marginTop: '0.4rem' }}
                                                                 primaryTypographyProps={{ style: { fontSize: 14 } }}
@@ -248,22 +382,77 @@ export default function OrderPage() {
 
                                                     <TableCell align="left">{formatPrice(Precio_Total)}</TableCell>
                                                     <TableCell align="left">
-                                                        {/* <Label color={(Estado === 'Agotado' && 'error') || 'success'}>{sentenceCase(Estado)}</Label> */}
+                                                        <Label color={
+                                                            estadoText === 'Pendiente' ? 'warning' :
+                                                                estadoText === 'Aceptado' ? 'success' :
+                                                                    'error'
+                                                        }>
+                                                            {sentenceCase(estadoText)}
+                                                        </Label>
                                                     </TableCell>
 
-                                                    <TableCell>
+                                                    <TableCell sx={{ paddingRight: 0 }}>
                                                         <IconButton
-                                                            aria-label="expand row"
-                                                            size="small"
-                                                            onClick={() => handleOpenMenu(ID_Pedido)}>
+                                                            size="large"
+                                                            onClick={() => handleOpenMenu(row.ID_Pedido)}
+                                                        >
                                                             {open[ID_Pedido] ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
                                                         </IconButton>
                                                     </TableCell>
+
+                                                    <TableCell sx={{ padding: 0, paddingRight: 0.8 }}>
+
+                                                        <IconButton
+                                                            size="large"
+                                                            color="inherit"
+                                                            onClick={(event) => handleOpenMenu2(event, ID_Pedido, ID_Cliente)}
+                                                        >
+                                                            <Iconify icon={'eva:more-vertical-fill'} />
+                                                        </IconButton>
+                                                    </TableCell>
+
+
+                                                    <Popover
+                                                        open={Boolean(openMenu)}
+                                                        anchorEl={openMenu}
+                                                        onClose={handleCloseMenu}
+                                                        anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
+                                                        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                                                        PaperProps={{
+                                                            sx: {
+                                                                p: 1,
+                                                                width: 140,
+                                                                '& .MuiMenuItem-root': {
+                                                                    px: 1,
+                                                                    typography: 'body2',
+                                                                    borderRadius: 0.75,
+                                                                },
+                                                            },
+                                                        }}
+                                                    >
+                                                        <MenuItem
+                                                            sx={{ color: 'success.main' }}
+                                                            onClick={() => handleSuccessOrder(selectedMenuID, selectedMenuIdCliente)}
+                                                        >
+                                                            <Iconify icon={'fluent:checkmark-12-filled'} sx={{ mr: 2 }} />
+                                                            Aceptar
+                                                        </MenuItem>
+
+                                                        <MenuItem
+                                                            sx={{ color: 'error.main' }}
+                                                            onClick={() => handleSuccessOrder(selectedMenuID, selectedMenuIdCliente)}
+                                                        >
+                                                            <Iconify icon={'ph:x-bold'} sx={{ mr: 2 }} />
+                                                            Rechazar
+                                                        </MenuItem>
+
+
+                                                    </Popover>
                                                 </TableRow>
 
                                                 {/* Detalles desplegables */}
                                                 <TableRow>
-                                                    <TableCell style={{ padding: 0, backgroundColor: "#F4F6F8" }} colSpan={8} size='medium'>
+                                                    <TableCell style={{ padding: 0, backgroundColor: "#F4F6F8" }} colSpan={10} size='medium'>
                                                         <Collapse in={open[ID_Pedido]} timeout="auto" unmountOnExit >
                                                             {anchetas[ID_Pedido] ? (
                                                                 <Card sx={{ margin: 1.5 }}>
@@ -365,7 +554,6 @@ export default function OrderPage() {
                     />
                 </Card>
             </Container>
-
         </>
     );
 }
