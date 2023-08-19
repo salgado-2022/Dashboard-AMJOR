@@ -32,6 +32,8 @@ export default function DashboardAppPage() {
 
   const [totalPedidos, setTotalPedidos] = useState(0);
   const [totalUsuarios, setTotalUsuarios] = useState(0);
+  const [totalPedidosPendientes, setTotalPedidosPendientes] = useState(0);
+  const [totalVentas, setTotalVentas] = useState(0);
 
   useEffect(() => {
     axios.get('http://localhost:4000/api/admin/getinfo/totalpedidos')
@@ -60,13 +62,33 @@ export default function DashboardAppPage() {
         console.error('Error al obtener la cantidad total de usuarios:', error);
       });
 
+    axios.get('http://localhost:4000/api/admin/getinfo/pedidospendientes')
+      .then((response) => {
+        const totalPedidosPendientes = response.data[0]?.total_pedidos_pendientes;
+        if (totalPedidosPendientes !== undefined) {
+          setTotalPedidosPendientes(totalPedidosPendientes);
+        } else {
+          console.error('Datos de cantidad de total de pedidos pendientes no encontrados en la respuesta de la API.');
+        }
+      })
+      .catch((error) => {
+        console.error('Error al obtener la cantidad total de pedidos pendientes:', error);
+      });
+      
+    axios.get('http://localhost:4000/api/admin/getinfo/totalventas')
+    .then((response) => {
+      const totalVentas = response.data[0]?.suma_precios_ventas;
+      if (totalVentas !== undefined) {
+        setTotalVentas(totalVentas);
+      } else {
+        console.error('Datos de cantidad de total de ventas no encontrados en la respuesta de la API.');
+      }
+    })
+    .catch((error) => {
+      console.error('Error al obtener la cantidad total de ventas:', error);
+    });
+
     }, [] );
-
-  
-
-  
-  
-  
 
 
   const theme = useTheme();
@@ -101,7 +123,7 @@ export default function DashboardAppPage() {
 
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Pedidos por aceptar" total={1} icon={'ant-design:android-filled'} />
+            <AppWidgetSummary title="Pedidos por aceptar" total={totalPedidosPendientes} icon={'ant-design:android-filled'} />
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
@@ -113,7 +135,7 @@ export default function DashboardAppPage() {
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Bug Reports" total={234} color="error" icon={'ant-design:bug-filled'} />
+            <AppWidgetSummary title="Dinero de ventas" total={totalVentas} color="error" icon={'ant-design:bug-filled'} />
           </Grid>
 
           <Grid item xs={12} md={6} lg={8}>
