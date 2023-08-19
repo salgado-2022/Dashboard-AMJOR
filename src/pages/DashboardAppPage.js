@@ -131,11 +131,11 @@ export default function DashboardAppPage() {
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Pedidos totales" total={totalPedidos} color="warning" icon={'uil:cart'} />
+            <AppWidgetSummary title="Pedidos totales" total={totalPedidos} color="warning" icon={'solar:bag-bold'} />
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Dinero de" total={totalVentas} color="error" icon={'mdi:cash'} />
+            <AppWidgetSummary title="Dinero de ventas" total={totalVentas} color="error" icon={'solar:dollar-bold'} />
           </Grid>
 
           <Grid item xs={12} md={6} lg={8}>
