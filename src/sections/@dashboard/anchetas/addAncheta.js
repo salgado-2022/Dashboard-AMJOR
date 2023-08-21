@@ -17,15 +17,16 @@ import {
     IconButton, 
     DialogActions, 
     TablePagination, 
-    Divider 
+    Divider
 } from "@mui/material";
+import { UserListToolbar } from '../../@dashboard/user';
 import { filter } from 'lodash';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import Iconify from "../../../components/iconify";
 import Swal from 'sweetalert2';
 import axios from "axios";
-import { UserListToolbar } from '../../@dashboard/user';
+
 
 //-----------------------------------------------------------------------------------------------------------
 import { Insumoscontext } from './context/Context';
@@ -75,7 +76,7 @@ function AddAncheta() {
             })
             .catch((err) => console.log(err));
     };
-
+    
     const states = state.map(obj => ({ idInsumo: obj.ID_Insumo, cantidad: obj.Cantidad, precio: obj.PrecioUnitario * obj.Cantidad }));
 
     const Precio = state.reduce((Precio, insumo) => {
@@ -91,12 +92,9 @@ function AddAncheta() {
     };
     
     useEffect(() => {
-        fetchData();
-        return () => {
-            dispatch({ type: 'ResetInsumos' });
-        };
-    }, [dispatch]);
-
+        fetchData();   
+    }, []);
+    
     const handleInput = (event) => {
         const { name, value, type } = event.target;
         setValues(prev => ({ ...prev, [name]: value }));
@@ -223,10 +221,12 @@ function AddAncheta() {
         setFilterName(event.target.value);
       };
 
-    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0;
+    const emptyRows = page > 0 ? Math.max(0, (page + 1) * rowsPerPage - data.length) : 0;
 
     const filteredUsers = filter(data, (_nombre) => _nombre.NombreInsumo.toLowerCase().indexOf(filterName.toLowerCase()) !== -1);
 
+    const dataLength = state ? (data.length - state.length) : (data.length);
+    
     return (
     <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
@@ -308,10 +308,7 @@ function AddAncheta() {
                             placeholder="Buscar Insumo..."
                         />
                         <List sx={{ maxHeight: '300px', overflowY: 'auto' }}>
-                            {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((insumo, index)  => {
-                                if (insumosAgregados.includes(insumo.ID_Insumo)) {
-                                    return null;
-                                }
+                            {filteredUsers.filter(insumo => !insumosAgregados.includes(insumo.ID_Insumo)).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((insumo, index) => {
 
                                 if (insumo.Estado === 'Agotado') {
                                     return null;
@@ -319,7 +316,7 @@ function AddAncheta() {
 
                                 insumo.Cantidad = 1;
                                 insumo.Precio = insumo.PrecioUnitario;
-
+                                
                                 return (
                                     <React.Fragment key={insumo.ID_Insumo}>
                                     <ListItem key={insumo.ID_Insumo} secondaryAction={
@@ -331,8 +328,7 @@ function AddAncheta() {
                                             </IconButton>
                                         </ListItemIcon>
                                         <Grid item sm={8} xs={8}>
-                                            <ListItemText 
-                                                primary={insumo.NombreInsumo}/>
+                                            <ListItemText primary={insumo.NombreInsumo}/>
                                         </Grid>  
                                     </ListItem>
                                     {index < data.length - 1 && <Divider />}
@@ -344,7 +340,7 @@ function AddAncheta() {
                         <TablePagination
                             rowsPerPageOptions={[5, 10, 25]}
                             component="div"
-                            count={data.length}
+                            count={dataLength}
                             rowsPerPage={rowsPerPage}
                             page={page}
                             onPageChange={handleChangePage}
