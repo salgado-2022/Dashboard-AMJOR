@@ -117,12 +117,12 @@ function UsuariosFormulario2({ open, onClose, fetchData }) {
       <div
         style={{
           backgroundColor: 'white',
-          padding: '24px',  
+          padding: '24px',
           borderRadius: '8px',
           width: '100%',
           maxWidth: '800px',
-        }} 
-      > 
+        }}
+      >
         <h2 style={{ marginBottom: '16px', textAlign: 'center' }}>
           Crear un nuevo usuario</h2>
         <form onSubmit={handleSubmit}>
