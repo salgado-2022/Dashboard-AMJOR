@@ -31,7 +31,7 @@ const MENU_OPTIONS = [
 
 export default function AccountPopover() {
   const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
-  const landingUrl = process.env.REACT_APP_LANDING_URL;
+  const landingUrl = process.env.REACT_APP_AMJOR_LANDING_URL;
 
   const [open, setOpen] = useState(null);
 
@@ -49,7 +49,7 @@ export default function AccountPopover() {
     axios
       .get(`${apiUrl}/api/logout`)
       .then((res) => {
-        window.location.href = `https://amjor.shop/`;
+        window.location.href = `${landingUrl}`;
         let timerInterval;
         Swal.fire({
           title: 'Cerrando sesión...',
