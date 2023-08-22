@@ -39,6 +39,8 @@ Nav.propTypes = {
 };
 
 export default function Nav({ openNav, onCloseNav }) {
+  const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
+  
   const { pathname } = useLocation();
 
   const isDesktop = useResponsive('up', 'lg');
@@ -52,7 +54,7 @@ export default function Nav({ openNav, onCloseNav }) {
       onCloseNav();
     }
     if(token) {
-      axios.get(`http://localhost:4000/api/search/${token}`)
+      axios.get(`${apiUrl}/api/search/${token}`)
       .then((res) =>{
           const {Nombre, Nombre_Rol} = res.data[0]
           setNombre(Nombre);

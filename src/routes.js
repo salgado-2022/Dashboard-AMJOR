@@ -15,17 +15,18 @@ import { AddAncheta } from './sections/@dashboard/anchetas/addAncheta';
 import { EditAncheta } from './sections/@dashboard/anchetas/editAncheta';
 import { ConfiFormulario } from './sections/@dashboard/configuracion/modal/crearte';
 
+const apiUrl = process.env.REACT_APP_AMJOR_LANDING_URL
+
 function checkTokenInCookies() {
   const token = Cookies.get('token');
   return Boolean(token);
 }
-
 function AuthGuard({ children }) {
   const isTokenValid = checkTokenInCookies();
 
   if (!isTokenValid) {
 // Si el token no es válido, redirigir al usuario a la página de inicio de sesión
-    return window.location.href = "http://localhost:3000/login";
+    return window.location.href = `${apiUrl}`;
   }
 
   return children;

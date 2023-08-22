@@ -5,6 +5,8 @@ import { Modal, TextField, Button, DialogActions, Grid } from '@mui/material';
 import "../../../../styles/modal.css";
 
 function AddInsumo({ open, onClose, fetchData }) {
+    const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
+
     const [nombreError, setNombreError] = useState('');
     const [descripcionError, setDescripcionError] = useState('');
     const [precioError, setPrecioError] = useState('');
@@ -108,7 +110,7 @@ function AddInsumo({ open, onClose, fetchData }) {
                 return;
             }
 
-            axios.post('http://localhost:4000/api/crearInsumo', values)
+            axios.post(`${apiUrl}/api/crearInsumo`, values)
                 .then(res => {
                     if (res.data.Status === "Success") {
                         Swal.fire({

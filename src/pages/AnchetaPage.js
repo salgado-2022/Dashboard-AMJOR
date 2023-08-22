@@ -81,6 +81,8 @@ function applySortFilter(array, comparator, query) {
 }
 
 export default function AnchetasPage() {
+  const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
+
   const [open, setOpen] = useState(null);
 
   const [page, setPage] = useState(0);
@@ -115,7 +117,7 @@ export default function AnchetasPage() {
 
   const fetchData = () => {
     axios
-      .get('http://localhost:4000/api/admin/anchetas')
+      .get(`${apiUrl}/api/admin/anchetas`)
       .then((res) => {
         setData(res.data);
         setTimeout(() => {
@@ -127,7 +129,7 @@ export default function AnchetasPage() {
 
   const handleDelete = (id) => {
     axios
-      .delete('http://localhost:4000/api/admin/anchetas/anchetadel/' + id)
+      .delete(`${apiUrl}/api/admin/anchetas/anchetadel/` + id)
       .then((res) => {
         console.log(res);
         Swal.fire({
@@ -324,7 +326,7 @@ export default function AnchetasPage() {
 
                           <TableCell component="th" scope="row" padding="none">
                             <Stack direction="row" alignItems="center" spacing={2}>
-                              <Avatar alt="" src={`http://localhost:4000/anchetas/` + image} />
+                              <Avatar alt="" src={`${apiUrl}/anchetas/` + image} />
                             </Stack>
                           </TableCell>
 

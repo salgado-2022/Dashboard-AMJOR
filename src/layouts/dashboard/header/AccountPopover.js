@@ -30,6 +30,9 @@ const MENU_OPTIONS = [
 // ----------------------------------------------------------------------
 
 export default function AccountPopover() {
+  const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
+  const landingUrl = process.env.REACT_APP_AMJOR_LANDING_URL;
+
   const [open, setOpen] = useState(null);
 
   const handleOpen = (event) => {
@@ -44,9 +47,9 @@ export default function AccountPopover() {
 
   const logout = () => {
     axios
-      .get('http://localhost:4000/api/logout')
+      .get(`${apiUrl}/api/logout`)
       .then((res) => {
-        window.location.href = 'http://localhost:3000';
+        window.location.href = `${landingUrl}`;
         let timerInterval;
         Swal.fire({
           title: 'Cerrando sesión...',
@@ -62,7 +65,7 @@ export default function AccountPopover() {
           },
           willClose: () => {
             clearInterval(timerInterval);
-            window.location.reload(true);
+            //window.location.reload(true);
           },
         }).then((result) => {
           /* Read more about handling dismissals below */

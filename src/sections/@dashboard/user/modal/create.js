@@ -18,6 +18,8 @@ import Swal from 'sweetalert2';
 // Importa tus funciones de validación aquí
 
 function UsuariosFormulario2({ open, onClose, fetchData }) {
+  const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
+  
   const [values, setValues] = useState({
     nombre: '',
     correo: '',
@@ -53,7 +55,7 @@ function UsuariosFormulario2({ open, onClose, fetchData }) {
 
   useEffect(() => {
     axios
-      .get('http://localhost:4000/api/admin/configuracion')
+      .get(`${apiUrl}/api/admin/configuracion`)
       .then((res) => {
         setRoles(res.data);
       })
@@ -75,7 +77,7 @@ function UsuariosFormulario2({ open, onClose, fetchData }) {
     event.preventDefault();
 
     try {
-      const res = await axios.post('http://localhost:4000/api/crearUsuario', {
+      const res = await axios.post(`${apiUrl}/api/crearUsuario`, {
         correo: values.correo,
         contrasena: values.contrasena,
         documento: values.documento,
@@ -117,12 +119,12 @@ function UsuariosFormulario2({ open, onClose, fetchData }) {
       <div
         style={{
           backgroundColor: 'white',
-          padding: '24px',  
+          padding: '24px',
           borderRadius: '8px',
           width: '100%',
           maxWidth: '800px',
-        }} 
-      > 
+        }}
+      >
         <h2 style={{ marginBottom: '16px', textAlign: 'center' }}>
           Crear un nuevo usuario</h2>
         <form onSubmit={handleSubmit}>

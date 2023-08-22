@@ -5,6 +5,8 @@ import axios from 'axios';
 import { Button, TextField, Modal, Grid, MenuItem, Typography, Switch } from '@mui/material';
 
 function EditarUsuario(props) {
+  const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
+
   const { selectedUsuarioID, onHide, show } = props;
   const id = selectedUsuarioID;
   const [roles, setRoles] = useState([]);
@@ -42,7 +44,7 @@ function EditarUsuario(props) {
   useEffect(() => {
     if (show) {
       axios
-        .get(`http://localhost:4000/api/admin/usuario/usullamada/${id}`)
+        .get(`${apiUrl}/api/admin/usuario/usullamada/${id}`)
         .then((res) => {
           setValues((prevValues) => ({
             ...prevValues,
@@ -69,7 +71,7 @@ function EditarUsuario(props) {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:4000/api/admin/configuracion`)
+      .get(`${apiUrl}/api/admin/configuracion`)
       .then((res) => {
         setRoles(res.data);
       })
@@ -105,7 +107,7 @@ function EditarUsuario(props) {
     }));
   
     axios
-      .put(`http://localhost:4000/api/admin/usuario/usuariarioedit/${id}`, values)
+      .put(`${apiUrl}/api/admin/usuario/usuariarioedit/${id}`, values)
       .then((res) => {
         setGuardadoExitoso(true);
         Swal.fire({
