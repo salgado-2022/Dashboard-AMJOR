@@ -1,5 +1,6 @@
 import io from "socket.io-client";
 
-let socket = io('https://api.amjor.shop');
+const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
+let socket = io(`${apiUrl}`);
 
 export default socket;

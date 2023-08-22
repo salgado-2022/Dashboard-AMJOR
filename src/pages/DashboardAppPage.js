@@ -32,6 +32,8 @@ export default function DashboardAppPage() {
 
   const [totalPedidos, setTotalPedidos] = useState(0);
   const [totalUsuarios, setTotalUsuarios] = useState(0);
+  const [totalPedidosPendientes, setTotalPedidosPendientes] = useState(0);
+  const [totalVentas, setTotalVentas] = useState(0);
 
   useEffect(() => {
     axios.get(`${apiUrl}/api/admin/getinfo/totalpedidos`)
@@ -59,6 +61,32 @@ export default function DashboardAppPage() {
       .catch((error) => {
         console.error('Error al obtener la cantidad total de usuarios:', error);
       });
+
+    axios.get(`${apiUrl}/api/admin/getinfo/pedidospendientes`)
+      .then((response) => {
+        const totalPedidosPendientes = response.data[0]?.total_pedidos_pendientes;
+        if (totalPedidosPendientes !== undefined) {
+          setTotalPedidosPendientes(totalPedidosPendientes);
+        } else {
+          console.error('Datos de cantidad de total de pedidos pendientes no encontrados en la respuesta de la API.');
+        }
+      })
+      .catch((error) => {
+        console.error('Error al obtener la cantidad total de pedidos pendientes:', error);
+      });
+      
+    axios.get(`${apiUrl}/api/admin/getinfo/totalventas`)
+    .then((response) => {
+      const totalVentas = response.data[0]?.suma_precios_ventas;
+      if (totalVentas !== undefined) {
+        setTotalVentas(totalVentas);
+      } else {
+        console.error('Datos de cantidad de total de ventas no encontrados en la respuesta de la API.');
+      }
+    })
+    .catch((error) => {
+      console.error('Error al obtener la cantidad total de ventas:', error);
+    });
 
     }, [] );
 
@@ -95,19 +123,19 @@ export default function DashboardAppPage() {
 
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Pedidos por aceptar" total={1} icon={'ant-design:android-filled'} />
+            <AppWidgetSummary title="Pedidos por aceptar" total={totalPedidosPendientes} icon={'mdi:cart'} />
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Usuarios registrados" total={totalUsuarios} color="info" icon={'ant-design:apple-filled'} />
+            <AppWidgetSummary title="Usuarios registrados" total={totalUsuarios} color="info" icon={'mdi:user'} />
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Pedidos totales" total={totalPedidos} color="warning" icon={'ant-design:windows-filled'} />
+            <AppWidgetSummary title="Pedidos totales" total={totalPedidos} color="warning" icon={'solar:bag-bold'} />
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Bug Reports" total={234} color="error" icon={'ant-design:bug-filled'} />
+            <AppWidgetSummary title="Dinero de ventas" total={totalVentas} color="error" icon={'solar:dollar-bold'} />
           </Grid>
 
           <Grid item xs={12} md={6} lg={8}>
