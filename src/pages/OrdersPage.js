@@ -28,7 +28,13 @@ import {
     Popover,
     Tabs,
     Tab,
-    Badge,
+    Dialog,
+    DialogActions,
+    Button,
+    DialogContent,
+    DialogTitle,
+    DialogContentText
+
 } from '@mui/material';
 
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -121,6 +127,8 @@ export default function OrderPage() {
     const [selectedMenuID, setSelectedMenuID] = useState(null);
 
     const [selectedMenuIdCliente, setSelectedMenuIdCliente] = useState(null);
+
+    const [openModal, setOpenModal] = useState(false)
 
 
     /* The above code is a useEffect hook in JavaScript. It is used to handle side effects in functional
@@ -245,13 +253,21 @@ export default function OrderPage() {
         setPage(0);
         setFilterName(event.target.value);
     };
-
+    
     const formatPrice = (price) => {
         return price.toLocaleString('es-CO', {
             style: 'currency',
             currency: 'COP',
             minimumFractionDigits: 0,
         });
+    };
+
+    const handleClickOpen = () => {
+        setOpenModal(true);
+    };
+
+    const handleCloseModal = () => {
+        setOpenModal(false);
     };
 
     /**
@@ -476,7 +492,7 @@ export default function OrderPage() {
                                                             </Popover>
                                                         </TableCell>
                                                     ) : (
-                                                        <TableCell sx={{ padding: 0, paddingRight: 0.8}} width={55} ></TableCell>
+                                                        <TableCell sx={{ padding: 0, paddingRight: 0.8 }} width={55} ></TableCell>
                                                     )}
                                                 </TableRow>
 
@@ -501,15 +517,25 @@ export default function OrderPage() {
                                                                                         primaryTypographyProps={{ style: { fontSize: 14 } }}
                                                                                         secondaryTypographyProps={{ style: { fontSize: 14 } }}
                                                                                         primary={ancheta.NombreAncheta}
-                                                                                        secondary='asdaslkdjlaksdjlaksdjlkajsd'
+                                                                                        secondary={ancheta.Descripcion}
                                                                                     />
 
+                                                                                    <Box>
+                                                                                        <IconButton
+                                                                                            color="primary"
+                                                                                            sx={{ fontSize: "24px" }}
+                                                                                            onClick={handleClickOpen}
+                                                                                        >
+                                                                                            <Iconify icon="grommet-icons:view" class="big-icon" />
+                                                                                        </IconButton>
+                                                                                    </Box>
+
                                                                                     <Box >
-                                                                                        x1
+                                                                                        x{ancheta.Cantidad}
                                                                                     </Box>
 
                                                                                     <Box sx={{ width: 110, height: 22, textAlign: 'right' }}  >
-                                                                                        $200.000
+                                                                                        {formatPrice(ancheta.Total)}
                                                                                     </Box>
                                                                                 </Stack>
                                                                                 {index !== anchetas[ID_Pedido].length - 1 && <Divider sx={{ my: 2 }} />}
@@ -584,6 +610,40 @@ export default function OrderPage() {
                     />
                 </Card>
             </Container>
+
+            <Dialog
+                fullWidth={true}
+                maxWidth={'sm'}
+                open={openModal}
+                onClose={handleCloseModal}
+            >
+                <DialogTitle>Insumos</DialogTitle>
+                <DialogContent>
+                    
+                        <React.Fragment >
+                            <Stack direction="row" alignItems="center" spacing={2}>
+
+                                <ListItemText
+                                    primaryTypographyProps={{ style: { fontSize: 14 } }}
+                                    secondaryTypographyProps={{ style: { fontSize: 14 } }}
+                                    primary="Cerveza Aguila light"
+                                    secondary="cerveza 200ml"
+                                />
+
+                                <Box >
+                                    x1
+                                </Box>
+
+                                <Box sx={{ width: 110, height: 22, textAlign: 'right' }}  >
+                                    $200.000
+                                </Box>
+                            </Stack>
+                        </React.Fragment>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseModal}>Cerrar</Button>
+                </DialogActions>
+            </Dialog>
         </>
     );
 }
