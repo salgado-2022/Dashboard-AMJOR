@@ -1,14 +1,35 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Link } from 'react-router-dom';
-import { Container, Grid, Button, TextField, Typography, Stack, Card, CardHeader, CardContent, List, ListItem, ListItemIcon, ListItemText, IconButton, DialogActions} from "@mui/material";
+import { 
+    Container, 
+    Grid, 
+    Button, 
+    TextField, 
+    Typography, 
+    Stack, 
+    Card, 
+    CardHeader, 
+    CardContent, 
+    List, 
+    ListItem, 
+    ListItemIcon, 
+    ListItemText, 
+    IconButton, 
+    DialogActions, 
+    TablePagination, 
+    Divider
+} from "@mui/material";
+import { UserListToolbar } from '../../@dashboard/user';
+import { filter } from 'lodash';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import Iconify from "../../../components/iconify";
 import Swal from 'sweetalert2';
 import axios from "axios";
 
+
 //-----------------------------------------------------------------------------------------------------------
-import { Insumoscontext } from './context/Context'
+import { Insumoscontext } from './context/Context';
 
 function AddAncheta() {
 
@@ -43,6 +64,10 @@ function AddAncheta() {
 
     const [data, setData] = useState([]);
 
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [filterName, setFilterName] = useState('');
+
     const fetchData = () => {
         axios
             .get("http://localhost:4000/api/admin/insumos")
@@ -51,7 +76,7 @@ function AddAncheta() {
             })
             .catch((err) => console.log(err));
     };
-
+    
     const states = state.map(obj => ({ idInsumo: obj.ID_Insumo, cantidad: obj.Cantidad, precio: obj.PrecioUnitario * obj.Cantidad }));
 
     const Precio = state.reduce((Precio, insumo) => {
@@ -67,12 +92,9 @@ function AddAncheta() {
     };
     
     useEffect(() => {
-        fetchData();
-        return () => {
-            dispatch({ type: 'ResetInsumos' });
-        };
-    }, [dispatch]);
-
+        fetchData();   
+    }, []);
+    
     const handleInput = (event) => {
         const { name, value, type } = event.target;
         setValues(prev => ({ ...prev, [name]: value }));
@@ -121,8 +143,8 @@ function AddAncheta() {
                     text: 'No has agregado insumos a la ancheta',
                     icon: 'warning',
                     showConfirmButton: false,
-                    timer: 2000
-                });
+                    timer: 1500,
+                })
                 return;
             }
 
@@ -159,7 +181,10 @@ function AddAncheta() {
                             icon: 'success',
                             showConfirmButton: false,
                             timer: 1500
-                        });
+                        })
+                        .then(() => {
+                            window.location.href = '/dashboard/anchetas';
+                          });
                     } else {
                         Swal.fire({
                             title: 'Error!',
@@ -182,15 +207,36 @@ function AddAncheta() {
         dispatch({ type: 'ResetInsumos' });
     };
 
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+      };
+    
+    const handleChangeRowsPerPage = (event) => {
+        setPage(0);
+        setRowsPerPage(parseInt(event.target.value, 10));
+      };
+
+    const handleFilterByName = (event) => {
+        setPage(0);
+        setFilterName(event.target.value);
+      };
+
+    const emptyRows = page > 0 ? Math.max(0, (page + 1) * rowsPerPage - data.length) : 0;
+
+    const filteredUsers = filter(data, (_nombre) => _nombre.NombreInsumo.toLowerCase().indexOf(filterName.toLowerCase()) !== -1);
+
+    const dataLength = state ? (data.length - state.length) : (data.length);
+    
     return (
     <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-            <Typography variant="h4" gutterBottom>Crear ancheta </Typography>
+            <Typography variant="h4" gutterBottom>Crear Ancheta</Typography>
             <Link to="/dashboard/anchetas">
                 <Button variant="contained" startIcon={<Iconify icon="ph:arrow-left" />}>
                 Volver
                 </Button>
             </Link>
+            
         </Stack>
         <form onSubmit={handleSubmit} onReset={handleReset} encType="multipart/form-data">
             <Grid container spacing={2}>
@@ -198,8 +244,18 @@ function AddAncheta() {
                     <TextField fullWidth style={{ marginBottom: '16px' }} label="Nombre" variant="outlined" id="NombreAncheta" name="NombreAncheta" value={values.NombreAncheta} onChange={handleInput} error={nombreError !== ''}  helperText={nombreError} />
                     <TextField fullWidth style={{ marginBottom: '16px' }} label="Descripción" variant="outlined" id="Descripcion" name="Descripcion" value={values.Descripcion} onChange={handleInput} error={descripcionError !== ''}  helperText={descripcionError}/>
                     <Card elevation={3} style={{ marginBottom: '16px' }}>
-                        <CardHeader component="label" sx={{backgroundColor: isImageUploaded ? "#f5f5f5" : "#f5f5f5", cursor: isImageUploaded ? "auto" : "pointer", textAlign: "center", padding: "24px", marginBottom: "0px"}}
-                            title={isImageUploaded ? (<img src={imageUrl} alt="" style={{ maxWidth: "300px", margin: "0 auto" }}/>
+                        <CardHeader component={isImageUploaded ? "div" : "label"} sx={{backgroundColor: "#f5f5f5", cursor: isImageUploaded ? "auto" : "pointer", textAlign: "center", padding: "24px", marginBottom: "0px"}}
+                            title={isImageUploaded ? (
+                            <div>
+                                <IconButton color="error" sx={{position: "absolute", top: "8px",right: "8px",}} onClick={() => {
+                                    setIsImageUploaded(false);
+                                    setImageUrl(null);
+                                    setValues((prev) => ({ ...prev, image: null }));
+                                }}>
+                                    <Iconify icon="material-symbols:cancel" class="big-icon" />
+                                </IconButton>
+                                <img src={imageUrl} alt="" style={{maxWidth: "300px", margin: "0 auto"}}/>
+                            </div>
                             ) : (
                             <div style={{fontSize: "62px", marginBottom: "21px"}}>
                                 <input type="file" className="form-control" id="image" name="image" accept=".jpg, .png" onChange={handleInput} style={{ display: "none" }} />
@@ -207,9 +263,9 @@ function AddAncheta() {
                             </div>  
                             )}
                         />
-                        {state.length === 0 ? (<CardContent sx={{textAlign: "center", color: "#aab4be"}}><Typography variant="body1">Sin Insumos</Typography></CardContent>
+                        {state.length === 0 ? (<CardContent sx={{textAlign: "center", color: "#98a4b0"}}><Typography variant="body1">Sin Insumos</Typography></CardContent>
                         ) : (
-                        <List sx={{ maxHeight: state.length >= 4 ? "300px" : "none", overflowY: "auto" }}>
+                        <List sx={{ maxHeight: '300px', overflowY: 'auto'}}>
                             {state.map((insumo) => (
                                 <ListItem key={insumo.ID_Insumo} secondaryAction={
                                     <div>
@@ -245,36 +301,53 @@ function AddAncheta() {
                     </DialogActions> 
                 </Grid>
                 <Grid item md={7}>
-                    <List sx={{ maxHeight: data.length >= 10 ? "550px" : "none", overflowY: "auto", backgroundColor: '#ffffff'}}>
-                        {data && data.map((insumo) => {
-                            if (insumosAgregados.includes(insumo.ID_Insumo)) {
-                                return null;
-                            }
+                    <Card>
+                        <UserListToolbar
+                            filterName={filterName}
+                            onFilterName={handleFilterByName}
+                            placeholder="Buscar Insumo..."
+                        />
+                        <List sx={{ maxHeight: '300px', overflowY: 'auto' }}>
+                            {filteredUsers.filter(insumo => !insumosAgregados.includes(insumo.ID_Insumo)).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((insumo, index) => {
 
-                            if (insumo.Estado === 'Agotado') {
-                                return null;
-                            }
+                                if (insumo.Estado === 'Agotado') {
+                                    return null;
+                                }   
 
-                            insumo.Cantidad = 1;
-                            insumo.Precio = insumo.PrecioUnitario;
-
-                            return (
-                                <ListItem key={insumo.ID_Insumo} secondaryAction={
-                                    <Typography variant="subtitle2">{formatPrice(insumo.Precio)}</Typography>
-                                }>
-                                    <ListItemIcon onClick={() => dispatch({ type: 'AddInsumo', payload: insumo })}>
-                                        <IconButton color="primary" sx={{fontSize: "32px"}}>
-                                            <Iconify icon="typcn:plus" class="big-icon" />
-                                        </IconButton>
-                                    </ListItemIcon>
-                                    <Grid item sm={8} xs={8}>
-                                        <ListItemText 
-                                            primary={insumo.NombreInsumo}/>
-                                    </Grid>  
-                                </ListItem>
-                            );
-                        })}
-                    </List>
+                                insumo.Cantidad = 1;
+                                insumo.Precio = insumo.PrecioUnitario;
+                                
+                                return (
+                                    <React.Fragment key={insumo.ID_Insumo}>
+                                    <ListItem key={insumo.ID_Insumo} secondaryAction={
+                                        <Typography variant="subtitle2">{formatPrice(insumo.Precio)}</Typography>
+                                    }>
+                                        <ListItemIcon onClick={() => dispatch({ type: 'AddInsumo', payload: insumo })}>
+                                            <IconButton color="primary" sx={{fontSize: "32px"}}>
+                                                <Iconify icon="typcn:plus" class="big-icon" />
+                                            </IconButton>
+                                        </ListItemIcon>
+                                        <Grid item sm={8} xs={8}>
+                                            <ListItemText primary={insumo.NombreInsumo}/>
+                                        </Grid>  
+                                    </ListItem>
+                                    {index < data.length - 1 && <Divider />}
+                                    </React.Fragment>
+                                );
+                            })}
+                            {emptyRows > 0 && (<ListItem style={{ height: 73 * emptyRows }}/>)}
+                        </List>
+                        <TablePagination
+                            rowsPerPageOptions={[5, 10, 25]}
+                            component="div"
+                            count={dataLength}
+                            rowsPerPage={rowsPerPage}
+                            page={page}
+                            onPageChange={handleChangePage}
+                            onRowsPerPageChange={handleChangeRowsPerPage}
+                            labelRowsPerPage="Filas por pagina:"
+                        />
+                    </Card>
                 </Grid>
             </Grid>
         </form>

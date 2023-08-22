@@ -118,7 +118,7 @@ export default function OrderPage() {
     const [selectedTab, setSelectedTab] = useState(0);
 
     const [selectedMenuID, setSelectedMenuID] = useState(null);
-    
+
     const [selectedMenuIdCliente, setSelectedMenuIdCliente] = useState(null);
 
 
@@ -160,7 +160,7 @@ export default function OrderPage() {
         setSelectedMenuIdCliente(ID_Cliente)
     };
 
-    const handleSuccessOrder = (pedido,cliente) => {
+    const handleSuccessOrder = (pedido, cliente) => {
         setOpenMenu(null);
         const data = {
             pedido: pedido,
@@ -187,6 +187,33 @@ export default function OrderPage() {
             })
     }
 
+    const handleRefusedOrder = (pedido, cliente) => {
+        setOpenMenu(null);
+        const data = {
+            pedido: pedido,
+            cliente: cliente
+        }
+
+        axios.get('http://localhost:4000/api/admin/pedidos/refused', { params: data })
+            .then(res => {
+                if (res.data.Success === true) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Pedido rechazado correctamente',
+                        confirmButtonText: 'OK'
+                    })
+                }
+            })
+            .catch(err => {
+                Swal.fire({ // Muestra la alerta de SweetAlert2
+                    title: 'Error!',
+                    text: err,
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            })
+    }
+
 
     const handleCloseMenu = () => {
         setOpenMenu(null);
@@ -194,6 +221,7 @@ export default function OrderPage() {
 
     const handleChangeTab = (event, newValue) => {
         setSelectedTab(newValue);
+        setPage(0);
     };
 
     const handleRequestSort = (event, property) => {
@@ -400,54 +428,55 @@ export default function OrderPage() {
                                                         </IconButton>
                                                     </TableCell>
 
-                                                    <TableCell sx={{ padding: 0, paddingRight: 0.8 }}>
+                                                    {Estado === 3 ? (
+                                                        <TableCell sx={{ padding: 0, paddingRight: 0.8 }}>
+                                                            <IconButton
+                                                                size="large"
+                                                                color="inherit"
+                                                                onClick={(event) => handleOpenMenu2(event, ID_Pedido, ID_Cliente)}
+                                                            >
+                                                                <Iconify icon={'eva:more-vertical-fill'} />
+                                                            </IconButton>
+                                                            <Popover
+                                                                open={Boolean(openMenu)}
+                                                                anchorEl={openMenu}
+                                                                onClose={handleCloseMenu}
+                                                                anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
+                                                                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                                                                PaperProps={{
+                                                                    sx: {
+                                                                        p: 1,
+                                                                        width: 140,
+                                                                        '& .MuiMenuItem-root': {
+                                                                            px: 1,
+                                                                            typography: 'body2',
+                                                                            borderRadius: 0.75,
+                                                                        },
+                                                                    },
+                                                                }}
+                                                            >
+                                                                <MenuItem
+                                                                    sx={{ color: 'success.main' }}
+                                                                    onClick={() => handleSuccessOrder(selectedMenuID, selectedMenuIdCliente)}
+                                                                >
+                                                                    <Iconify icon={'fluent:checkmark-12-filled'} sx={{ mr: 2 }} />
+                                                                    Aceptar
+                                                                </MenuItem>
 
-                                                        <IconButton
-                                                            size="large"
-                                                            color="inherit"
-                                                            onClick={(event) => handleOpenMenu2(event, ID_Pedido, ID_Cliente)}
-                                                        >
-                                                            <Iconify icon={'eva:more-vertical-fill'} />
-                                                        </IconButton>
-                                                    </TableCell>
-
-
-                                                    <Popover
-                                                        open={Boolean(openMenu)}
-                                                        anchorEl={openMenu}
-                                                        onClose={handleCloseMenu}
-                                                        anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-                                                        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-                                                        PaperProps={{
-                                                            sx: {
-                                                                p: 1,
-                                                                width: 140,
-                                                                '& .MuiMenuItem-root': {
-                                                                    px: 1,
-                                                                    typography: 'body2',
-                                                                    borderRadius: 0.75,
-                                                                },
-                                                            },
-                                                        }}
-                                                    >
-                                                        <MenuItem
-                                                            sx={{ color: 'success.main' }}
-                                                            onClick={() => handleSuccessOrder(selectedMenuID, selectedMenuIdCliente)}
-                                                        >
-                                                            <Iconify icon={'fluent:checkmark-12-filled'} sx={{ mr: 2 }} />
-                                                            Aceptar
-                                                        </MenuItem>
-
-                                                        <MenuItem
-                                                            sx={{ color: 'error.main' }}
-                                                            onClick={() => handleSuccessOrder(selectedMenuID, selectedMenuIdCliente)}
-                                                        >
-                                                            <Iconify icon={'ph:x-bold'} sx={{ mr: 2 }} />
-                                                            Rechazar
-                                                        </MenuItem>
+                                                                <MenuItem
+                                                                    sx={{ color: 'error.main' }}
+                                                                    onClick={() => handleRefusedOrder(selectedMenuID, selectedMenuIdCliente)}
+                                                                >
+                                                                    <Iconify icon={'ph:x-bold'} sx={{ mr: 2 }} />
+                                                                    Rechazar
+                                                                </MenuItem>
 
 
-                                                    </Popover>
+                                                            </Popover>
+                                                        </TableCell>
+                                                    ) : (
+                                                        <TableCell sx={{ padding: 0, paddingRight: 0.8}} width={55} ></TableCell>
+                                                    )}
                                                 </TableRow>
 
                                                 {/* Detalles desplegables */}
@@ -479,7 +508,7 @@ export default function OrderPage() {
                                                                                     </Box>
 
                                                                                     <Box sx={{ width: 110, height: 22, textAlign: 'right' }}  >
-                                                                                        $400.000
+                                                                                        $200.000
                                                                                     </Box>
                                                                                 </Stack>
                                                                                 {index !== anchetas[ID_Pedido].length - 1 && <Divider sx={{ my: 2 }} />}
@@ -545,7 +574,7 @@ export default function OrderPage() {
                     <TablePagination style={{ marginBottom: '' }}
                         rowsPerPageOptions={[5, 10, 25]}
                         component="div"
-                        count={data.length}
+                        count={filteredUsers.length}
                         rowsPerPage={rowsPerPage}
                         page={page}
                         onPageChange={handleChangePage}
