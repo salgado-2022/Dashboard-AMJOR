@@ -12,6 +12,7 @@ import DashboardAppPage from './pages/DashboardAppPage';
 import SuppliesPage from './pages/SuppliesPage';
 import AnchetasPage from './pages/AnchetaPage';
 import { AddAncheta } from './sections/@dashboard/anchetas/addAncheta';
+import { EditAncheta } from './sections/@dashboard/anchetas/editAncheta';
 import { ConfiFormulario } from './sections/@dashboard/configuracion/modal/crearte';
 
 function checkTokenInCookies() {
@@ -44,16 +45,13 @@ export default function Router() {
         { path: 'supplies', element: <SuppliesPage /> },
         { path: 'anchetas', element: <AnchetasPage /> },
         { path: 'anchetas/crearancheta', element: <AddAncheta /> },
+        { path: 'anchetas/editarancheta', element: <EditAncheta /> },
         { path: 'confi', element: <ListaConfiguracion />},
         { path: 'crearte', element: <ConfiFormulario/>}, 
       ],
     },
     {
       path: 'login',
-      element: <LoginPage />,
-    },
-    {
-      path: 'crearancheta',
       element: <LoginPage />,
     },
     {

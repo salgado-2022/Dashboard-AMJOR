@@ -32,13 +32,17 @@ import axios from "axios";
 //-----------------------------------------------------------------------------------------------------------
 import { Insumoscontext } from './context/Context';
 
-function AddAncheta() {
+function EditAncheta(props) {
 
+    const { selectedAnchetaID } = props;
+    const id = selectedAnchetaID;
+    
+    console.log(id)
     const [values, setValues] = useState({
         NombreAncheta: '',
         Descripcion: '',
         PrecioUnitario: '',
-        ID_Estado: '2',
+        ID_Estado: '',
         image: ''
     });
 
@@ -46,15 +50,18 @@ function AddAncheta() {
         NombreAncheta: '',
         Descripcion: '',
         PrecioUnitario: '',
-        ID_Estado: '2',
+        ID_Estado: '',
         image: ''
     };
 
     const [nombreError, setNombreError] = useState('');
     const [descripcionError, setDescripcionError] = useState('');
 
-    const [imageUrl, setImageUrl] = useState(null);
+    const [isChecked, setIsChecked] = useState(false);
+    const [imageUrlEdit, setImageUrlEdit] = useState(null);
+    const [oldImage, setOldImage] = useState('');
     const [imageHolder, setImageHolder] = useState(null);
+    const [imageUrl, setImageUrl] = useState(null);
     const [isImageUploaded, setIsImageUploaded] = useState(false);
 
     const Globalstate = useContext(Insumoscontext);
@@ -75,7 +82,7 @@ function AddAncheta() {
             .then((res) => {
                 setData(res.data);
             })
-            .catch((err) => console.log(err));
+            .catch((err) => console.log(err));          
     };
     
     const states = state.map(obj => ({ idInsumo: obj.ID_Insumo, cantidad: obj.Cantidad, precio: obj.PrecioUnitario * obj.Cantidad }));
@@ -99,41 +106,22 @@ function AddAncheta() {
         };   
     }, [dispatch]);
     
+
     const handleInput = (event) => {
-        const { name, value, type } = event.target;
-        setValues(prev => ({ ...prev, [name]: value }));
+        const { name, value, type, checked } = event.target;
 
-        if (type === 'file') {
-            const selectedFile = event.target.files[0];
-            if (selectedFile) {
-                setImageUrl(URL.createObjectURL(selectedFile));
-                setImageHolder(selectedFile);
-                setValues((prev) => ({ ...prev, image: selectedFile }));
-                setIsImageUploaded(true);
-                window.location("/dashboard/anchetas");
-            }
-
-            if (!selectedFile) {
-                setValues((prev) => ({ ...prev, image: imageHolder }));
-                setImageUrl(URL.createObjectURL(imageHolder));
-            }
+        if (type === 'checkbox') {
+            setIsChecked(checked);
+            setValues(prev => ({ ...prev, [name]: checked ? 1 : 2 }));
+        } else {
+            setValues(prev => ({ ...prev, [name]: value }));
         }
 
-        if (name === 'NombreAncheta') {
-            if (!value) {
-                setNombreError('El nombre es requerido');
-            } else if (!/^[^<>%$"!#&/=]*$/.test(value)) {
-                setNombreError('Por favor ingrese un nombre válido');
-            } else {
-                setNombreError('');
-            }
-        } else if (name === 'Descripcion') {
-            if (!value) {
-                setDescripcionError('La descripción es requerida');
-            } else if (!/^[^<>%$!#&/]*$/.test(value)) {
-                setDescripcionError('Por favor ingrese una descripción válida');
-            } else {
-                setDescripcionError('');
+        if (type === 'file') {
+            const selectedFileEdit = event.target.files[0];
+            if (selectedFileEdit) {
+                setImageUrlEdit(URL.createObjectURL(selectedFileEdit));
+                setValues((prev) => ({ ...prev, image: selectedFileEdit }));
             }
         }
     };
@@ -236,7 +224,7 @@ function AddAncheta() {
     return (
     <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-            <Typography variant="h4" gutterBottom>Crear Ancheta</Typography>
+            <Typography variant="h4" gutterBottom>Editar Ancheta</Typography>
             <Link to="/dashboard/anchetas">
                 <Button variant="contained" startIcon={<Iconify icon="ph:arrow-left" />}>
                 Volver
@@ -366,4 +354,4 @@ function AddAncheta() {
     );
 }
 
-export { AddAncheta };
+export { EditAncheta };

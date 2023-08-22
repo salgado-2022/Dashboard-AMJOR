@@ -34,9 +34,8 @@ import Label from '../components/label';
 
 // sections
 import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
-
-import { EditInsumo } from '../sections/@dashboard/supplies/modal/edit';
 import { VerInsumos } from '../sections/@dashboard/anchetas/modal/details';
+import { EditAncheta } from '../sections/@dashboard/anchetas/editAncheta';
 
 // ----------------------------------------------------------------------
 
@@ -207,8 +206,6 @@ export default function AnchetasPage() {
 
   const handleDetalle = (idSelectedUser) => {
     setSelectedAncheta(idSelectedUser); // Asignar el idUsuario seleccionado al estado
-    setModaShowDetalle(true);
-    setOpen(null);
   };
 
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0;
@@ -376,10 +373,12 @@ export default function AnchetasPage() {
                               Detalle
                             </MenuItem>
 
-                            <MenuItem sx={{ color: 'warning.main' }} onClick={() => handleEditar(selectedAncheta)}>
-                              <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
-                              Editar
-                            </MenuItem>
+                            <Link to="/dashboard/anchetas/editarancheta">
+                              <MenuItem sx={{ color: 'warning.main' }} onClick={() => handleEditar(selectedAncheta)}>
+                                <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
+                                Editar
+                              </MenuItem>
+                            </Link>
 
                             <MenuItem sx={{ color: 'error.main' }} onClick={() => handleDelete(selectedAncheta)}>
                               <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
@@ -445,7 +444,7 @@ export default function AnchetasPage() {
         selectedAnchetaID={selectedAncheta}
       />
 
-      <EditInsumo show={modalShow} onHide={() => setModalShow(false)} selectedAnchetaID={selectedAncheta} />
+      <EditAncheta selectedAnchetaID={selectedAncheta} />
     </>
   );
 }
