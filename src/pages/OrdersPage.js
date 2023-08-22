@@ -90,6 +90,7 @@ function applySortFilter(array, comparator, filters) {
 }
 
 export default function OrderPage() {
+    const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
 
     const [open, setOpen] = useState({});
 
@@ -143,7 +144,7 @@ export default function OrderPage() {
 
         if (!anchetas[ID_Ancheta]) {
             try {
-                const res = await axios.get(`http://localhost:4000/api/admin/pedidos/detalle/` + ID_Ancheta);
+                const res = await axios.get(`${apiUrl}/api/admin/pedidos/detalle/` + ID_Ancheta);
                 setAnchetas((prevAnchetas) => ({
                     ...prevAnchetas,
                     [ID_Ancheta]: res.data,
@@ -167,7 +168,7 @@ export default function OrderPage() {
             cliente: cliente
         }
 
-        axios.get('http://localhost:4000/api/admin/pedidos/success', { params: data })
+        axios.get(`${apiUrl}/api/admin/pedidos/success`, { params: data })
             .then(res => {
                 if (res.data.Success === true) {
                     Swal.fire({
@@ -194,7 +195,7 @@ export default function OrderPage() {
             cliente: cliente
         }
 
-        axios.get('http://localhost:4000/api/admin/pedidos/refused', { params: data })
+        axios.get(`${apiUrl}/api/admin/pedidos/refused`, { params: data })
             .then(res => {
                 if (res.data.Success === true) {
                     Swal.fire({
@@ -389,7 +390,7 @@ export default function OrderPage() {
                                                     <TableCell >
 
                                                         <Stack direction="row" alignItems="center" spacing={2}>
-                                                            <Avatar alt='' src={`http://localhost:4000/anchetas/` + image} />
+                                                            <Avatar alt='' src={`${apiUrl}/anchetas/` + image} />
                                                             <Typography hidden={true}>
                                                                 {ID_Cliente}
                                                             </Typography>
@@ -492,7 +493,7 @@ export default function OrderPage() {
 
                                                                                     <Avatar
                                                                                         alt=''
-                                                                                        src={`http://localhost:4000/anchetas/` + ancheta.image}
+                                                                                        src={`${apiUrl}/anchetas/` + ancheta.image}
                                                                                         variant="rounded"
                                                                                         sx={{ width: 52, height: 52, borderRadius: "10px" }}
                                                                                     />

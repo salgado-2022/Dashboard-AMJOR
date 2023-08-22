@@ -6,6 +6,8 @@ import { Insumoscontext } from "../context/Context";
 
 
 function ListarInsumos(props) {
+    const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
+
     const { onHide, show } = props;
 
     const [data, setData] = useState([]);
@@ -25,7 +27,7 @@ function ListarInsumos(props) {
 
     const fetchData = () => {
         axios
-            .get("http://localhost:4000/api/admin/insumos")
+            .get(`${apiUrl}/api/admin/insumos`)
             .then((res) => {
                 setData(res.data);
             })

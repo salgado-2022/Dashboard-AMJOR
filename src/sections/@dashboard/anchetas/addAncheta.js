@@ -32,6 +32,7 @@ import axios from "axios";
 import { Insumoscontext } from './context/Context';
 
 function AddAncheta() {
+    const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
 
     const [values, setValues] = useState({
         NombreAncheta: '',
@@ -70,7 +71,7 @@ function AddAncheta() {
 
     const fetchData = () => {
         axios
-            .get("http://localhost:4000/api/admin/insumos")
+            .get(`${apiUrl}/api/admin/insumos`)
             .then((res) => {
                 setData(res.data);
             })
@@ -172,7 +173,7 @@ function AddAncheta() {
             formdata.append('PrecioUnitario', Precio.toString());
             formdata.append('Insumos', JSON.stringify(states))
             formdata.append('image', values.image);
-            axios.post('http://localhost:4000/api/crearAncheta', formdata)
+            axios.post(`${apiUrl}/api/crearAncheta`, formdata)
                 .then(res => {
                     if (res.data.Status === "Success") {
                         Swal.fire({
