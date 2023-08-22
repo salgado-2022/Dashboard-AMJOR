@@ -185,7 +185,7 @@ function AddAncheta() {
     return (
     <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-            <Typography variant="h4" gutterBottom>Crear Ancheta </Typography>
+            <Typography variant="h4" gutterBottom>Crear ancheta </Typography>
             <Link to="/dashboard/anchetas">
                 <Button variant="contained" startIcon={<Iconify icon="ph:arrow-left" />}>
                 Volver
