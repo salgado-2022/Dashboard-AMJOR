@@ -27,8 +27,8 @@ import { useLocation } from 'react-router-dom';
 // ----------------------------------------------------------------------
 
 
-
 export default function DashboardAppPage() {
+  const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
 
   const [totalPedidos, setTotalPedidos] = useState(0);
   const [totalUsuarios, setTotalUsuarios] = useState(0);
@@ -36,7 +36,7 @@ export default function DashboardAppPage() {
   const [totalVentas, setTotalVentas] = useState(0);
 
   useEffect(() => {
-    axios.get('http://localhost:4000/api/admin/getinfo/totalpedidos')
+    axios.get(`${apiUrl}/api/admin/getinfo/totalpedidos`)
       .then((response) => {
         const totalPedidos = response.data[0]?.total_pedidos;
         if (totalPedidos !== undefined) {
@@ -49,7 +49,7 @@ export default function DashboardAppPage() {
         console.error('Error al obtener la cantidad total de pedidos:', error);
       });
 
-      axios.get('http://localhost:4000/api/admin/getinfo/totalusuarios')
+      axios.get(`${apiUrl}/api/admin/getinfo/totalusuarios`)
       .then((response) => {
         const totalUsuarios = response.data[0]?.total_usuarios;
         if (totalUsuarios !== undefined) {
@@ -62,7 +62,7 @@ export default function DashboardAppPage() {
         console.error('Error al obtener la cantidad total de usuarios:', error);
       });
 
-    axios.get('http://localhost:4000/api/admin/getinfo/pedidospendientes')
+    axios.get(`${apiUrl}/api/admin/getinfo/pedidospendientes`)
       .then((response) => {
         const totalPedidosPendientes = response.data[0]?.total_pedidos_pendientes;
         if (totalPedidosPendientes !== undefined) {
@@ -75,7 +75,7 @@ export default function DashboardAppPage() {
         console.error('Error al obtener la cantidad total de pedidos pendientes:', error);
       });
       
-    axios.get('http://localhost:4000/api/admin/getinfo/totalventas')
+    axios.get(`${apiUrl}/api/admin/getinfo/totalventas`)
     .then((response) => {
       const totalVentas = response.data[0]?.suma_precios_ventas;
       if (totalVentas !== undefined) {
@@ -100,7 +100,7 @@ export default function DashboardAppPage() {
 
   useEffect(() => {
     if(token) {
-      axios.get(`http://localhost:4000/api/search/${token}`)
+      axios.get(`${apiUrl}/api/search/${token}`)
       .then((res) =>{
           const {Nombre, Nombre_Rol} = res.data[0]
           setNombre(Nombre);

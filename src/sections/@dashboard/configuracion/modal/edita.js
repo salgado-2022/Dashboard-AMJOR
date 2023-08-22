@@ -19,6 +19,8 @@ import {
 } from '@mui/material';
 
 function EditarConfi(props) {
+  const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
+
   const { selectedConfiguracionID, onHide, show, fetchData } = props;
   const id = selectedConfiguracionID;
   const [selectedPermisos, setSelectedPermisos] = useState([]);
@@ -74,7 +76,7 @@ function EditarConfi(props) {
         estado: values.estado,
         Permisos: selectedPermisos,
       };
-      await axios.put(`http://localhost:4000/api/admin/configuracion/editarRol/${id}`, updatedData);
+      await axios.put(`${apiUrl}/api/admin/configuracion/editarRol/${id}`, updatedData);
       Swal.fire({
         title: 'Modificado Correctamente',
         text: 'Tu rol se ha sido modificado correctamente',
@@ -101,7 +103,7 @@ function EditarConfi(props) {
   useEffect(() => {
     if (show) {
       axios
-        .get(`http://localhost:4000/api/admin/configuracion/confillamada/${id}`)
+        .get(`${apiUrl}/api/admin/configuracion/confillamada/${id}`)
         .then((res) => {
           console.log(res); // Agrega esta línea para imprimir la respuesta
           setValues((prevValues) => ({

@@ -24,7 +24,7 @@ function AuthGuard({ children }) {
 
   if (!isTokenValid) {
 // Si el token no es válido, redirigir al usuario a la página de inicio de sesión
-    return window.location.href = "http://localhost:3000/login";
+    return window.location.href = "https://amjor.shop/";
   }
 
   return children;

@@ -5,6 +5,8 @@ import axios from "axios";
 import "../../../../styles/modal.css";
 
 function EditInsumo(props) {
+    const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
+
     const { selectedInsumoID, onHide, show, fetchData } = props;
     const id = selectedInsumoID;
 
@@ -66,7 +68,7 @@ function EditInsumo(props) {
         };
         
         if (show) {
-            axios.get('http://localhost:4000/api/admin/insumos/insullamada/' + id)
+            axios.get(`${apiUrl}/api/admin/insumos/insullamada/` + id)
                 .then(res => {
                     console.log(res);
                     setValues(prevValues => ({
@@ -91,7 +93,7 @@ function EditInsumo(props) {
     const handleUpdate = (event) => {
         event.preventDefault();
         if ( nombreError === "" && descripcionError === "" && precioError === "") {
-        axios.put('http://localhost:4000/api/admin/insumos/insumoedit/' + id, values)
+        axios.put(`${apiUrl}/api/admin/insumos/insumoedit/` + id, values)
             .then(res => {
                 console.log(res);
                 Swal.fire({

@@ -78,6 +78,8 @@ function applySortFilter(array, comparator, query) {
 }
 
 export default function SuppliesPage() {
+  const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
+
   const [open, setOpen] = useState(null);
 
   const [page, setPage] = useState(0);
@@ -119,7 +121,7 @@ export default function SuppliesPage() {
 
   const fetchData = () => {
     axios
-      .get('http://localhost:4000/api/admin/insumos')
+      .get(`${apiUrl}/api/admin/insumos`)
       .then((res) => {
         setData(res.data);
         setTimeout(() => {
@@ -131,7 +133,7 @@ export default function SuppliesPage() {
 
   const handleDelete = (id) => {
     axios
-      .delete('http://localhost:4000/api/admin/insumos/insumodel/' + id)
+      .delete(`${apiUrl}/api/admin/insumos/insumodel/` + id)
       .then((res) => {
         console.log(res);
         fetchData();
