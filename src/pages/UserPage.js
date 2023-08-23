@@ -99,6 +99,14 @@ export default function UserPage() {
   useEffect(() => {
     setLoading(true);
     fetchData();
+
+    // Auto-refresh every 1 second
+    const interval = setInterval(fetchData, 1000);
+
+    // Cleanup the interval when the component unmounts
+    return () => {
+      clearInterval(interval);
+    };
   }, [apiUrl]);
 
   const fetchData = () => {

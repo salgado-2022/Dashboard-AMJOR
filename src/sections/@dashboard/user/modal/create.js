@@ -62,7 +62,7 @@ function UsuariosFormulario2({ open, onClose, fetchData }) {
       .catch((err) => {
         console.error('Error al cargar la lista de roles:', err);
       });
-  }, []);
+  }, [apiUrl]);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -93,7 +93,6 @@ function UsuariosFormulario2({ open, onClose, fetchData }) {
           text: 'El usuario ha sido creado exitosamente.',
           icon: 'success',
         }).then(() => {
-          onClose();
         });
       } else if (res.data.Error === 'El correo ya está registrado.') {
         setExistingEmailError('El correo ya está registrado.');
@@ -104,6 +103,7 @@ function UsuariosFormulario2({ open, onClose, fetchData }) {
       setExistingEmailError('Hubo un problema al registrar.');
     }
     fetchData();
+    
   };
 
   return (
@@ -236,6 +236,7 @@ function UsuariosFormulario2({ open, onClose, fetchData }) {
               style={{ marginTop: '8px' }}
               onClick={(event) => {
                 handleSubmit(event);
+                onClose();
               }}
             >
               Crear Usuario
