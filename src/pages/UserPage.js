@@ -39,6 +39,8 @@ import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
 
 const TABLE_HEAD = [
   { id: 'idUsuario', label: 'ID', alignRight: false },
+  { id: 'documento', label: 'Documento', alignRight: false },
+  { id: 'nombre', label: 'Nombres', alignRight: false },
   { id: 'correo', label: 'Correo', alignRight: false },
   { id: 'rol', label: 'Rol del Usuario', alignRight: false },
   { id: 'estado', label: 'Estado', alignRight: false }, // Nuevo campo para el estado
@@ -89,7 +91,6 @@ export default function UserPage() {
   const [selectedUser1, setSelectedUser] = useState(null);
   const [showDeleteMenu, setShowDeleteMenu] = useState(false);
   const [openModal, setOpenModal] = useState(false);
-
   const [loading, setLoading] = useState(true);
 
   //Modal Editar Usuario
@@ -111,7 +112,6 @@ export default function UserPage() {
       })
       .catch((err) => console.log(err));
   };
-
   const handleDelete = () => {
     if (!selectedUser1) {
       return;
@@ -206,13 +206,14 @@ export default function UserPage() {
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0;
   const filteredUsers = applySortFilter(data, getComparator(order, orderBy), filterName);
   const isNotFound = !filteredUsers.length && !!filterName;
+
   return (
     <>
       <Helmet>
         <title> Usuarios | AMJOR </title>
       </Helmet>
 
-      <Container>
+      <Container maxWidth="xl">
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
             Usuarios
@@ -298,7 +299,7 @@ export default function UserPage() {
                   />
                   <TableBody>
                     {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                      const { idUsuario, correo, Nombre_Rol, Estado } = row;
+                      const { idUsuario, Documento, Nombre, correo, Nombre_Rol, Estado } = row;
                       const selectedUser = selected.indexOf(idUsuario) !== -1;
                       const estadoText = Estado === 1 ? 'Activo' : 'Inactivo'; // Texto del estado según el valor
                       return (
@@ -314,6 +315,12 @@ export default function UserPage() {
                               </Typography>
                             </Stack>
                           </TableCell>
+                          <TableCell key={Documento} align="left">
+                          {Documento}
+                        </TableCell>
+                        <TableCell key={Nombre} align="left">
+                          {Nombre}
+                        </TableCell>
                           <TableCell key={correo} align="left">
                             {correo}
                           </TableCell>
