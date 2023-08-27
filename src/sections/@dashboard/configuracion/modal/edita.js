@@ -14,6 +14,7 @@ import {
   TextField,
   Typography,
   Stack,
+  Switch,
   Modal,
   Grid,
 } from '@mui/material';
@@ -24,6 +25,7 @@ function EditarConfi(props) {
   const { selectedConfiguracionID, onHide, show, fetchData } = props;
   const id = selectedConfiguracionID;
   const [selectedPermisos, setSelectedPermisos] = useState([]);
+  const [isRolActivo, setIsRolActivo] = useState(false);
   const permisos = ['Usuarios', 'Insumos', 'Anchetas', 'Pedidos'];
 
   const [, setIsChecked] = useState(false);
@@ -37,7 +39,7 @@ function EditarConfi(props) {
     const { name, value, type, checked } = event.target;
 
     if (type === 'checkbox') {
-      setIsChecked(checked);
+      setIsRolActivo(checked);
     } else if (type === 'select-multiple') {
       const selectedOptions = Array.from(event.target.selectedOptions, (option) => option.value);
       setValues((prev) => ({ ...prev, [name]: selectedOptions }));
@@ -112,7 +114,9 @@ function EditarConfi(props) {
           }));
           setIsChecked(res.data[0].estado === 1);
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {
+          console.log(err);
+        });
     }
   }, [id, show]);
 
@@ -124,7 +128,7 @@ function EditarConfi(props) {
       centered
       style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
     >
-      <div style={{ background: 'white', padding: '15px', borderRadius: '8px', width: '400px' }}>
+      <div style={{ background: '#F8F9FA', padding: '15px', borderRadius: '8px', width: '400px' }}>
         <Typography variant="h5" align="center" sx={{ mb: 4 }}>
           Editar Roles y los permisos
         </Typography>
@@ -161,6 +165,18 @@ function EditarConfi(props) {
                 </TableBody>
               </Table>
             </TableContainer>
+            <Grid item xs={12}>
+              <Grid container alignItems="center" spacing={1} style={{ marginTop: '16px' }}>
+                <Switch
+                  color="success" 
+                  id="estado"
+                  name="estado"
+                  checked={isRolActivo}
+                  onChange={handleInput}
+                />
+                <Typography>Rol Activo</Typography>
+              </Grid>
+            </Grid>
             <Grid container spacing={1}>
               <Grid item xs={6}>
                 <Button type="submit" variant="contained" color="primary" fullWidth>

@@ -2,7 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import Swal from 'sweetalert2';
 import axios from 'axios';
-import { Button, TextField, Modal, Grid, MenuItem, Typography, Switch } from '@mui/material';
+import {
+  Button,
+  TextField,
+  Modal,
+  Grid,
+  MenuItem,
+  Typography,
+  Switch,
+  Paper,
+} from '@mui/material';
 
 function EditarUsuario(props) {
   const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
@@ -12,13 +21,16 @@ function EditarUsuario(props) {
   const [roles, setRoles] = useState([]);
   const [selectedRol, setSelectedRol] = useState('');
   const [values, setValues] = useState({
+    documento: '',
+    nombre: '',
     correo: '',
     contrasena: '',
     ID_Rol: '',
-    estado: false, // Cambio en el estado
+    estado: false,
   });
   const [showPassword, setShowPassword] = useState(false);
   const [correoError, setCorreoError] = useState(false);
+  const [documentoError, setDocumentoError] = useState(false);
   const [contrasenaError, setContrasenaError] = useState(false);
   const [guardadoExitoso, setGuardadoExitoso] = useState(false);
   const [isUsuarioActivo, setIsUsuarioActivo] = useState(false);
@@ -46,16 +58,21 @@ function EditarUsuario(props) {
       axios
         .get(`${apiUrl}/api/admin/usuario/usullamada/${id}`)
         .then((res) => {
+          const userData = res.data; // Obtener los datos del usuario directamente
           setValues((prevValues) => ({
             ...prevValues,
-            correo: res.data[0].correo,
+            correo: userData.correo,
+            documento: userData.documento,
+            nombre: userData.nombre,
           }));
-          setSelectedRol(res.data[0].ID_Rol);
-          setIsUsuarioActivo(res.data[0].Estado === 1);
+          setSelectedRol(userData.ID_Rol);
+          setIsUsuarioActivo(userData.Estado === 1);
         })
         .catch((err) => console.log(err));
     } else {
       setValues({
+        documento: '',
+        nombre: '',
         correo: '',
         contrasena: '',
         ID_Rol: '',
@@ -76,7 +93,7 @@ function EditarUsuario(props) {
         setRoles(res.data);
       })
       .catch((err) => console.log(err));
-  }, [id]);
+  }, [apiUrl]);
 
   const handleUpdate = (event) => {
     event.preventDefault();
@@ -95,12 +112,9 @@ function EditarUsuario(props) {
       return;
     }
   
-    // Obtenemos el ID_Rol y el Nombre_Rol del rol seleccionado
     const selectedRole = roles.find((rol) => rol.ID_Rol === selectedRol);
     const nuevoID_Rol = selectedRole.ID_Rol;
-    // No es necesario agregar el Nombre_Rol aquí, ya que no se usa en la actualización
   
-    // Actualizamos los valores en el objeto "values" antes de la solicitud
     setValues((prevValues) => ({
       ...prevValues,
       ID_Rol: nuevoID_Rol,
@@ -123,6 +137,8 @@ function EditarUsuario(props) {
       })
       .catch((err) => console.log(err));
   };
+  
+
   const validateEmail = (email) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(email);
@@ -140,33 +156,59 @@ function EditarUsuario(props) {
   });
 
   return (
-    <Modal onClose={onHide} open={show} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
+    <Modal onClose={onHide} open={show}>
       <div
         style={{
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          minHeight: '100vh',
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          height: '100vh',
         }}
       >
-        <div style={{ backgroundColor: 'white', padding: '16px', borderRadius: '8px', width: '100%', maxWidth: '600px' }}>
+        <Paper elevation={3} style={{ padding: '16px', borderRadius: '8px', width: '100%', maxWidth: '600px' }}>
           <h2 style={{ textAlign: 'center', marginBottom: '24px' }}>Editar datos de Usuario</h2>
           <form onSubmit={handleUpdate} id="editarUsuario">
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Documento"
+                  variant="outlined"
+                  type="number"
+                  name="documento"
+                  value={values.documento}
+                  onChange={handleInput}
+                  error={documentoError}
+                  helperText={documentoError ? 'Ingresa un documento válido.' : ''}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Nombre"
+                  variant="outlined"
+                  type="text"
+                  name="nombre"
+                  value={values.nombre}
+                  onChange={handleInput}
+                />
+              </Grid>
+            </Grid>
             <TextField
               fullWidth
-              label="Cambia tu correo"
+              label="Correo"
               variant="outlined"
+              type="email"
               name="correo"
               value={values.correo}
               onChange={handleInput}
               error={correoError}
-              helperText={correoError ? 'Por favor, ingresa un correo electrónico válido.' : ''}
-              style={{ marginBottom: '16px', borderRadius: '8px' }}
+              helperText={correoError ? 'Ingresa un correo válido.' : ''}
+              style={{ marginTop: '16px' }}
             />
             <TextField
               fullWidth
-              label="Cambia tu Contraseña"
+              label="Contraseña"
               variant="outlined"
               type={showPassword ? 'text' : 'password'}
               name="contrasena"
@@ -178,7 +220,6 @@ function EditarUsuario(props) {
                   ? 'La contraseña debe tener al menos 5 caracteres, la primera letra debe ser mayúscula y debe contener al menos 2 números sin espacios.'
                   : ''
               }
-              style={{ marginBottom: '10px', borderRadius: '8px' }}
               InputProps={{
                 endAdornment: (
                   <Button onClick={toggleShowPassword}>
@@ -186,43 +227,50 @@ function EditarUsuario(props) {
                   </Button>
                 ),
               }}
+              style={{ marginTop: '16px' }}
             />
             <TextField
-  select
-  fullWidth
-  label="Seleccionar Rol"
-  variant="outlined"
-  name="ID_Rol"
-  value={selectedRol}
-  onChange={(event) => setSelectedRol(event.target.value)}
-  style={{ marginBottom: '16px', borderRadius: '8px' }}
->
-  {roles.map((rol, index) => (
-    <MenuItem key={index} value={rol.ID_Rol}>
-      <Typography>{rol.Nombre_Rol || 'Nombre no disponible'}</Typography>
-    </MenuItem>
-  ))}
-</TextField>
+              select
+              fullWidth
+              label="Rol"
+              variant="outlined"
+              name="ID_Rol"
+              value={selectedRol}
+              onChange={(event) => setSelectedRol(event.target.value)}
+              style={{ marginTop: '16px' }}
+            >
+              {roles.map((rol, index) => (
+                <MenuItem key={index} value={rol.ID_Rol}>
+                  <Typography>{rol.Nombre_Rol || 'Nombre no disponible'}</Typography>
+                </MenuItem>
+              ))}
+            </TextField>
             <Grid item xs={12}>
-              <Grid container alignItems="center" spacing={1}>
-                <Switch color="switch" id="estado" name="estado" checked={isUsuarioActivo} onChange={handleInput} />
-                <Typography>Disponible</Typography>
+              <Grid container alignItems="center" spacing={1} style={{ marginTop: '16px' }}>
+                <Switch
+                  color="switch"
+                  id="estado"
+                  name="estado"
+                  checked={isUsuarioActivo}
+                  onChange={handleInput}
+                />
+                <Typography>Usuario Activo</Typography>
               </Grid>
             </Grid>
-            <Grid container spacing={1}>
-              <Grid item xs={12} md={6}>
+            <Grid container spacing={2} style={{ marginTop: '16px' }}>
+              <Grid item xs={12} sm={6}>
                 <Button type="submit" variant="contained" color="primary" fullWidth>
                   Guardar cambios
                 </Button>
               </Grid>
-              <Grid item xs={12} md={6}>
+              <Grid item xs={12} sm={6}>
                 <Button variant="contained" color="secondary" fullWidth onClick={onHide}>
                   Cancelar
                 </Button>
               </Grid>
             </Grid>
           </form>
-        </div>
+        </Paper>
       </div>
     </Modal>
   );
