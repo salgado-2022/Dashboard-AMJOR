@@ -69,15 +69,6 @@ function AddAncheta() {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [filterName, setFilterName] = useState('');
-
-    const fetchData = () => {
-        axios
-            .get(`${apiUrl}/api/admin/insumos`)
-            .then((res) => {
-                setData(res.data);
-            })
-            .catch((err) => console.log(err));
-    };
     
     const states = state.map(obj => ({ idInsumo: obj.ID_Insumo, cantidad: obj.Cantidad, precio: obj.PrecioUnitario * obj.Cantidad }));
 
@@ -94,11 +85,20 @@ function AddAncheta() {
     };
     
     useEffect(() => {
+        const fetchData = () => {
+            axios
+                .get(`${apiUrl}/api/admin/insumos`)
+                .then((res) => {
+                    setData(res.data);
+                })
+                .catch((err) => console.log(err));
+        };
+        
         fetchData();
         return () => {
             dispatch({ type: 'ResetInsumos' });
         };   
-    }, [dispatch]);
+    }, [dispatch, apiUrl]);
     
     const handleInput = (event) => {
         const { name, value, type } = event.target;
@@ -235,7 +235,7 @@ function AddAncheta() {
     const dataLength = state ? (data.length - state.length) : (data.length);
     
     return (
-    <Container>
+    <Container maxWidth={"xl"}>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
             <Typography variant="h4" gutterBottom>Crear Ancheta</Typography>
             <Link to="/dashboard/anchetas">
@@ -248,8 +248,14 @@ function AddAncheta() {
         <form onSubmit={handleSubmit} onReset={handleReset} encType="multipart/form-data">
             <Grid container spacing={2}>
                 <Grid item md={5}>
-                    <TextField fullWidth style={{ marginBottom: '16px' }} label="Nombre" variant="outlined" id="NombreAncheta" name="NombreAncheta" value={values.NombreAncheta} onChange={handleInput} error={nombreError !== ''}  helperText={nombreError} />
-                    <TextField fullWidth style={{ marginBottom: '16px' }} label="Descripción" variant="outlined" id="Descripcion" name="Descripcion" value={values.Descripcion} onChange={handleInput} error={descripcionError !== ''}  helperText={descripcionError}/>
+                    <TextField fullWidth style={{ marginBottom: '13px' }} label="Nombre" variant="outlined" id="NombreAncheta" name="NombreAncheta" value={values.NombreAncheta} onChange={handleInput} error={nombreError !== ''}  helperText={nombreError} />
+                    <TextField fullWidth style={{ marginBottom: '13px' }} label="Mano de Obra" variant="outlined" id="NombreAncheta" name="NombreAncheta" value={values.NombreAncheta} onChange={handleInput} error={nombreError !== ''}  helperText={nombreError} />
+                </Grid>
+                <Grid item md={7}>
+                    <TextField multiline rows={4} fullWidth style={{ marginBottom: '16px' }} label="Descripción" variant="outlined" id="Descripcion" name="Descripcion" value={values.Descripcion} onChange={handleInput} error={descripcionError !== ''}  helperText={descripcionError}/>
+                </Grid>
+                
+                <Grid item md={4}>
                     <Card elevation={3} style={{ marginBottom: '16px' }}>
                         <CardHeader component={isImageUploaded ? "div" : "label"} sx={{backgroundColor: "#f5f5f5", cursor: isImageUploaded ? "auto" : "pointer", textAlign: "center", padding: "24px", marginBottom: "0px"}}
                             title={isImageUploaded ? (
@@ -307,7 +313,7 @@ function AddAncheta() {
                         <Button type="reset" variant="contained" color="secondary" fullWidth>Cancelar</Button>
                     </DialogActions> 
                 </Grid>
-                <Grid item md={7}>
+                <Grid item md={8}>
                     <Card>
                         <UserListToolbar
                             filterName={filterName}
@@ -361,6 +367,7 @@ function AddAncheta() {
                         />
                     </Card>
                 </Grid>
+                
             </Grid>
         </form>
     </Container>
