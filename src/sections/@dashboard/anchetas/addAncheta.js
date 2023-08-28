@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
     Container, 
     Grid, 
@@ -34,6 +34,8 @@ import { Insumoscontext } from './context/Context';
 
 function AddAncheta() {
     const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
+
+    const navigate = useNavigate();
 
     const [values, setValues] = useState({
         NombreAncheta: '',
@@ -185,9 +187,6 @@ function AddAncheta() {
                             showConfirmButton: false,
                             timer: 1500
                         })
-                        .then(() => {
-                            window.location.href = '/dashboard/anchetas';
-                          });
                     } else {
                         Swal.fire({
                             title: 'Error!',
@@ -196,8 +195,8 @@ function AddAncheta() {
                             confirmButtonText: 'OK'
                         });
                     }
+                    navigate("/dashboard/anchetas");
                 })
-                .then(err => console.log(err));
         }
     };
 
