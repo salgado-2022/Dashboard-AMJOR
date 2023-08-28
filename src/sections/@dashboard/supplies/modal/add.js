@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Swal from 'sweetalert2';
 import axios from "axios";
-import { Modal, TextField, Button, DialogActions, Grid } from '@mui/material';
-import "../../../../styles/modal.css";
+import { Dialog, TextField, Button, DialogActions, Grid, DialogContent, Typography } from '@mui/material';
 
 function AddInsumo({ open, onClose, fetchData }) {
     const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
@@ -136,24 +135,24 @@ function AddInsumo({ open, onClose, fetchData }) {
     };
 
     return (
-        <Modal open={open} onClose={handleCloseModal}>
-            <div className="modal-container">
-                <h2 className="modal-title">Crear Insumo</h2>
+        <Dialog open={open} onClose={handleCloseModal}>
+            <DialogContent>
+                <Typography fontSize="32px" marginBottom="16px" textAlign="center">Crear Insumo</Typography>
                 <form onSubmit={handleSubmit}>
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
-                            <TextField fullWidth style={{ marginBottom: '16px' }} label="Nombre" variant="outlined" id="NombreInsumo" name="NombreInsumo" value={values.NombreInsumo} onChange={handleInput} error={nombreError !== ''}  helperText={nombreError}/>
-                            <TextField fullWidth style={{ marginBottom: '16px' }} label="Descripción" variant="outlined" id="Descripcion" name="Descripcion" value={values.Descripcion} onChange={handleInput} error={descripcionError !== ''}  helperText={descripcionError}/>
-                            <TextField fullWidth style={{ marginBottom: '16px' }} label="Precio" variant="outlined" id="PrecioUnitario" name="PrecioUnitario" value={values.PrecioUnitario} onChange={handleInput} error={precioError !== ''}  helperText={precioError}/>
+                            <TextField fullWidth sx={{ marginBottom: '16px' }} label="Nombre" variant="outlined" id="NombreInsumo" name="NombreInsumo" value={values.NombreInsumo} onChange={handleInput} error={nombreError !== ''}  helperText={nombreError}/>
+                            <TextField fullWidth sx={{ marginBottom: '16px' }} label="Descripción" variant="outlined" id="Descripcion" name="Descripcion" value={values.Descripcion} onChange={handleInput} error={descripcionError !== ''}  helperText={descripcionError}/>
+                            <TextField fullWidth sx={{ marginBottom: '16px' }} label="Precio" variant="outlined" id="PrecioUnitario" name="PrecioUnitario" value={values.PrecioUnitario} onChange={handleInput} error={precioError !== ''}  helperText={precioError}/>
                         </Grid>
                     </Grid>
                     <DialogActions> 
-                        <Button type="submit" variant="contained" color="primary" fullWidth style={{ marginTop: '8px' }}>Crear Insumo</Button>
-                        <Button variant="contained" color="secondary" fullWidth onClick={handleCloseModal} style={{marginTop: '8px'}}>Cancelar</Button>
+                        <Button type="submit" variant="contained" color="primary" fullWidth sx={{ marginTop: '8px' }}>Crear Insumo</Button>
+                        <Button variant="contained" color="secondary" onClick={handleCloseModal} fullWidth sx={{marginTop: '8px'}}>Cancelar</Button>
                     </DialogActions> 
                 </form>           
-            </div>        
-        </Modal>
+            </DialogContent>        
+        </Dialog>
     );   
 }
 
