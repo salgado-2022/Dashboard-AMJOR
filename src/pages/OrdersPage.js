@@ -134,7 +134,7 @@ export default function OrderPage() {
 
     const [openModal, setOpenModal] = useState(false)
 
-    const [semaforo, setSemaforo] = useState(10)
+    const [semaforo, setSemaforo] = useState(1)
 
     const [loadingAceptados, setLoadingAceptados] = useState(false)
 
@@ -155,7 +155,6 @@ export default function OrderPage() {
             setLoadingAceptados(false);
         }
     }, [data, selectedTab]);
-    // console.log(acceptedOrdersWithin3Days)
 
     const rojo = (dateString) => {
         const currentDate = new Date();
@@ -168,7 +167,13 @@ export default function OrderPage() {
         const currentDate = new Date();
         const deliveryDate = new Date(dateString);
         const timeDifferenceInDays = (deliveryDate - currentDate) / (1000 * 60 * 60 * 24);
-        return timeDifferenceInDays >= 0 && timeDifferenceInDays <= 7;
+        return timeDifferenceInDays > 3 && timeDifferenceInDays <= 7;
+    };
+    const verde = (dateString) => {
+        const currentDate = new Date();
+        const deliveryDate = new Date(dateString);
+        const timeDifferenceInDays = (deliveryDate - currentDate) / (1000 * 60 * 60 * 24);
+        return timeDifferenceInDays > 7;
     };
 
     const handleChange = (event) => {
@@ -339,12 +344,23 @@ export default function OrderPage() {
 
     const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0;
 
+    const applyFilterBasedOnPriority = (item) => {
+        if (semaforo === 1) {
+            return rojo(item.Fecha_Entrega); // Filtro para 3 días
+        } else if (semaforo === 2) {
+            return amarillo(item.Fecha_Entrega); // Filtro para 1 semana
+        } else if (semaforo === 3) {
+            return verde(item.Fecha_Entrega);
+        }
+        return true; // No se aplican filtros
+    };
+
     const filteredUsers = applySortFilter(
         data.filter(item => {
             if (selectedTab === 0) {
                 return item.Estado === 3; // Pendientes
             } else if (selectedTab === 1) {
-                return item.Estado === 4 && rojo(item.Fecha_Entrega); // Aceptados dentro de 3 días
+                return item.Estado === 4 && applyFilterBasedOnPriority(item); // Filtro en función de la prioridad seleccionada
             } else if (selectedTab === 2) {
                 return item.Estado !== 3 && item.Estado !== 4; // Rechazados
             }
@@ -418,18 +434,18 @@ export default function OrderPage() {
 
                             {loadingAceptados && (
                                 <FormControl sx={{ m: 1, minWidth: 210, paddingRight: '24px' }}>
-                                    <InputLabel id="demo-simple-select-label">Age</InputLabel>
+                                    <InputLabel id="demo-simple-select-label">Prioridad</InputLabel>
                                     <Select
                                         labelId="demo-simple-select-autowidth-label"
                                         id="demo-simple-select-autowidth"
                                         value={semaforo}
                                         onChange={handleChange}
                                         autoWidth
-                                        label="Age"
+                                        label="Prioridad"
                                     >
-                                        <MenuItem value={10}>Entrega inmediata</MenuItem>
-                                        <MenuItem value={21}>Entrega proxima</MenuItem>
-                                        <MenuItem value={22}>Entrega a tiempo</MenuItem>
+                                        <MenuItem value={1}>Entrega inmediata</MenuItem>
+                                        <MenuItem value={2}>Entrega proxima</MenuItem>
+                                        <MenuItem value={3}>Entrega a tiempo</MenuItem>
                                     </Select>
                                 </FormControl>
                             )}
@@ -604,7 +620,7 @@ export default function OrderPage() {
                                                                                             sx={{ fontSize: "24px" }}
                                                                                             onClick={handleClickOpen}
                                                                                         >
-                                                                                            <Iconify icon="grommet-icons:view" class="big-icon" />
+                                                                                            <Iconify icon="grommet-icons:view" className="big-icon" />
                                                                                         </IconButton>
                                                                                     </Box>
 
