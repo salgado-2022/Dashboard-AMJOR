@@ -42,7 +42,7 @@ const TABLE_HEAD = [
   { id: '' },
   { id: 'ID_Ancheta', label: 'ID', alignRight: false },
   { id: 'NombreAncheta', label: 'Nombre', alignRight: false },
-  { id: 'Descripcion', label: 'Descripcion', alignRight: false },
+  { id: 'Descripcion', label: 'Descripción', alignRight: false },
   { id: 'PrecioUnitario', label: 'Precio', alignRight: false },
   { id: 'Estado', label: 'Estado', alignRight: false },
   { id: '#' },

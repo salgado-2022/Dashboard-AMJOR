@@ -40,7 +40,7 @@ import { EditInsumo } from '../sections/@dashboard/supplies/modal/edit';
 const TABLE_HEAD = [
   { id: 'ID_Insumo', label: 'ID', alignRight: false },
   { id: 'NombreInsumo', label: 'Nombre', alignRight: false },
-  { id: 'Descripcion', label: 'Descripcion', alignRight: false },
+  { id: 'Descripcion', label: 'Descripción', alignRight: false },
   { id: 'PrecioUnitario', label: 'Precio', alignRight: false },
   { id: 'Estado', label: 'Estado', alignRight: false },
   { id: '' },
