@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useContext } from "react";
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
     Container, 
     Grid, 
@@ -38,6 +38,7 @@ function EditAncheta() {
 
     const location = useLocation();
     const id = location.state?.idAncheta;
+    const navigate = useNavigate();
 
     const [values, setValues] = useState({
         NombreAncheta: '',
@@ -204,18 +205,9 @@ function EditAncheta() {
                     formdata.append('image', values.image);
                     formdata.append('oldImage', oldImage);
                     axios.put(`${apiUrl}/api/admin/anchetas/anchetaedit/` + id, formdata)
-                    .then(res => {
-                        console.log(res);
-                        setTimeout(function () { window.location = '/dashboard/anchetas'; }, 670);
-                    })
-                    .catch(err => console.log(err));
-                } else {
-                    setTimeout(function () { window.location = '/dashboard/anchetas'; }, 670);
                 }
+                navigate("/dashboard/anchetas");
             })
-            .catch(error => {
-                console.log('Error al actualizar la ancheta:', error);
-              });
         }
       };
 

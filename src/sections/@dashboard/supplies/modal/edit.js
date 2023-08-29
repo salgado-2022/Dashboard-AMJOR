@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Modal, TextField, Button, DialogActions, Grid, Switch, Typography } from '@mui/material';
+import { Dialog, TextField, Button, DialogActions, Grid, Switch, Typography, DialogContent } from '@mui/material';
 import Swal from 'sweetalert2';
 import axios from "axios";
-import "../../../../styles/modal.css";
 
 function EditInsumo(props) {
     const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
@@ -111,28 +110,28 @@ function EditInsumo(props) {
     };
 
     return (
-        <Modal onClose={onHide} open={show}>
-            <div className="modal-container">
-                <h2 className= "modal-title">Editar Insumo</h2>
+        <Dialog onClose={onHide} open={show}>
+            <DialogContent>
+                <Typography fontSize="32px" marginBottom="16px" textAlign="center">Editar Insumo</Typography>
                 <form onSubmit={handleUpdate} id="editarInsumo">
                     <Grid container spacing={2}>  
                         <Grid item xs={12}>
                             <TextField fullWidth label="Nombre" style={{ marginBottom: '16px' }} variant="outlined" id="NombreInsumo" name="NombreInsumo" value={values.NombreInsumo} onChange={handleInput} error={nombreError !== ''}  helperText={nombreError}/>
                             <TextField fullWidth label="Descripción" style={{ marginBottom: '16px' }} variant="outlined" id="Descripcion" name="Descripcion" value={values.Descripcion} onChange={handleInput} error={descripcionError !== ''}  helperText={descripcionError}/>
                             <TextField fullWidth label="Precio" style={{ marginBottom: '16px' }} variant="outlined" id="PrecioUnitario" name="PrecioUnitario" value={values.PrecioUnitario} onChange={handleInput} error={precioError !== ''}  helperText={precioError}/>
-                            <Grid container alignItems="center" spacing={1}>
+                            <Grid container alignItems="center" spacing={1} marginBottom={-1}>
                                 <Switch color="switch" id="ID_Estado" name="ID_Estado" checked={isChecked}onChange={handleInput}/>
                                 <Typography>Disponible</Typography>
                             </Grid>
                         </Grid>
                     </Grid>
                     <DialogActions> 
-                        <Button type="submit" variant="contained" color="primary" id="modInsumo" fullWidth style={{ marginTop: '8px' }}>Editar Insumo</Button>
-                        <Button variant="contained" color="secondary" fullWidth id="cancelarInsumo" onClick={props.onHide} style={{marginTop: '8px'}}>Cancelar</Button>
+                        <Button type="submit" variant="contained" color="primary" id="modInsumo" fullWidth style={{ marginTop: '8px'}}>Editar Insumo</Button>
+                        <Button variant="contained" color="secondary" id="cancelarInsumo" onClick={props.onHide} fullWidth style={{marginTop: '8px'}}>Cancelar</Button>
                     </DialogActions> 
                 </form>
-            </div>
-        </Modal>
+            </DialogContent>
+        </Dialog>
     );
 }
 
