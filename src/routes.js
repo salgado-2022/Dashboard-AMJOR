@@ -2,10 +2,8 @@ import { Navigate, useRoutes } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import DashboardLayout from './layouts/dashboard';
 import SimpleLayout from './layouts/simple';
-import BlogPage from './pages/BlogPage';
 import UserPage from './pages/UserPage';
 import ListaConfiguracion from './pages/ConfigurationPage';
-import LoginPage from './pages/LoginPage';
 import Page404 from './pages/Page404';
 import OrdersPage from './pages/OrdersPage';
 import DashboardAppPage from './pages/DashboardAppPage';
@@ -42,7 +40,6 @@ export default function Router() {
         { path: 'app', element: <DashboardAppPage /> },
         { path: 'user', element: <UserPage /> },
         { path: 'orders', element: <OrdersPage /> },
-        { path: 'blog', element: <BlogPage /> },
         { path: 'supplies', element: <SuppliesPage /> },
         { path: 'anchetas', element: <AnchetasPage /> },
         { path: 'anchetas/crearancheta', element: <AddAncheta /> },
@@ -50,10 +47,6 @@ export default function Router() {
         { path: 'confi', element: <ListaConfiguracion />},
         { path: 'crearte', element: <ConfiFormulario/>}, 
       ],
-    },
-    {
-      path: 'login',
-      element: <LoginPage />,
     },
     {
       element: <SimpleLayout />,

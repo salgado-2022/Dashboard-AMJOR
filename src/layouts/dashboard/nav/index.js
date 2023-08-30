@@ -17,6 +17,8 @@ import navConfig from './config';
 
 //js-cookie
 import Cookies from "js-cookie";
+import jwt_decode from 'jwt-decode';
+
 import axios from 'axios';
 
 // ----------------------------------------------------------------------
@@ -40,29 +42,49 @@ Nav.propTypes = {
 
 export default function Nav({ openNav, onCloseNav }) {
   const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
-  
+
   const { pathname } = useLocation();
 
   const isDesktop = useResponsive('up', 'lg');
 
   const token = Cookies.get("token");
+
+  const [data, setData] = useState([]);
+
+
   const [nombre, setNombre] = useState(null);
   const [rol, setRol] = useState(null);
 
   useEffect(() => {
+
+    const idUserPrev = jwt_decode(token);
+    const idUser = idUserPrev.userId
+    if (idUser) {
+      axios.get(`${apiUrl}/api/admin/search/permisos/` + idUser)
+        .then((res) => {
+          const permisos = res.data.map(item => item.NombrePermiso);
+          setData(permisos)
+        })
+        .catch(err => { console.log(err) })
+    }
+
     if (openNav) {
       onCloseNav();
     }
-    if(token) {
+    if (token) {
       axios.get(`${apiUrl}/api/search/${token}`)
-      .then((res) =>{
-          const {Nombre, Nombre_Rol} = res.data[0]
+        .then((res) => {
+          const { Nombre, Nombre_Rol } = res.data[0]
           setNombre(Nombre);
           setRol(Nombre_Rol);
-      })
+        })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
+  const filteredNavConfig = navConfig.filter(configItem => data.includes(configItem.title));
+  console.log(filteredNavConfig)
+  console.log(data)
+
 
 
   const renderContent = (
@@ -83,18 +105,18 @@ export default function Nav({ openNav, onCloseNav }) {
 
             <Box sx={{ ml: 2 }}>
               <Typography variant="subtitle2" sx={{ color: 'text.primary' }}>
-                {nombre} 
+                {nombre}
               </Typography>
 
               <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                {rol} 
+                {rol}
               </Typography>
             </Box>
           </StyledAccount>
         </Link>
       </Box>
 
-      <NavSection data={navConfig} />
+      <NavSection data={filteredNavConfig} />
 
       <Box sx={{ flexGrow: 1 }} />
 
