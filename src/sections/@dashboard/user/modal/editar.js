@@ -5,13 +5,18 @@ import axios from 'axios';
 import {
   Button,
   TextField,
-  Modal,
   Grid,
   MenuItem,
   Typography,
   Switch,
-  Paper,
+  Slide,
+  Dialog,
+  DialogContent
 } from '@mui/material';
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 function EditarUsuario(props) {
   const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
@@ -159,16 +164,8 @@ function EditarUsuario(props) {
   });
 
   return (
-    <Modal onClose={onHide} open={show}>
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          height: '100vh',
-        }}
-      >
-        <Paper elevation={3} style={{ padding: '16px', borderRadius: '8px', width: '100%', maxWidth: '600px' }}>
+    <Dialog onClose={onHide} open={show} TransitionComponent={Transition}>
+      <DialogContent>
           <h2 style={{ textAlign: 'center', marginBottom: '24px' }}>Editar datos de Usuario</h2>
           <form onSubmit={handleUpdate} id="editarUsuario">
             <Grid container spacing={2}>
@@ -273,9 +270,8 @@ function EditarUsuario(props) {
               </Grid>
             </Grid>
           </form>
-        </Paper>
-      </div>
-    </Modal>
+      </DialogContent>
+    </Dialog>
   );
 }
 

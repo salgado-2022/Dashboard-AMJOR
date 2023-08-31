@@ -103,7 +103,7 @@ export default function AnchetasPage() {
   const [selectedAncheta, setSelectedAncheta] = useState(null);
 
   //Modal Ver Detalle
-  const [modalShowDetalle, setModaShowDetalle] = useState(false);
+  const [modalShowDetalle, setModalShowDetalle] = useState(false);
 
   //Skeleton
   const [loading, setLoading] = useState(true);
@@ -205,7 +205,9 @@ export default function AnchetasPage() {
   
 
   const handleDetalle = (idSelectedUser) => {
-    setSelectedAncheta(idSelectedUser); // Asignar el idUsuario seleccionado al estado
+    setSelectedAncheta(idSelectedUser); 
+    setModalShowDetalle(true);
+    setOpen(null);
   };
 
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0;
@@ -436,11 +438,7 @@ export default function AnchetasPage() {
         </Card>
       </Container>
 
-      <VerInsumos
-        show={modalShowDetalle}
-        onHide={() => setModaShowDetalle(false)}
-        selectedAnchetaID={selectedAncheta}
-      />
+      <VerInsumos show={modalShowDetalle} onHide={() => setModalShowDetalle(false)} selectedAnchetaID={selectedAncheta}/>
     </>
   );
 }

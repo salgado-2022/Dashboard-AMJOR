@@ -14,9 +14,16 @@ import {
   TextField,
   Typography,
   Stack,
-  Modal,
   Grid,
+  Slide,
+  Dialog,
+  DialogContent
 } from '@mui/material';
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
+
 
 function EditarConfi(props) {
   const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
@@ -131,14 +138,12 @@ function EditarConfi(props) {
   }, [id, show]);
 
   return (
-    <Modal
+    <Dialog
       open={show}
       onClose={handleCloseModal}
-      aria-labelledby="contained-modal-title-vcenter"
-      centered
-      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+      TransitionComponent={Transition}
     >
-      <div style={{ background: '#F8F9FA', padding: '15px', borderRadius: '8px', width: '500px' }}>
+      <DialogContent>
         <Typography variant="h5" align="center" sx={{ mb: 4 }}>
           Editar Roles y los permisos
         </Typography>
@@ -201,8 +206,8 @@ function EditarConfi(props) {
             </Grid>
           </Stack>
         </form>
-      </div>
-    </Modal>
+      </DialogContent>
+    </Dialog>
   );
 }
 
