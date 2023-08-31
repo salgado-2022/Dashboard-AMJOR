@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Button } from "react-bootstrap";
-import Modal from 'react-bootstrap/Modal';
 import axios from "axios";
+import { Dialog, TextField, Button, DialogActions, Grid, DialogContent, Typography } from '@mui/material';
 
 function VerInsumos(props) {
     const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
@@ -61,27 +60,11 @@ function VerInsumos(props) {
     }, [id]);
 
     return (
-        <Modal
-            onHide={onHide}
-            show={show}
-            size="lg"
-            aria-labelledby="contained-modal-title-vcenter"
-            centered
-            style={{ zIndex: '2000' }}
-        >
-            <Modal.Header>
-                <Modal.Title id="contained-modal-title-vcenter" className="text-black">
-                    Insumos de la Ancheta
-                </Modal.Title>
-                <Button variant="secondary" onClick={props.onHide} className="close">
-                    <span aria-hidden="true">&times;</span>
-                </Button>
-            </Modal.Header>
-            <Modal.Body>
+        <Dialog onClose={onHide} open={show}>
+            <DialogContent>
                 {isLoading ? (
                     <div className="text-center">
                         <h3>Espera un momento...</h3>
-                        {/* Puedes agregar un spinner o un mensaje de carga aquí */}
                     </div>
                 ) : (
                     <>
@@ -117,14 +100,12 @@ function VerInsumos(props) {
                                     })}
                                 </tbody>
                             </table>
-                        </div>
-                        <Modal.Footer>
                             <h4>Total: {formatPrice(dataA.PrecioUnitario)}</h4>
-                        </Modal.Footer>
+                        </div>
                     </>
                 )}
-            </Modal.Body>
-        </Modal>
+            </DialogContent>
+        </Dialog>
     );
 }
 
