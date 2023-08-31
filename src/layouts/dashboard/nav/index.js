@@ -81,6 +81,8 @@ export default function Nav({ openNav, onCloseNav }) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
+
+  
   const filteredNavConfig = navConfig.filter(configItem => data.includes(configItem.title));
   console.log(filteredNavConfig)
   console.log(data)

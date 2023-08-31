@@ -34,18 +34,20 @@ import { EditarUsuario } from '../sections/@dashboard/user/modal/editar';
 
 // sections
 import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
+import OrderListHead from '../sections/@dashboard/pedidos/OrderListHead';
+
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
+  { id: 'w', label: '', alignRight: false },
   { id: 'idUsuario', label: 'ID', alignRight: false },
   { id: 'documento', label: 'Documento', alignRight: false },
   { id: 'nombre', label: 'Nombres', alignRight: false },
-  { id: 'apellido', label: 'Apellido', alignRight: false },
   { id: 'correo', label: 'Correo', alignRight: false },
   { id: 'rol', label: 'Rol del Usuario', alignRight: false },
-  { id: 'estado', label: 'Estado', alignRight: false }, 
-  { id: '', label: '', alignRight: false }, 
+  { id: 'estado', label: 'Estado', alignRight: false },
+  { id: '', label: '', alignRight: false },
 ];
 
 // ----------------------------------------------------------------------
@@ -98,16 +100,7 @@ export default function UserPage() {
   const [modalShow, setModalShow] = useState(false);
 
   useEffect(() => {
-    setLoading(true);
     fetchData();
-
-    // Auto-refresh every 1 second
-    const interval = setInterval(fetchData, 1000);
-
-    // Cleanup the interval when the component unmounts
-    return () => {
-      clearInterval(interval);
-    };
   }, [apiUrl]);
 
   const fetchData = () => {
@@ -227,11 +220,11 @@ export default function UserPage() {
           <Typography variant="h4" gutterBottom>
             Usuarios
           </Typography>
-          <Button variant="contained" onClick={handleOpenModal}startIcon={<Iconify icon="eva:plus-fill" />}>
-            
+          <Button variant="contained" onClick={handleOpenModal} startIcon={<Iconify icon="eva:plus-fill" />}>
+
             Crear nuevo usuario
           </Button>
-          <UsuariosFormulario2 open={openModal} onClose={handleCloseModal} />
+          <UsuariosFormulario2 open={openModal} onClose={handleCloseModal} fetchData={fetchData}/>
         </Stack>
         <Card>
           <UserListToolbar
@@ -242,47 +235,56 @@ export default function UserPage() {
           />
 
           <Scrollbar>
-
             {loading ? ( // Mostrar un mensaje de carga si los datos aún están cargando
               <TableContainer sx={{ minWidth: 800 }}>
                 <Table>
-                  <UserListHead
+                  <OrderListHead
                     order={order}
                     orderBy={orderBy}
                     headLabel={TABLE_HEAD}
                     rowCount={data.length}
                     numSelected={selected.length}
-                    onRequestSort={handleRequestSort}
-                    onSelectAllClick={handleSelectAllClick}
+
                   />
                   <TableBody>
 
                     {Array.from({ length: rowsPerPage }).map((_, index) => (
-
                       <TableRow key={index} hover role="checkbox" >
-                        <TableCell padding="checkbox">
-                          <Checkbox />
+                        <TableCell width={38}>
                         </TableCell>
-                        <TableCell component="th" scope="row" padding="none">
+                        <TableCell component="th" scope="row" padding="none" width={87}>
                           <Stack direction="row" alignItems="center" spacing={2}>
                             <Skeleton variant="circular" width={40} height={40} />
                             <Typography variant="subtitle2" noWrap>
-                              <Skeleton variant="rounded" width={23} height={10}/>
+                              <Skeleton variant="rounded" width={23} height={10} />
                             </Typography>
                           </Stack>
                         </TableCell>
 
-                        <TableCell align="left"><Skeleton variant="rounded" width={280} height={22} /></TableCell>
-
-                        <TableCell align="left">
-                          <Label ><Skeleton variant="rounded" width={40} height={22} /></Label>
+                        <TableCell align="left" width={141}>
+                          <Skeleton variant="rounded" width={100} height={22} />
                         </TableCell>
 
-                        <TableCell align="left" width={184} >
+                        <TableCell align="left" width={340}>
+                          <Skeleton variant="rounded" width={250} height={22} />
+                        </TableCell>
+
+                        <TableCell align="left" width={362}>
+                          <Skeleton variant="rounded" width={250} height={22} />
+                        </TableCell>
+
+                        <TableCell align="left" width={160}>
+                          <Skeleton variant="rounded" width={113} height={22} />
+                        </TableCell>
+
+                        <TableCell align="left" width={113}>
+                          <Label ><Skeleton variant="rounded" width={50} height={22} /></Label>
+                        </TableCell>
+
+                        <TableCell align="left" width={92} >
                           <IconButton
                             size="large"
                             color="inherit"
-
                           >
                             <Iconify icon={'eva:more-vertical-fill'} />
                           </IconButton>
@@ -295,16 +297,14 @@ export default function UserPage() {
               </TableContainer>
             ) : (
 
-              <TableContainer sx={{ minWidth: 800 }}>
+              <TableContainer sx={{ minWidth: 1200 }}>
                 <Table>
-                  <UserListHead
+                  <OrderListHead
                     order={order}
                     orderBy={orderBy}
                     headLabel={TABLE_HEAD}
                     rowCount={data.length}
                     numSelected={selected.length}
-                    onRequestSort={handleRequestSort}
-                    onSelectAllClick={handleSelectAllClick}
                   />
                   <TableBody>
                     {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
@@ -312,9 +312,8 @@ export default function UserPage() {
                       const selectedUser = selected.indexOf(idUsuario) !== -1;
                       const estadoText = Estado === 1 ? 'Activo' : 'Inactivo'; // Texto del estado según el valor
                       return (
-                        <TableRow hover key={idUsuario} tabIndex={-1} role="checkbox" selected={selectedUser}>
-                          <TableCell padding="checkbox">
-                            <Checkbox checked={selectedUser} onChange={(event) => handleClick(event, idUsuario)} />
+                        <TableRow hover tabIndex={-1} role="checkbox" selected={selectedUser}>
+                          <TableCell >
                           </TableCell>
                           <TableCell component="th" scope="row" padding="none">
                             <Stack direction="row" alignItems="center" spacing={2}>
@@ -324,25 +323,22 @@ export default function UserPage() {
                               </Typography>
                             </Stack>
                           </TableCell>
-                          <TableCell key={Documento} align="left">
-                          {Documento}
-                        </TableCell>
-                        <TableCell key={Nombre} align="left">
-                          {Nombre}
-                        </TableCell>
-                        <TableCell key={Apellido} align="left">
-                          {Apellido}
-                        </TableCell>
-                          <TableCell key={correo} align="left">
+                          <TableCell key={Documento} >
+                            {Documento}
+                          </TableCell>
+                          <TableCell key={Nombre} >
+                            {Nombre} {Apellido}
+                          </TableCell>
+                          <TableCell key={correo} >
                             {correo}
                           </TableCell>
-                          <TableCell key={Nombre_Rol} align="left">
-                    {row.Nombre_Rol}
-                  </TableCell>
-                          <TableCell align="left">
+                          <TableCell key={Nombre_Rol} >
+                            {row.Nombre_Rol}
+                          </TableCell>
+                          <TableCell >
                             <Label color={(estadoText === 'Activo' && 'success') || 'error'}>{sentenceCase(estadoText)}</Label>
                           </TableCell>
-                          <TableCell align="left">
+                          <TableCell >
                             <IconButton
                               size="large"
                               color="inherit"
@@ -350,34 +346,34 @@ export default function UserPage() {
                             >
                               <Iconify icon={'eva:more-vertical-fill'} />
                             </IconButton>
-                            <Popover
-                              open={Boolean(open) && showDeleteMenu}
-                              anchorEl={open}
-                              onClose={handleCloseMenu}
-                              anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-                              transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-                              PaperProps={{
-                                sx: {
-                                  p: 1,
-                                  width: 140,
-                                  '& .MuiMenuItem-root': {
-                                    px: 1,
-                                    typography: 'body2',
-                                    borderRadius: 0.75,
-                                  },
-                                },
-                              }}
-                            >
-                              <MenuItem sx={{ color: 'warning.main' }} onClick={() => handleEditar(selectedUser1)}>
-                                <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
-                                Editar
-                              </MenuItem>
-                              <MenuItem sx={{ color: 'error.main' }} onClick={() => handleDelete(selectedUser1)}>
-                                <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
-                                Eliminar
-                              </MenuItem>
-                            </Popover>
                           </TableCell>
+                          <Popover
+                            open={Boolean(open) && showDeleteMenu}
+                            anchorEl={open}
+                            onClose={handleCloseMenu}
+                            anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
+                            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                            PaperProps={{
+                              sx: {
+                                p: 1,
+                                width: 140,
+                                '& .MuiMenuItem-root': {
+                                  px: 1,
+                                  typography: 'body2',
+                                  borderRadius: 0.75,
+                                },
+                              },
+                            }}
+                          >
+                            <MenuItem sx={{ color: 'warning.main' }} onClick={() => handleEditar(selectedUser1)}>
+                              <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
+                              Editar
+                            </MenuItem>
+                            <MenuItem sx={{ color: 'error.main' }} onClick={() => handleDelete(selectedUser1)}>
+                              <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
+                              Eliminar
+                            </MenuItem>
+                          </Popover>
                         </TableRow>
                       );
                     })}
@@ -415,7 +411,6 @@ export default function UserPage() {
               </TableContainer>
 
             )}
-
           </Scrollbar>
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
