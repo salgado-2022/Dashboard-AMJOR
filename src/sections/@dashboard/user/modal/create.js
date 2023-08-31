@@ -208,11 +208,11 @@ function UsuariosFormulario2({ open, onClose, fetchData }) {
     const telefonoRegex = /^\d{5,11}$/;
 
     setValidationErrors({
-      documento: !documentoRegex.test(values.Documento),
+      documento: !documentoRegex.test(values.documento),
       correo: !emailRegex.test(values.correo),
       contrasena: !passwordRegex.test(values.contrasena),
       nombre: values.Nombre === '',
-      telefono: !telefonoRegex.test(values.Telefono),
+      telefono: !telefonoRegex.test(values.telefono),
       apellidos: values.Apellidos === '',
       rol: values.rol === '',
     });
@@ -221,10 +221,10 @@ function UsuariosFormulario2({ open, onClose, fetchData }) {
       const res = await axios.post(`${apiUrl}/api/crearUsuario`, {
         correo: values.correo,
         contrasena: values.contrasena,
-        documento: values.Documento,
-        nombre: values.Nombre,
-        apellido: values.Apellidos,
-        telefono: values.Telefono,
+        documento: values.documento,
+        nombre: values.nombre,
+        apellido: values.apellidos,
+        telefono: values.telefono,
         rol: values.rol,
       });
 
@@ -403,6 +403,7 @@ function UsuariosFormulario2({ open, onClose, fetchData }) {
               style={{ marginTop: '8px' }}
               onClick={(event) => {
                 handleSubmit(event);
+                resetForm();
                 onClose();
               }}
               

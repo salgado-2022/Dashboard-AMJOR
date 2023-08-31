@@ -92,9 +92,27 @@ export default function ListaConfiguracion() {
   const [modalShow, setModalShow] = useState(false);
   const [loading, setLoading] = useState(true);
   const [showDeleteMenu, setShowDeleteMenu] = useState(false);
+  const [refreshInterval, setRefreshInterval] = useState(null);
+
+
+
   useEffect(() => {
     setLoading(true);
     fetchData();
+  
+    // Configura un intervalo de auto-refresh cada 5 segundos (puedes ajustar el tiempo según tus necesidades)
+    const interval = setInterval(() => {
+      fetchData();
+    }, 1000);
+  
+    // Almacenamos el ID del intervalo en el estado refreshInterval
+    setRefreshInterval(interval);
+  
+    // Esta función se ejecutará cuando el componente se desmonte
+    return () => {
+      // Limpia el intervalo cuando el componente se desmonta
+      clearInterval(interval);
+    };
   }, []);
 
   const fetchData = () => {
