@@ -80,7 +80,7 @@ function applySortFilter(array, comparator, query) {
 }
 
 export default function AnchetasPage() {
-  const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
+  const apiUrl = process.env.REACT_APP_AMJOR_API_URL_NEW;
 
   const navigate = useNavigate();
 

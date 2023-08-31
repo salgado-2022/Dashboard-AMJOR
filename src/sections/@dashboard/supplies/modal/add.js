@@ -152,8 +152,8 @@ function AddInsumo({ open, onClose, fetchData }) {
                         </Grid>
                     </Grid>
                     <DialogActions> 
-                        <Button type="submit" variant="contained" color="primary" fullWidth sx={{ marginTop: '8px' }}>Crear Insumo</Button>
-                        <Button variant="contained" color="secondary" onClick={handleCloseModal} fullWidth sx={{marginTop: '8px'}}>Cancelar</Button>
+                        <Button type="submit" variant="contained" color="primary"  sx={{ marginTop: '8px' }}>Crear Insumo</Button>
+                        <Button variant="contained" color="secondary" onClick={handleCloseModal}  sx={{marginTop: '8px'}}>Cancelar</Button>
                     </DialogActions> 
                 </form>           
             </DialogContent>        
