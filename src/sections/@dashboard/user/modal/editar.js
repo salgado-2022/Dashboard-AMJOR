@@ -26,7 +26,7 @@ function EditarUsuario(props) {
     correo: '',
     contrasena: '',
     ID_Rol: '',
-    estado: false,
+    estado: '',
   });
   const [showPassword, setShowPassword] = useState(false);
   const [correoError, setCorreoError] = useState(false);
@@ -63,8 +63,10 @@ function EditarUsuario(props) {
           setValues((prevValues) => ({
             ...prevValues,
             correo: userData.correo,
-            documento: userData.documento,
-            nombre: userData.nombre,
+            documento: userData.Documento_Cliente,
+            nombre: userData.Nombre_Cliente,
+            estado: userData.Estado,
+
           }));
           setSelectedRol(userData.ID_Rol);
           setIsUsuarioActivo(userData.Estado === 1);
@@ -77,7 +79,7 @@ function EditarUsuario(props) {
         correo: '',
         contrasena: '',
         ID_Rol: '',
-        estado: false,
+        estado: '',
       });
       setShowPassword(false);
       setCorreoError(false);

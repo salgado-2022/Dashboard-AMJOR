@@ -330,7 +330,7 @@ export default function UserPage() {
                         <TableCell key={Nombre} align="left">
                           {Nombre}
                         </TableCell>
-                        <TableCell key={Nombre} align="left">
+                        <TableCell key={Apellido} align="left">
                           {Apellido}
                         </TableCell>
                           <TableCell key={correo} align="left">
