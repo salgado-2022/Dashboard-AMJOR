@@ -44,7 +44,7 @@ const TABLE_HEAD = [
   { id: 'correo', label: 'Correo', alignRight: false },
   { id: 'rol', label: 'Rol del Usuario', alignRight: false },
   { id: 'estado', label: 'Estado', alignRight: false }, // Nuevo campo para el estado
-  { id: 'Acciones', label: 'Acciones', alignRight: false },
+  { id: "", label: "", alignRight: false },
 ];
 
 // ----------------------------------------------------------------------
