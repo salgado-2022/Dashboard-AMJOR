@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 import {
-  Modal,
   TextField,
   FormControl,
   Button,
@@ -12,6 +11,9 @@ import {
   Grid,
   InputAdornment,
   IconButton,
+  Dialog,
+  DialogContent,
+  Slide
 } from '@mui/material';
 import axios from 'axios';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
@@ -30,6 +32,10 @@ const NoNumberArrowsTextField = styled(TextField)(({ theme }) => ({
 }));
 
 //----------------------------------------------------------------
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 
 function UsuariosFormulario2({ open, onClose, fetchData }) {
@@ -251,23 +257,12 @@ function UsuariosFormulario2({ open, onClose, fetchData }) {
   };
 
   return (
-    <Modal
+    <Dialog
       open={open}
       onClose={handleCloseModal}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
+      TransitionComponent={Transition}
     >
-      <div
-        style={{
-          backgroundColor: 'white',
-          padding: '24px',
-          borderRadius: '8px',
-          width: '100%',
-          maxWidth: '800px',
-        }}
+      <DialogContent
       >
         <h2 style={{ marginBottom: '16px', textAlign: 'center' }}>Crear un nuevo usuario</h2>
         <form onSubmit={handleSubmit}>
@@ -421,8 +416,8 @@ function UsuariosFormulario2({ open, onClose, fetchData }) {
             </Button>
           </DialogActions>
         </form>
-      </div>
-    </Modal>
+      </DialogContent>
+    </Dialog>
   );
 }
 

@@ -5,13 +5,18 @@ import axios from 'axios';
 import {
   Button,
   TextField,
-  Modal,
   Grid,
   MenuItem,
   Typography,
   Switch,
-  Paper,
+  Slide,
+  Dialog,
+  DialogContent
 } from '@mui/material';
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 function EditarUsuario(props) {
   const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
@@ -26,7 +31,7 @@ function EditarUsuario(props) {
     correo: '',
     contrasena: '',
     ID_Rol: '',
-    estado: false,
+    estado: '',
   });
   const [showPassword, setShowPassword] = useState(false);
   const [correoError, setCorreoError] = useState(false);
@@ -63,8 +68,10 @@ function EditarUsuario(props) {
           setValues((prevValues) => ({
             ...prevValues,
             correo: userData.correo,
-            documento: userData.documento,
-            nombre: userData.nombre,
+            documento: userData.Documento_Cliente,
+            nombre: userData.Nombre_Cliente,
+            estado: userData.Estado,
+
           }));
           setSelectedRol(userData.ID_Rol);
           setIsUsuarioActivo(userData.Estado === 1);
@@ -77,7 +84,7 @@ function EditarUsuario(props) {
         correo: '',
         contrasena: '',
         ID_Rol: '',
-        estado: false,
+        estado: '',
       });
       setShowPassword(false);
       setCorreoError(false);
@@ -157,16 +164,8 @@ function EditarUsuario(props) {
   });
 
   return (
-    <Modal onClose={onHide} open={show}>
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          height: '100vh',
-        }}
-      >
-        <Paper elevation={3} style={{ padding: '16px', borderRadius: '8px', width: '100%', maxWidth: '600px' }}>
+    <Dialog onClose={onHide} open={show} TransitionComponent={Transition}>
+      <DialogContent>
           <h2 style={{ textAlign: 'center', marginBottom: '24px' }}>Editar datos de Usuario</h2>
           <form onSubmit={handleUpdate} id="editarUsuario">
             <Grid container spacing={2}>
@@ -271,9 +270,8 @@ function EditarUsuario(props) {
               </Grid>
             </Grid>
           </form>
-        </Paper>
-      </div>
-    </Modal>
+      </DialogContent>
+    </Dialog>
   );
 }
 

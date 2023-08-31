@@ -17,9 +17,14 @@ import {
   TableHead,
   TableRow,
   Paper,
+  Slide
 } from '@mui/material';
 import axios from 'axios';
 import Swal from 'sweetalert2';
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 function ConfiFormulario({ onClose }) {
   const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
@@ -126,7 +131,7 @@ function ConfiFormulario({ onClose }) {
       >
         Crear nuevo rol
       </Button>
-      <Dialog open={modalOpen} onClose={handleCloseModal} fullWidth>
+      <Dialog open={modalOpen} onClose={handleCloseModal} TransitionComponent={Transition} fullWidth>
         <DialogTitle>Crear un nuevo rol</DialogTitle>
         <DialogContent dividers>
           <TextField

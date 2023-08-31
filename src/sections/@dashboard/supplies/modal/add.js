@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from "react";
 import Swal from 'sweetalert2';
 import axios from "axios";
-import { Dialog, TextField, Button, DialogActions, Grid, DialogContent, Typography } from '@mui/material';
+import { Dialog, TextField, Button, DialogActions, Grid, DialogContent, Typography, Slide } from '@mui/material';
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+    return <Slide direction="up" ref={ref} {...props} />;
+  });
 
 function AddInsumo({ open, onClose, fetchData }) {
     const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
@@ -135,7 +139,7 @@ function AddInsumo({ open, onClose, fetchData }) {
     };
 
     return (
-        <Dialog open={open} onClose={handleCloseModal}>
+        <Dialog open={open} onClose={handleCloseModal} TransitionComponent={Transition}>
             <DialogContent>
                 <Typography fontSize="32px" marginBottom="16px" textAlign="center">Crear Insumo</Typography>
                 <form onSubmit={handleSubmit}>
@@ -147,8 +151,8 @@ function AddInsumo({ open, onClose, fetchData }) {
                         </Grid>
                     </Grid>
                     <DialogActions> 
-                        <Button type="submit" variant="contained" color="primary" fullWidth sx={{ marginTop: '8px' }}>Crear Insumo</Button>
-                        <Button variant="contained" color="secondary" onClick={handleCloseModal} fullWidth sx={{marginTop: '8px'}}>Cancelar</Button>
+                        <Button type="submit" variant="contained" color="primary"  sx={{ marginTop: '8px' }}>Crear Insumo</Button>
+                        <Button variant="contained" color="secondary" onClick={handleCloseModal}  sx={{marginTop: '8px'}}>Cancelar</Button>
                     </DialogActions> 
                 </form>           
             </DialogContent>        

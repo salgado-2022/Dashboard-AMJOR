@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Dialog, TextField, Button, DialogActions, Grid, Switch, Typography, DialogContent } from '@mui/material';
+import { Dialog, TextField, Button, DialogActions, Grid, Switch, Typography, DialogContent, Slide } from '@mui/material';
 import Swal from 'sweetalert2';
 import axios from "axios";
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+    return <Slide direction="up" ref={ref} {...props} />;
+  });
 
 function EditInsumo(props) {
     const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
@@ -87,7 +91,7 @@ function EditInsumo(props) {
             setDescripcionError('');
             setPrecioError('');
         }
-    }, [id, show]);
+    }, [id, show, apiUrl]);
 
     const handleUpdate = (event) => {
         event.preventDefault();
@@ -110,7 +114,7 @@ function EditInsumo(props) {
     };
 
     return (
-        <Dialog onClose={onHide} open={show}>
+        <Dialog onClose={onHide} open={show} TransitionComponent={Transition}>
             <DialogContent>
                 <Typography fontSize="32px" marginBottom="16px" textAlign="center">Editar Insumo</Typography>
                 <form onSubmit={handleUpdate} id="editarInsumo">
