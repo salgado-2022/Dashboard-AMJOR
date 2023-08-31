@@ -37,15 +37,10 @@ const navConfig = [
     icon: icon('ic_cart'),
   },
   {
-    title: 'blog',
-    path: '/dashboard/blog',
-    icon: icon('ic_blog'),
-  },
-  {
-    title: 'login',
-    path: '/login',
-    icon: icon('ic_lock'),
-  },
+    title:'Ventas',
+    path: '/dashboard/sales',
+    icon: icon('sales')
+  }
 ];
 
 export default navConfig;

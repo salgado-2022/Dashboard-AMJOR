@@ -41,10 +41,11 @@ const TABLE_HEAD = [
   { id: 'idUsuario', label: 'ID', alignRight: false },
   { id: 'documento', label: 'Documento', alignRight: false },
   { id: 'nombre', label: 'Nombres', alignRight: false },
+  { id: 'apellido', label: 'Apellido', alignRight: false },
   { id: 'correo', label: 'Correo', alignRight: false },
   { id: 'rol', label: 'Rol del Usuario', alignRight: false },
-  { id: 'estado', label: 'Estado', alignRight: false }, // Nuevo campo para el estado
-  { id: "", label: "", alignRight: false },
+  { id: 'estado', label: 'Estado', alignRight: false }, 
+  { id: '', label: '', alignRight: false }, 
 ];
 
 // ----------------------------------------------------------------------
@@ -307,7 +308,7 @@ export default function UserPage() {
                   />
                   <TableBody>
                     {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                      const { idUsuario, Documento, Nombre, correo, Nombre_Rol, Estado } = row;
+                      const { idUsuario, Documento, Nombre, Apellido, correo, Nombre_Rol, Estado } = row;
                       const selectedUser = selected.indexOf(idUsuario) !== -1;
                       const estadoText = Estado === 1 ? 'Activo' : 'Inactivo'; // Texto del estado según el valor
                       return (
@@ -328,6 +329,9 @@ export default function UserPage() {
                         </TableCell>
                         <TableCell key={Nombre} align="left">
                           {Nombre}
+                        </TableCell>
+                        <TableCell key={Nombre} align="left">
+                          {Apellido}
                         </TableCell>
                           <TableCell key={correo} align="left">
                             {correo}

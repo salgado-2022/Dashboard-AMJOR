@@ -37,7 +37,7 @@ import {
     FormControl,
     InputLabel,
     Select,
-    Grid
+    Grid,
 
 } from '@mui/material';
 
@@ -57,7 +57,7 @@ const TABLE_HEAD = [
     { id: 'ID_Pedido', label: 'ID', alignRight: false },
     { id: 'NombreAncheta', label: 'Cliente', alignRight: false },
     { id: 'Descripcion', label: 'Dirección', alignRight: false },
-    { id: 'as', label: 'Fecha de entrega', alignRight: false },
+    { id: 'Fecha_Entrega', label: 'Fecha de entrega', alignRight: false },
     { id: 'Precio_Total', label: 'Total', alignRight: false },
     { id: 'Estado', label: 'Estado', alignRight: false },
     { id: 'blanck' },
@@ -140,6 +140,7 @@ export default function OrderPage() {
 
 
 
+
     /* The above code is a useEffect hook in JavaScript. It is used to handle side effects in functional
     components in React. */
     useEffect(() => {
@@ -151,8 +152,12 @@ export default function OrderPage() {
 
         if (selectedTab === 1) {
             setLoadingAceptados(true);
+            setOrder("asc")
+            setOrderBy("Fecha_Entrega")
         } else {
             setLoadingAceptados(false);
+            setOrder("desc")
+            setOrderBy("ID_Pedido")
         }
     }, [data, selectedTab]);
 
@@ -206,6 +211,100 @@ export default function OrderPage() {
         setOpenMenu(event.currentTarget);
         setSelectedMenuID(ID_Pedido);
         setSelectedMenuIdCliente(ID_Cliente)
+    };
+
+    const handleNextState = (idPedido, statusPedido) => {
+
+        if (statusPedido === 0) {
+            Swal.fire({
+                title: '¿Estas seguro?',
+                text: "El estado del pedido cambiara a EN PREPARACIÓN",
+                icon: 'warning',
+                showCancelButton: true,
+                cancelButtonText: "Cancelar",
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Si'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    axios.put(`${apiUrl}/api/admin/pedido/status/preparacion/` + idPedido)
+                        .then(res => {
+                            Swal.fire(
+                                'Se cambio el estado',
+                                'Your file has been deleted.',
+                                'success'
+                            )
+                        })
+                        .catch(err => {
+                            Swal.fire(
+                                'Error en el servidor',
+                                'Comunicarse con soporte.',
+                                'error'
+                            )
+                        })
+                }
+            })
+        }
+        else if (statusPedido === 1) {
+
+            Swal.fire({
+                title: '¿Estas seguro?',
+                text: "El estado del pedido cambiara a PREPRADADO",
+                icon: 'warning',
+                showCancelButton: true,
+                cancelButtonText: "Cancelar",
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Si'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    axios.put(`${apiUrl}/api/admin/pedido/status/preparado/` + idPedido)
+                        .then(res => {
+                            Swal.fire(
+                                'Se cambio el estado',
+                                'El estado se cambio correctamente.',
+                                'success'
+                            )
+                        })
+                        .catch(err => {
+                            Swal.fire(
+                                'Error en el servidor',
+                                'Comunicarse con soporte.',
+                                'error'
+                            )
+                        })
+                }
+            })
+        } else if (statusPedido === 2) {
+            Swal.fire({
+                title: '¿Estas seguro?',
+                text: "El estado del pedido cambiara a DESPACHADO",
+                icon: 'warning',
+                showCancelButton: true,
+                cancelButtonText: "Cancelar",
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Si'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    axios.put(`${apiUrl}/api/admin/pedido/status/despachado/` + idPedido)
+                        .then(res => {
+                            Swal.fire(
+                                'Se cambio el estado',
+                                'El estado se cambio correctamente.',
+                                'success'
+                            )
+                        })
+                        .catch(err => {
+                            Swal.fire(
+                                'Error en el servidor',
+                                'Comunicarse con soporte.',
+                                'error'
+                            )
+                        })
+                }
+            })
+        }
     };
 
     const handleSuccessOrder = (pedido, cliente) => {
@@ -465,9 +564,10 @@ export default function OrderPage() {
                                 />
                                 <TableBody>
                                     {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                                        const { ID_Pedido, ID_Cliente, Nombre_Cliente, Direccion_Entrega, Fecha_Entrega, Precio_Total, correo, image, Estado, Municipio, Barrio, fecha_creacion, Telefono } = row;
+                                        const { ID_Pedido, ID_Cliente, Nombre_Cliente, Direccion_Entrega, Fecha_Entrega, Precio_Total, correo, image, Estado, Municipio, Barrio, fecha_creacion, Telefono, Status_Pedido } = row;
                                         const selectedUser = selected.indexOf(ID_Pedido) !== -1;
                                         const estadoText = Estado === 3 ? 'Pendiente' : Estado === 4 ? 'Aceptado' : 'Rechazado'
+                                        const statusText = Status_Pedido === 1 ? 'En preparación' : Status_Pedido === 2 ? 'Preparado' : 'Despachado'
                                         return (
                                             <React.Fragment key={ID_Pedido}>
                                                 <TableRow hover tabIndex={-1} role="checkbox" selected={selectedUser} >
@@ -520,15 +620,31 @@ export default function OrderPage() {
                                                     <TableCell align="left">{formatDate(Fecha_Entrega)}</TableCell>
 
                                                     <TableCell align="left">{formatPrice(Precio_Total)}</TableCell>
-                                                    <TableCell align="left">
-                                                        <Label color={
-                                                            estadoText === 'Pendiente' ? 'warning' :
-                                                                estadoText === 'Aceptado' ? 'success' :
-                                                                    'error'
-                                                        }>
-                                                            {sentenceCase(estadoText)}
-                                                        </Label>
-                                                    </TableCell>
+
+                                                    {Status_Pedido === 0 ? (
+
+                                                        <TableCell align="left">
+                                                            <Label color={
+                                                                estadoText === 'Pendiente' ? 'warning' :
+                                                                    estadoText === 'Aceptado' ? 'success' :
+                                                                        'error'
+                                                            }>
+                                                                {sentenceCase(estadoText)}
+                                                            </Label>
+                                                        </TableCell>
+
+                                                    ) : (
+
+                                                        <TableCell align="left">
+                                                            <Label color={
+                                                                statusText === 'En preparación' ? 'warning' :
+                                                                    statusText === 'Preparado' ? 'warning' :
+                                                                        'error'
+                                                            }>
+                                                                {sentenceCase(statusText)}
+                                                            </Label>
+                                                        </TableCell>
+                                                    )}
 
                                                     <TableCell sx={{ paddingRight: 0 }}>
                                                         <IconButton
@@ -584,6 +700,17 @@ export default function OrderPage() {
 
 
                                                             </Popover>
+                                                        </TableCell>
+                                                    ) : Estado === 4 ? (
+                                                        <TableCell sx={{ padding: 0, paddingRight: 0.8 }} width={55} >
+                                                            <IconButton
+                                                                size="large"
+                                                                onClick={() => handleNextState(ID_Pedido, Status_Pedido)}
+                                                            >
+                                                                <Iconify icon={'ooui:double-chevron-start-rtl'} />
+                                                            </IconButton>
+
+
                                                         </TableCell>
                                                     ) : (
                                                         <TableCell sx={{ padding: 0, paddingRight: 0.8 }} width={55} ></TableCell>
