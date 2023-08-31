@@ -147,7 +147,8 @@ function AddInsumo({ open, onClose, fetchData }) {
                         <Grid item xs={12}>
                             <TextField fullWidth sx={{ marginBottom: '16px' }} label="Nombre" variant="outlined" id="NombreInsumo" name="NombreInsumo" value={values.NombreInsumo} onChange={handleInput} error={nombreError !== ''}  helperText={nombreError}/>
                             <TextField fullWidth sx={{ marginBottom: '16px' }} label="Descripción" variant="outlined" id="Descripcion" name="Descripcion" value={values.Descripcion} onChange={handleInput} error={descripcionError !== ''}  helperText={descripcionError}/>
-                            <TextField fullWidth sx={{ marginBottom: '16px' }} label="Precio" variant="outlined" id="PrecioUnitario" name="PrecioUnitario" value={values.PrecioUnitario} onChange={handleInput} error={precioError !== ''}  helperText={precioError}/>
+                            <TextField fullWidth type="number" sx={{ marginBottom: '16px' }} label="Precio" variant="outlined" id="PrecioUnitario" name="PrecioUnitario" value={values.PrecioUnitario} onChange={handleInput} error={precioError !== ''}  helperText={precioError}/>
+                            <input type="password"></input>
                         </Grid>
                     </Grid>
                     <DialogActions> 
