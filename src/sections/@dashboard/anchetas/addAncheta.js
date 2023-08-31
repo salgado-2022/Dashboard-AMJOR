@@ -34,6 +34,7 @@ import { Insumoscontext } from './context/Context';
 
 function AddAncheta() {
     const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
+    const deployApiUrl = process.env.REACT_APP_AMJOR_DEPLOY_API_URL;
 
     const navigate = useNavigate();
 
@@ -177,7 +178,7 @@ function AddAncheta() {
             formdata.append('PrecioUnitario', Precio.toString());
             formdata.append('Insumos', JSON.stringify(states))
             formdata.append('image', values.image);
-            axios.post(`${apiUrl}/api/crearAncheta`, formdata)
+            axios.post(`${deployApiUrl}/api/crearAncheta`, formdata)
                 .then(res => {
                     if (res.data.Status === "Success") {
                         Swal.fire({
@@ -243,7 +244,7 @@ function AddAncheta() {
         </Stack>
         <form onSubmit={handleSubmit} onReset={handleReset} encType="multipart/form-data">
             <Grid container spacing={2}>
-                <Grid item md={4} >
+                <Grid item md={5} >
                     <TextField fullWidth style={{ marginBottom: '16px' }} label="Nombre" variant="outlined" id="NombreAncheta" name="NombreAncheta" value={values.NombreAncheta} onChange={handleInput} error={nombreError !== ''}  helperText={nombreError} />
                     <TextField multiline rows={4} fullWidth style={{ marginBottom: '16px' }} label="Descripción" variant="outlined" id="Descripcion" name="Descripcion" value={values.Descripcion} onChange={handleInput} error={descripcionError !== ''}  helperText={descripcionError}/>
                     <Card elevation={3} style={{ marginBottom: '16px' }}>
@@ -307,7 +308,7 @@ function AddAncheta() {
                         <Button type="reset" variant="contained" color="secondary" fullWidth>Cancelar</Button>
                     </Stack> 
                 </Grid>
-                <Grid item md={8}>
+                <Grid item md={7}>
                     <Card>
                         <UserListToolbar
                             filterName={filterName}
