@@ -560,7 +560,6 @@ export default function OrderPage() {
                                     headLabel={TABLE_HEAD}
                                     rowCount={data.length}
                                     numSelected={selected.length}
-                                    onRequestSort={handleRequestSort}
                                 />
                                 <TableBody>
                                     {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
@@ -570,7 +569,7 @@ export default function OrderPage() {
                                         const statusText = Status_Pedido === 1 ? 'En preparación' : Status_Pedido === 2 ? 'Preparado' : 'Despachado'
                                         return (
                                             <React.Fragment key={ID_Pedido}>
-                                                <TableRow hover tabIndex={-1} role="checkbox" selected={selectedUser} >
+                                                <TableRow hover tabIndex={-1} role="checkbox" >
                                                     <TableCell>
 
                                                     </TableCell>
