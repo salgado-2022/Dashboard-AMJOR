@@ -1,8 +1,8 @@
 import { Helmet } from 'react-helmet-async';
 import { filter } from 'lodash';
 import { sentenceCase } from 'change-case';
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect, useCallback} from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
@@ -34,8 +34,6 @@ import Label from '../components/label';
 
 // sections
 import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
-
-import { EditInsumo } from '../sections/@dashboard/supplies/modal/edit';
 import { VerInsumos } from '../sections/@dashboard/anchetas/modal/details';
 
 // ----------------------------------------------------------------------
@@ -44,7 +42,7 @@ const TABLE_HEAD = [
   { id: '' },
   { id: 'ID_Ancheta', label: 'ID', alignRight: false },
   { id: 'NombreAncheta', label: 'Nombre', alignRight: false },
-  { id: 'Descripcion', label: 'Descripcion', alignRight: false },
+  { id: 'Descripcion', label: 'Descripción', alignRight: false },
   { id: 'PrecioUnitario', label: 'Precio', alignRight: false },
   { id: 'Estado', label: 'Estado', alignRight: false },
   { id: '#' },
@@ -84,6 +82,8 @@ function applySortFilter(array, comparator, query) {
 export default function AnchetasPage() {
   const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
 
+  const navigate = useNavigate();
+
   const [open, setOpen] = useState(null);
 
   const [page, setPage] = useState(0);
@@ -102,21 +102,13 @@ export default function AnchetasPage() {
 
   const [selectedAncheta, setSelectedAncheta] = useState(null);
 
-  //Modal Editar Ancheta
-  const [modalShow, setModalShow] = useState(false);
-
   //Modal Ver Detalle
   const [modalShowDetalle, setModaShowDetalle] = useState(false);
 
   //Skeleton
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    setLoading(true);
-    fetchData();
-  }, []);
-
-  const fetchData = () => {
+  const fetchData = useCallback(() => {
     axios
       .get(`${apiUrl}/api/admin/anchetas`)
       .then((res) => {
@@ -126,7 +118,12 @@ export default function AnchetasPage() {
         }, 1000)
       })
       .catch((err) => console.log(err));
-  };
+    }, [apiUrl]);
+
+  useEffect(() => {
+    setLoading(true);
+    fetchData();
+  }, [fetchData]);
 
   const handleDelete = (id) => {
     axios
@@ -202,15 +199,13 @@ export default function AnchetasPage() {
   };
 
   const handleEditar = (idSelectedUser) => {
-    setSelectedAncheta(idSelectedUser); // Asignar el idUsuario seleccionado al estado
-    setModalShow(true);
-    setOpen(null);
+    setSelectedAncheta(idSelectedUser);
+    navigate("/dashboard/anchetas/editarancheta", { state: { idAncheta: selectedAncheta } });
   };
+  
 
   const handleDetalle = (idSelectedUser) => {
     setSelectedAncheta(idSelectedUser); // Asignar el idUsuario seleccionado al estado
-    setModaShowDetalle(true);
-    setOpen(null);
   };
 
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0;
@@ -218,14 +213,14 @@ export default function AnchetasPage() {
   const filteredUsers = applySortFilter(data, getComparator(order, orderBy), filterName);
 
   const isNotFound = !filteredUsers.length && !!filterName;
-
+  
   return (
     <>
       <Helmet>
         <title> Anchetas | AMJOR </title>
       </Helmet>
 
-      <Container>
+      <Container maxWidth={"xl"}>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
             Anchetas
@@ -446,8 +441,6 @@ export default function AnchetasPage() {
         onHide={() => setModaShowDetalle(false)}
         selectedAnchetaID={selectedAncheta}
       />
-
-      <EditInsumo show={modalShow} onHide={() => setModalShow(false)} selectedAnchetaID={selectedAncheta} />
     </>
   );
 }

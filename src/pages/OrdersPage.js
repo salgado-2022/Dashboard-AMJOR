@@ -33,7 +33,11 @@ import {
     Button,
     DialogContent,
     DialogTitle,
-    DialogContentText
+    DialogContentText,
+    FormControl,
+    InputLabel,
+    Select,
+    Grid,
 
 } from '@mui/material';
 
@@ -53,7 +57,7 @@ const TABLE_HEAD = [
     { id: 'ID_Pedido', label: 'ID', alignRight: false },
     { id: 'NombreAncheta', label: 'Cliente', alignRight: false },
     { id: 'Descripcion', label: 'Dirección', alignRight: false },
-    { id: 'as', label: 'Fecha de entrega', alignRight: false },
+    { id: 'Fecha_Entrega', label: 'Fecha de entrega', alignRight: false },
     { id: 'Precio_Total', label: 'Total', alignRight: false },
     { id: 'Estado', label: 'Estado', alignRight: false },
     { id: 'blanck' },
@@ -130,6 +134,12 @@ export default function OrderPage() {
 
     const [openModal, setOpenModal] = useState(false)
 
+    const [semaforo, setSemaforo] = useState(1)
+
+    const [loadingAceptados, setLoadingAceptados] = useState(false)
+
+
+
 
     /* The above code is a useEffect hook in JavaScript. It is used to handle side effects in functional
     components in React. */
@@ -140,7 +150,41 @@ export default function OrderPage() {
             setData(datosActualizados)
         });
 
-    }, [data]);
+        if (selectedTab === 1) {
+            setLoadingAceptados(true);
+            setOrder("asc")
+            setOrderBy("Fecha_Entrega")
+        } else {
+            setLoadingAceptados(false);
+            setOrder("desc")
+            setOrderBy("ID_Pedido")
+        }
+    }, [data, selectedTab]);
+
+    const rojo = (dateString) => {
+        const currentDate = new Date();
+        const deliveryDate = new Date(dateString);
+        const timeDifferenceInDays = (deliveryDate - currentDate) / (1000 * 60 * 60 * 24);
+        return timeDifferenceInDays >= 0 && timeDifferenceInDays <= 3;
+    };
+
+    const amarillo = (dateString) => {
+        const currentDate = new Date();
+        const deliveryDate = new Date(dateString);
+        const timeDifferenceInDays = (deliveryDate - currentDate) / (1000 * 60 * 60 * 24);
+        return timeDifferenceInDays > 3 && timeDifferenceInDays <= 7;
+    };
+    const verde = (dateString) => {
+        const currentDate = new Date();
+        const deliveryDate = new Date(dateString);
+        const timeDifferenceInDays = (deliveryDate - currentDate) / (1000 * 60 * 60 * 24);
+        return timeDifferenceInDays > 7;
+    };
+
+    const handleChange = (event) => {
+        setSemaforo(event.target.value);
+    };
+
 
     const handleOpenMenu = async (ID_Ancheta) => {
         setOpen((prevOpen) => ({
@@ -167,6 +211,100 @@ export default function OrderPage() {
         setOpenMenu(event.currentTarget);
         setSelectedMenuID(ID_Pedido);
         setSelectedMenuIdCliente(ID_Cliente)
+    };
+
+    const handleNextState = (idPedido, statusPedido) => {
+
+        if (statusPedido === 0) {
+            Swal.fire({
+                title: '¿Estas seguro?',
+                text: "El estado del pedido cambiara a EN PREPARACIÓN",
+                icon: 'warning',
+                showCancelButton: true,
+                cancelButtonText: "Cancelar",
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Si'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    axios.put(`${apiUrl}/api/admin/pedido/status/preparacion/` + idPedido)
+                        .then(res => {
+                            Swal.fire(
+                                'Se cambio el estado',
+                                'Your file has been deleted.',
+                                'success'
+                            )
+                        })
+                        .catch(err => {
+                            Swal.fire(
+                                'Error en el servidor',
+                                'Comunicarse con soporte.',
+                                'error'
+                            )
+                        })
+                }
+            })
+        }
+        else if (statusPedido === 1) {
+
+            Swal.fire({
+                title: '¿Estas seguro?',
+                text: "El estado del pedido cambiara a PREPRADADO",
+                icon: 'warning',
+                showCancelButton: true,
+                cancelButtonText: "Cancelar",
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Si'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    axios.put(`${apiUrl}/api/admin/pedido/status/preparado/` + idPedido)
+                        .then(res => {
+                            Swal.fire(
+                                'Se cambio el estado',
+                                'El estado se cambio correctamente.',
+                                'success'
+                            )
+                        })
+                        .catch(err => {
+                            Swal.fire(
+                                'Error en el servidor',
+                                'Comunicarse con soporte.',
+                                'error'
+                            )
+                        })
+                }
+            })
+        } else if (statusPedido === 2) {
+            Swal.fire({
+                title: '¿Estas seguro?',
+                text: "El estado del pedido cambiara a DESPACHADO",
+                icon: 'warning',
+                showCancelButton: true,
+                cancelButtonText: "Cancelar",
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Si'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    axios.put(`${apiUrl}/api/admin/pedido/status/despachado/` + idPedido)
+                        .then(res => {
+                            Swal.fire(
+                                'Se cambio el estado',
+                                'El estado se cambio correctamente.',
+                                'success'
+                            )
+                        })
+                        .catch(err => {
+                            Swal.fire(
+                                'Error en el servidor',
+                                'Comunicarse con soporte.',
+                                'error'
+                            )
+                        })
+                }
+            })
+        }
     };
 
     const handleSuccessOrder = (pedido, cliente) => {
@@ -253,7 +391,7 @@ export default function OrderPage() {
         setPage(0);
         setFilterName(event.target.value);
     };
-    
+
     const formatPrice = (price) => {
         return price.toLocaleString('es-CO', {
             style: 'currency',
@@ -283,6 +421,13 @@ export default function OrderPage() {
         return date.toLocaleDateString(undefined, options);
     };
 
+    const formatPhoneNumber = (phoneNumber) => {
+        const cleanedNumber = phoneNumber.replace(/\D/g, ''); // Elimina todos los caracteres que no sean dígitos
+        const formattedNumber = cleanedNumber.replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3'); // Separa en grupos de 3-3-4 con espacios
+        return formattedNumber;
+    };
+
+
 
     // Aquí calcula la cantidad de pedidos en cada estado
     const countPendientes = data.filter(item => item.Estado === 3).length;
@@ -298,12 +443,23 @@ export default function OrderPage() {
 
     const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0;
 
+    const applyFilterBasedOnPriority = (item) => {
+        if (semaforo === 1) {
+            return rojo(item.Fecha_Entrega); // Filtro para 3 días
+        } else if (semaforo === 2) {
+            return amarillo(item.Fecha_Entrega); // Filtro para 1 semana
+        } else if (semaforo === 3) {
+            return verde(item.Fecha_Entrega);
+        }
+        return true; // No se aplican filtros
+    };
+
     const filteredUsers = applySortFilter(
         data.filter(item => {
             if (selectedTab === 0) {
                 return item.Estado === 3; // Pendientes
             } else if (selectedTab === 1) {
-                return item.Estado === 4; // Aceptados
+                return item.Estado === 4 && applyFilterBasedOnPriority(item); // Filtro en función de la prioridad seleccionada
             } else if (selectedTab === 2) {
                 return item.Estado !== 3 && item.Estado !== 4; // Rechazados
             }
@@ -329,7 +485,6 @@ export default function OrderPage() {
                     </Typography>
                 </Stack>
                 <Card >
-
                     <Tabs
                         value={selectedTab}
                         onChange={handleChangeTab}
@@ -372,8 +527,29 @@ export default function OrderPage() {
                     </Tabs>
                     <Divider />
 
-                    <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} placeholder="Buscar pedido..." />
+                    <Box sx={{ overflowX: 'auto' }}>
+                        <Box display="flex" justifyContent="space-between" alignItems="center" p={2}>
+                            <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} placeholder="Buscar pedido..." />
 
+                            {loadingAceptados && (
+                                <FormControl sx={{ m: 1, minWidth: 210, paddingRight: '24px' }}>
+                                    <InputLabel id="demo-simple-select-label">Prioridad</InputLabel>
+                                    <Select
+                                        labelId="demo-simple-select-autowidth-label"
+                                        id="demo-simple-select-autowidth"
+                                        value={semaforo}
+                                        onChange={handleChange}
+                                        autoWidth
+                                        label="Prioridad"
+                                    >
+                                        <MenuItem value={1}>Entrega inmediata</MenuItem>
+                                        <MenuItem value={2}>Entrega proxima</MenuItem>
+                                        <MenuItem value={3}>Entrega a tiempo</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            )}
+                        </Box>
+                    </Box>
                     <Scrollbar>
 
                         <TableContainer sx={{ minWidth: 1000 }}>
@@ -388,9 +564,10 @@ export default function OrderPage() {
                                 />
                                 <TableBody>
                                     {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                                        const { ID_Pedido, ID_Cliente, Nombre_Cliente, Direccion_Entrega, Fecha_Entrega, Precio_Total, correo, image, Estado } = row;
+                                        const { ID_Pedido, ID_Cliente, Nombre_Cliente, Direccion_Entrega, Fecha_Entrega, Precio_Total, correo, image, Estado, Municipio, Barrio, fecha_creacion, Telefono, Status_Pedido } = row;
                                         const selectedUser = selected.indexOf(ID_Pedido) !== -1;
                                         const estadoText = Estado === 3 ? 'Pendiente' : Estado === 4 ? 'Aceptado' : 'Rechazado'
+                                        const statusText = Status_Pedido === 1 ? 'En preparación' : Status_Pedido === 2 ? 'Preparado' : 'Despachado'
                                         return (
                                             <React.Fragment key={ID_Pedido}>
                                                 <TableRow hover tabIndex={-1} role="checkbox" selected={selectedUser} >
@@ -403,8 +580,7 @@ export default function OrderPage() {
                                                             # {ID_Pedido}
                                                         </Typography>
                                                     </TableCell>
-                                                    <TableCell >
-
+                                                    <TableCell>
                                                         <Stack direction="row" alignItems="center" spacing={2}>
                                                             <Avatar alt='' src={`${apiUrl}/anchetas/` + image} />
                                                             <Typography hidden={true}>
@@ -415,26 +591,60 @@ export default function OrderPage() {
                                                                 primaryTypographyProps={{ style: { fontSize: 14 } }}
                                                                 secondaryTypographyProps={{ style: { fontSize: 14 } }}
                                                                 primary={Nombre_Cliente}
-                                                                secondary={correo}
+                                                                secondary={
+                                                                    <>
+                                                                        {correo}
+                                                                        <br />
+                                                                        {formatPhoneNumber(Telefono)}
+                                                                    </>
+                                                                }
                                                             />
                                                         </Stack>
-
                                                     </TableCell>
 
-                                                    <TableCell align="left">{Direccion_Entrega}</TableCell>
+                                                    <TableCell>
+                                                        <Stack direction="row" alignItems="center" spacing={2}>
+
+                                                            <ListItemText
+                                                                style={{ marginTop: '0.4rem' }}
+                                                                primaryTypographyProps={{ style: { fontSize: 14 } }}
+                                                                secondaryTypographyProps={{ style: { fontSize: 14 } }}
+                                                                primary={Direccion_Entrega}
+                                                                secondary={Municipio + " - " + Barrio}
+
+                                                            />
+
+                                                        </Stack>
+                                                    </TableCell>
 
                                                     <TableCell align="left">{formatDate(Fecha_Entrega)}</TableCell>
 
                                                     <TableCell align="left">{formatPrice(Precio_Total)}</TableCell>
-                                                    <TableCell align="left">
-                                                        <Label color={
-                                                            estadoText === 'Pendiente' ? 'warning' :
-                                                                estadoText === 'Aceptado' ? 'success' :
-                                                                    'error'
-                                                        }>
-                                                            {sentenceCase(estadoText)}
-                                                        </Label>
-                                                    </TableCell>
+
+                                                    {Status_Pedido === 0 ? (
+
+                                                        <TableCell align="left">
+                                                            <Label color={
+                                                                estadoText === 'Pendiente' ? 'warning' :
+                                                                    estadoText === 'Aceptado' ? 'success' :
+                                                                        'error'
+                                                            }>
+                                                                {sentenceCase(estadoText)}
+                                                            </Label>
+                                                        </TableCell>
+
+                                                    ) : (
+
+                                                        <TableCell align="left">
+                                                            <Label color={
+                                                                statusText === 'En preparación' ? 'warning' :
+                                                                    statusText === 'Preparado' ? 'warning' :
+                                                                        'error'
+                                                            }>
+                                                                {sentenceCase(statusText)}
+                                                            </Label>
+                                                        </TableCell>
+                                                    )}
 
                                                     <TableCell sx={{ paddingRight: 0 }}>
                                                         <IconButton
@@ -491,6 +701,17 @@ export default function OrderPage() {
 
                                                             </Popover>
                                                         </TableCell>
+                                                    ) : Estado === 4 ? (
+                                                        <TableCell sx={{ padding: 0, paddingRight: 0.8 }} width={55} >
+                                                            <IconButton
+                                                                size="large"
+                                                                onClick={() => handleNextState(ID_Pedido, Status_Pedido)}
+                                                            >
+                                                                <Iconify icon={'ooui:double-chevron-start-rtl'} />
+                                                            </IconButton>
+
+
+                                                        </TableCell>
                                                     ) : (
                                                         <TableCell sx={{ padding: 0, paddingRight: 0.8 }} width={55} ></TableCell>
                                                     )}
@@ -526,7 +747,7 @@ export default function OrderPage() {
                                                                                             sx={{ fontSize: "24px" }}
                                                                                             onClick={handleClickOpen}
                                                                                         >
-                                                                                            <Iconify icon="grommet-icons:view" class="big-icon" />
+                                                                                            <Iconify icon="grommet-icons:view" className="big-icon" />
                                                                                         </IconButton>
                                                                                     </Box>
 
@@ -619,26 +840,26 @@ export default function OrderPage() {
             >
                 <DialogTitle>Insumos</DialogTitle>
                 <DialogContent>
-                    
-                        <React.Fragment >
-                            <Stack direction="row" alignItems="center" spacing={2}>
 
-                                <ListItemText
-                                    primaryTypographyProps={{ style: { fontSize: 14 } }}
-                                    secondaryTypographyProps={{ style: { fontSize: 14 } }}
-                                    primary="Cerveza Aguila light"
-                                    secondary="cerveza 200ml"
-                                />
+                    <React.Fragment >
+                        <Stack direction="row" alignItems="center" spacing={2}>
 
-                                <Box >
-                                    x1
-                                </Box>
+                            <ListItemText
+                                primaryTypographyProps={{ style: { fontSize: 14 } }}
+                                secondaryTypographyProps={{ style: { fontSize: 14 } }}
+                                primary="Cerveza Aguila light"
+                                secondary="cerveza 200ml"
+                            />
 
-                                <Box sx={{ width: 110, height: 22, textAlign: 'right' }}  >
-                                    $200.000
-                                </Box>
-                            </Stack>
-                        </React.Fragment>
+                            <Box >
+                                x1
+                            </Box>
+
+                            <Box sx={{ width: 110, height: 22, textAlign: 'right' }}  >
+                                $200.000
+                            </Box>
+                        </Stack>
+                    </React.Fragment>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseModal}>Cerrar</Button>

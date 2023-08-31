@@ -42,8 +42,11 @@ const TABLE_HEAD = [
   { id: 'ID_Rol', label: 'ID', alignRight: false },
   { id: 'Nombre_Rol', label: 'Rol', alignRight: false },
   { id: 'estado', label: 'Estado del Rol', alignRight: false },
-  { id: 'Acciones', label: 'Acciones', alignRight: false },
+  { id: '', label: '', alignRight: false },
 ];
+
+//
+
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -89,9 +92,27 @@ export default function ListaConfiguracion() {
   const [modalShow, setModalShow] = useState(false);
   const [loading, setLoading] = useState(true);
   const [showDeleteMenu, setShowDeleteMenu] = useState(false);
+  const [refreshInterval, setRefreshInterval] = useState(null);
+
+
+
   useEffect(() => {
     setLoading(true);
     fetchData();
+  
+    // Configura un intervalo de auto-refresh cada 5 segundos (puedes ajustar el tiempo según tus necesidades)
+    const interval = setInterval(() => {
+      fetchData();
+    }, 1000);
+  
+    // Almacenamos el ID del intervalo en el estado refreshInterval
+    setRefreshInterval(interval);
+  
+    // Esta función se ejecutará cuando el componente se desmonte
+    return () => {
+      // Limpia el intervalo cuando el componente se desmonta
+      clearInterval(interval);
+    };
   }, []);
 
   const fetchData = () => {
@@ -106,9 +127,25 @@ export default function ListaConfiguracion() {
       .catch((err) => console.log(err));
   };
 
-  const handleDelete = (id) => {
+  const handleOpenMenu = (event, ID_Rol) => {
+    setOpen(event.currentTarget);
+    setSelectedConfiguracionID(ID_Rol);
+    setShowDeleteMenu(true);
+  };
+  
+  const handleCloseMenu = () => {
+    setOpen(null);
+    setSelectedConfiguracionID(null);
+    setShowDeleteMenu(false);
+  };
+  
+  const handleDelete = () => {
+    if (selectedConfiguracionID === null) {
+      return;
+    }
+  
     axios
-      .delete(`${apiUrl}/api/admin/configuracion/Confidel/${id}`)
+      .delete(`${apiUrl}/api/admin/configuracion/Confidel/${selectedConfiguracionID}`)
       .then((res) => {
         console.log(res);
         fetchData();
@@ -119,20 +156,16 @@ export default function ListaConfiguracion() {
           showConfirmButton: false,
           timer: 1500,
         });
+        handleCloseMenu();
       })
-      .catch((err) => console.log(err));
-  };
-
-  const handleOpenMenu = (event, ID_Rol) => {
-    setOpen(event.currentTarget);
-    setSelectedConfiguracionID(ID_Rol);
-    setShowDeleteMenu(true);
-  };
-
-  const handleCloseMenu = () => {
-    setOpen(null);
-    setSelectedConfiguracionID(null);
-    setShowDeleteMenu(false);
+      .catch((err) => {
+        console.log(err);
+        Swal.fire({
+          title: 'Error',
+          text: 'Ocurrió un error al eliminar el rol.',
+          icon: 'error',
+        });
+      });
   };
 
   const handleRequestSort = (event, property) => {
@@ -332,7 +365,7 @@ export default function ListaConfiguracion() {
                                 <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
                                 Editar
                               </MenuItem>
-                              <MenuItem sx={{ color: 'error.main' }} onClick={() => handleDelete(ID_Rol)}>
+                              <MenuItem sx={{ color: 'error.main' }} onClick={() => handleDelete(selectedConfiguracionID)}>
                                 <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
                                 Eliminar
                               </MenuItem>

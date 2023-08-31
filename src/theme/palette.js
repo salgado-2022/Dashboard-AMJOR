@@ -74,6 +74,10 @@ const SWITCH = {
   main: '#00e676'
 };
 
+const TRASH = {
+  main: '#f44336'
+};
+
 const palette = {
   common: { black: '#000', white: '#fff' },
   primary: PRIMARY,
@@ -83,6 +87,7 @@ const palette = {
   warning: WARNING,
   error: ERROR,
   switch: SWITCH,
+  trash: TRASH,
   grey: GREY,
   divider: alpha(GREY[500], 0.24),
   text: {

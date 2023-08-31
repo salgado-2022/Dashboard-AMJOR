@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import Iconify from "../../../../components/iconify";
+import React, { useState, useEffect } from 'react';
+import Iconify from '../../../../components/iconify';
 import {
   Button,
   Container,
@@ -9,25 +9,68 @@ import {
   DialogContent,
   DialogActions,
   Alert,
+  Switch,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
 } from '@mui/material';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
 function ConfiFormulario({ onClose }) {
   const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
-  
-  const [rol, setRol] = useState('');
+
   const [modalOpen, setModalOpen] = useState(false);
-  const [errorMessages, setErrorMessages] = useState({ rol: '', general: '' });
+  const [rol, setRol] = useState('');
+  const [permissions, setPermissions] = useState([]);
+  const [permissionsMap, setPermissionsMap] = useState({});
+  const [errorMessages, setErrorMessages] = useState({ rol: '', permissions: '', general: '' });
 
   const handleOpenModal = () => {
+    loadPermissions();
     setModalOpen(true);
   };
 
   const handleCloseModal = () => {
     setModalOpen(false);
+    resetModalState();
+  };
+
+  const resetModalState = () => {
     setRol('');
-    setErrorMessages({ rol: '', general: '' });
+    setPermissionsMap({});
+    setErrorMessages({ rol: '', permissions: '', general: '' });
+  };
+
+  const loadPermissions = () => {
+    axios
+      .get(`${apiUrl}/api/admin/listpermisos`)
+      .then((res) => {
+        const permissionsData = {};
+        res.data.forEach((permission) => {
+          permissionsData[permission.ID_Permiso] = false;
+        });
+        setPermissionsMap(permissionsData);
+        setPermissions(res.data);
+      })
+      .catch((err) => {
+        console.table('Error al cargar la lista de permisos:', err);
+      });
+  };
+
+  useEffect(() => {
+    loadPermissions();
+  }, []);
+
+  const handlePermissionToggle = (permissionId) => {
+    setPermissionsMap((prevPermissions) => ({
+      ...prevPermissions,
+      [permissionId]: !prevPermissions[permissionId],
+    }));
   };
 
   const validarRolPermiso = () => {
@@ -37,11 +80,19 @@ function ConfiFormulario({ onClose }) {
       errors.rol = 'Debes ingresar un rol.';
     }
 
+    const selectedPermissions = Object.keys(permissionsMap).filter(
+      (permissionId) => permissionsMap[permissionId]
+    );
+
+    if (selectedPermissions.length === 0) {
+      errors.permissions = 'Debes seleccionar al menos un permiso.';
+    }
+
     if (Object.keys(errors).length === 0) {
       axios
-        .post(`${apiUrl}/api/crearRol`, { rol })
+        .post(`${apiUrl}/api/crearRol`, { rol, permisos: selectedPermissions })
         .then((res) => {
-          if (res.data.Status === 'Success') {
+          if (res.data.status === 'Success') {
             Swal.fire({
               title: 'Rol agregado correctamente',
               text: 'El rol ha sido creado exitosamente.',
@@ -49,11 +100,11 @@ function ConfiFormulario({ onClose }) {
             }).then(() => {
               onClose();
               handleCloseModal();
+              window.location.reload();
             });
           } else {
             setErrorMessages({ ...errorMessages, general: 'Error al crear el rol.' });
           }
-          window.location.reload()
         })
         .catch((err) => {
           console.log(err);
@@ -88,6 +139,31 @@ function ConfiFormulario({ onClose }) {
             error={Boolean(errorMessages.rol)}
             helperText={errorMessages.rol}
           />
+          <br />
+          <br />
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Permiso</TableCell>
+                  <TableCell align="right">Habilitar</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {permissions.map((permission) => (
+                  <TableRow key={permission.ID_Permiso}>
+                    <TableCell>{permission.NombrePermiso}</TableCell>
+                    <TableCell align="right">
+                      <Switch
+                        checked={permissionsMap[permission.ID_Permiso] || false}
+                        onChange={() => handlePermissionToggle(permission.ID_Permiso)}
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </DialogContent>
         <DialogActions>
           <Button
@@ -99,7 +175,7 @@ function ConfiFormulario({ onClose }) {
             style={{ marginTop: '8px' }}
             onClick={() => {
               validarRolPermiso();
-              handleCloseModal();
+              onClose();
             }}
           >
             Crear el rol
@@ -110,13 +186,21 @@ function ConfiFormulario({ onClose }) {
             id="cancelarRol"
             fullWidth
             style={{ marginTop: '8px' }}
-            onClick={handleCloseModal}
+            onClick={() => {
+              handleCloseModal();
+              resetModalState();
+            }}
           >
             Cancelar
           </Button>
         </DialogActions>
       </Dialog>
-      {Boolean(errorMessages.general) && (
+      {errorMessages.permissions && (
+        <Alert severity="error" style={{ marginTop: '8px' }}>
+          {errorMessages.permissions}
+        </Alert>
+      )}
+      {errorMessages.general && (
         <Alert severity="error" style={{ marginTop: '8px' }}>
           {errorMessages.general}
         </Alert>

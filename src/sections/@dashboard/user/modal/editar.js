@@ -34,6 +34,7 @@ function EditarUsuario(props) {
   const [contrasenaError, setContrasenaError] = useState(false);
   const [guardadoExitoso, setGuardadoExitoso] = useState(false);
   const [isUsuarioActivo, setIsUsuarioActivo] = useState(false);
+  
 
   const handleInput = (event) => {
     const { name, value, type, checked } = event.target;

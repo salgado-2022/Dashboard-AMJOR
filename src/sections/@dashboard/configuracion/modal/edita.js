@@ -10,11 +10,10 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Checkbox,
+  Switch,
   TextField,
   Typography,
   Stack,
-  Switch,
   Modal,
   Grid,
 } from '@mui/material';
@@ -26,9 +25,7 @@ function EditarConfi(props) {
   const id = selectedConfiguracionID;
   const [selectedPermisos, setSelectedPermisos] = useState([]);
   const [isRolActivo, setIsRolActivo] = useState(false);
-  const permisos = ['Usuarios', 'Insumos', 'Anchetas', 'Pedidos'];
-
-  const [, setIsChecked] = useState(false);
+  const [permisos, setPermisos] = useState([]);
   const [values, setValues] = useState({
     Nombre_Rol: '',
     estado: '',
@@ -39,7 +36,17 @@ function EditarConfi(props) {
     const { name, value, type, checked } = event.target;
 
     if (type === 'checkbox') {
-      setIsRolActivo(checked);
+      if (name === 'estado') {
+        setIsRolActivo(checked);
+      } else {
+        if (checked) {
+          setSelectedPermisos((prevSelectedPermisos) => [...prevSelectedPermisos, value]);
+        } else {
+          setSelectedPermisos((prevSelectedPermisos) =>
+            prevSelectedPermisos.filter((permiso) => permiso !== value)
+          );
+        }
+      }
     } else if (type === 'select-multiple') {
       const selectedOptions = Array.from(event.target.selectedOptions, (option) => option.value);
       setValues((prev) => ({ ...prev, [name]: selectedOptions }));
@@ -48,11 +55,11 @@ function EditarConfi(props) {
     }
   };
 
-  const handleCheckboxChange = (permiso) => {
+  const handleSwitchChange = (permisoID) => {
     setSelectedPermisos((prevSelectedPermisos) =>
-      prevSelectedPermisos.includes(permiso)
-        ? prevSelectedPermisos.filter((selected) => selected !== permiso)
-        : [...prevSelectedPermisos, permiso]
+      prevSelectedPermisos.includes(permisoID)
+        ? prevSelectedPermisos.filter((selected) => selected !== permisoID)
+        : [...prevSelectedPermisos, permisoID]
     );
   };
 
@@ -107,12 +114,15 @@ function EditarConfi(props) {
       axios
         .get(`${apiUrl}/api/admin/configuracion/confillamada/${id}`)
         .then((res) => {
-          console.log(res); // Agrega esta línea para imprimir la respuesta
+          console.log(res);
           setValues((prevValues) => ({
             ...prevValues,
-            Nombre_Rol: res.data[0].Nombre_Rol,
+            Nombre_Rol: res.data.Nombre_Rol,
+            estado: res.data.estado,
           }));
-          setIsChecked(res.data[0].estado === 1);
+          setIsRolActivo(res.data.estado === 1);
+          setPermisos(res.data.permisos.map((permiso) => permiso.ID_Permiso));
+          setSelectedPermisos(res.data.permisos.map((permiso) => permiso.ID_Permiso));
         })
         .catch((err) => {
           console.log(err);
@@ -128,7 +138,7 @@ function EditarConfi(props) {
       centered
       style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
     >
-      <div style={{ background: '#F8F9FA', padding: '15px', borderRadius: '8px', width: '400px' }}>
+      <div style={{ background: '#F8F9FA', padding: '15px', borderRadius: '8px', width: '500px' }}>
         <Typography variant="h5" align="center" sx={{ mb: 4 }}>
           Editar Roles y los permisos
         </Typography>
@@ -152,12 +162,12 @@ function EditarConfi(props) {
                 </TableHead>
                 <TableBody>
                   {permisos.map((permiso) => (
-                    <TableRow key={permiso}>
-                      <TableCell>{permiso}</TableCell>
+                    <TableRow key={permiso.ID_Permiso}>
+                      <TableCell>{permiso.NombrePermiso}</TableCell>
                       <TableCell align="center">
-                        <Checkbox
-                          checked={selectedPermisos.includes(permiso)}
-                          onChange={() => handleCheckboxChange(permiso)}
+                        <Switch
+                          checked={selectedPermisos.includes(permiso.ID_Permiso)}
+                          onChange={() => handleSwitchChange(permiso.ID_Permiso)}
                         />
                       </TableCell>
                     </TableRow>
@@ -168,7 +178,7 @@ function EditarConfi(props) {
             <Grid item xs={12}>
               <Grid container alignItems="center" spacing={1} style={{ marginTop: '16px' }}>
                 <Switch
-                  color="success" 
+                  color="success"
                   id="estado"
                   name="estado"
                   checked={isRolActivo}

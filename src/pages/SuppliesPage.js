@@ -1,7 +1,7 @@
 import { Helmet } from 'react-helmet-async';
 import { filter } from 'lodash';
 import { sentenceCase } from 'change-case';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
@@ -40,7 +40,7 @@ import { EditInsumo } from '../sections/@dashboard/supplies/modal/edit';
 const TABLE_HEAD = [
   { id: 'ID_Insumo', label: 'ID', alignRight: false },
   { id: 'NombreInsumo', label: 'Nombre', alignRight: false },
-  { id: 'Descripcion', label: 'Descripcion', alignRight: false },
+  { id: 'Descripcion', label: 'Descripción', alignRight: false },
   { id: 'PrecioUnitario', label: 'Precio', alignRight: false },
   { id: 'Estado', label: 'Estado', alignRight: false },
   { id: '' },
@@ -106,20 +106,7 @@ export default function SuppliesPage() {
   //Modal Crear Usuario
   const [openModal, setOpenModal] = useState(false);
 
-  useEffect(() => {
-    setLoading(true);
-    fetchData();
-  }, []);
-
-  const handleOpenModal = () => {
-    setOpenModal(true);
-  };
-
-  const handleCloseModal = () => {
-    setOpenModal(false);
-  };
-
-  const fetchData = () => {
+  const fetchData = useCallback(() => {
     axios
       .get(`${apiUrl}/api/admin/insumos`)
       .then((res) => {
@@ -129,6 +116,19 @@ export default function SuppliesPage() {
         }, 1000)
       })
       .catch((err) => console.log(err));
+  }, [apiUrl]);
+
+  useEffect(() => {
+    setLoading(true);
+    fetchData();
+  }, [fetchData]);
+
+  const handleOpenModal = () => {
+    setOpenModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
   };
 
   const handleDelete = (id) => {

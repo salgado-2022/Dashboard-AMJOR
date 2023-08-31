@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useContext } from "react";
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useCallback, useContext } from "react";
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
     Container, 
     Grid, 
@@ -17,6 +17,7 @@ import {
     IconButton, 
     TablePagination, 
     Paper,
+    Switch,
     CardMedia,
     Divider
 } from "@mui/material";
@@ -32,32 +33,27 @@ import axios from "axios";
 //-----------------------------------------------------------------------------------------------------------
 import { Insumoscontext } from './context/Context';
 
-function AddAncheta() {
+function EditAncheta() {
     const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
 
+    const location = useLocation();
+    const id = location.state?.idAncheta;
     const navigate = useNavigate();
 
     const [values, setValues] = useState({
         NombreAncheta: '',
         Descripcion: '',
         PrecioUnitario: '',
-        ID_Estado: '2',
+        ID_Estado: '',
         image: ''
     });
-
-    const initialValues = {
-        NombreAncheta: '',
-        Descripcion: '',
-        PrecioUnitario: '',
-        ID_Estado: '2',
-        image: ''
-    };
 
     const [nombreError, setNombreError] = useState('');
     const [descripcionError, setDescripcionError] = useState('');
 
-    const [imageUrl, setImageUrl] = useState(null);
-    const [imageHolder, setImageHolder] = useState(null);
+    const [isChecked, setIsChecked] = useState(false);
+    const [imageUrlEdit, setImageUrlEdit] = useState(null);
+    const [oldImage, setOldImage] = useState('');
 
     const Globalstate = useContext(Insumoscontext);
     const state = Globalstate.state;
@@ -66,11 +62,44 @@ function AddAncheta() {
     const insumosAgregados = insumosState.map((insumo) => insumo.ID_Insumo);
 
     const [data, setData] = useState([]);
+    const [dataInsumo, setDataInsumo] = useState([]);
+    const [InitialInsumos, setInitialInsumos] = useState(true);
 
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [filterName, setFilterName] = useState('');
-    
+
+    const fetchData = useCallback(async () => {
+        try {
+            const res = await axios.get(`${apiUrl}/api/admin/anchetas/insancheta/` + id);
+            setDataInsumo(res.data);
+        } catch (err) {
+            console.log(err);
+        }
+        axios.get(`${apiUrl}/api/admin/anchetas/anchellamada/` + id)
+            .then(res => {
+                console.log(res);
+                setValues(prevValues => ({
+                    ...prevValues,
+                    NombreAncheta: res.data[0].NombreAncheta,
+                    Descripcion: res.data[0].Descripcion,
+                    PrecioUnitario: res.data[0].PrecioUnitario,
+                    ID_Estado: res.data[0].ID_Estado,
+                    image: res.data[0].image
+                }));
+                setOldImage(res.data[0].image);
+                setIsChecked(res.data[0].ID_Estado === 1);
+                setImageUrlEdit(null);
+            })
+            .catch(err => console.log(err));
+
+        axios.get(`${apiUrl}/api/admin/insumos`)
+            .then((res) => {
+                setData(res.data);
+            })
+            .catch((err) => console.log(err));
+    }, [apiUrl, id]);
+
     const states = state.map(obj => ({ idInsumo: obj.ID_Insumo, cantidad: obj.Cantidad, precio: obj.PrecioUnitario * obj.Cantidad }));
 
     const Precio = state.reduce((Precio, insumo) => {
@@ -84,39 +113,29 @@ function AddAncheta() {
             minimumFractionDigits: 0,
         });
     };
-    
+
     useEffect(() => {
-        const fetchData = () => {
-            axios
-                .get(`${apiUrl}/api/admin/insumos`)
-                .then((res) => {
-                    setData(res.data);
-                })
-                .catch((err) => console.log(err));
-        };
-        
         fetchData();
         return () => {
             dispatch({ type: 'ResetInsumos' });
-        };   
-    }, [dispatch, apiUrl]);
-    
-    const handleInput = (event) => {
-        const { name, value, type } = event.target;
-        setValues(prev => ({ ...prev, [name]: value }));
+        };
+    }, [dispatch, fetchData]);
+
+   const handleInput = (event) => {
+        const { name, value, type, checked } = event.target;
+
+        if (type === 'checkbox') {
+            setIsChecked(checked);
+            setValues(prev => ({ ...prev, [name]: checked ? 1 : 2 }));
+        } else {
+            setValues(prev => ({ ...prev, [name]: value }));
+        }
 
         if (type === 'file') {
-            const selectedFile = event.target.files[0];
-            if (selectedFile) {
-                setImageUrl(URL.createObjectURL(selectedFile));
-                setImageHolder(selectedFile);
-                setValues((prev) => ({ ...prev, image: selectedFile }));
-                window.location("/dashboard/anchetas");
-            }
-
-            if (!selectedFile) {
-                setValues((prev) => ({ ...prev, image: imageHolder }));
-                setImageUrl(URL.createObjectURL(imageHolder));
+            const selectedFileEdit = event.target.files[0];
+            if (selectedFileEdit) {
+                setImageUrlEdit(URL.createObjectURL(selectedFileEdit));
+                setValues((prev) => ({ ...prev, image: selectedFileEdit }));
             }
         }
 
@@ -139,8 +158,9 @@ function AddAncheta() {
         }
     };
 
-    const handleSubmit = (event) => {
+    const handleUpdate = (event) => {
         event.preventDefault();
+
         if (nombreError === "" && descripcionError === "") {
             if (state.length === 0) {
                 Swal.fire({
@@ -164,48 +184,39 @@ function AddAncheta() {
                 return;
             }
 
-            if (
-                JSON.stringify(values) === JSON.stringify(initialValues) ||
-                !values.NombreAncheta ||
-                !values.Descripcion
-            ) {
-                return;
-            }
             const formdata = new FormData();
             formdata.append('NombreAncheta', values.NombreAncheta);
             formdata.append('Descripcion', values.Descripcion);
             formdata.append('PrecioUnitario', Precio.toString());
-            formdata.append('Insumos', JSON.stringify(states))
-            formdata.append('image', values.image);
-            axios.post(`${apiUrl}/api/crearAncheta`, formdata)
-                .then(res => {
-                    if (res.data.Status === "Success") {
-                        Swal.fire({
-                            title: 'Creado Correctamente',
-                            text: "Tu ancheta ha sido creada correctamente",
-                            icon: 'success',
-                            showConfirmButton: false,
-                            timer: 1500
-                        })
-                    } else {
-                        Swal.fire({
-                            title: 'Error!',
-                            text: 'Hubo un problema al registrar la ancheta.',
-                            icon: 'error',
-                            confirmButtonText: 'OK'
-                        });
-                    }
-                    navigate("/dashboard/anchetas");
-                })
+            formdata.append('ID_Estado', values.ID_Estado);
+            formdata.append('Insumos', JSON.stringify(states));
+            axios.put(`${apiUrl}/api/admin/anchetas/anchetaedit/` + id, formdata)
+            .then(res => {
+                console.log(res);
+                Swal.fire({
+                    title: 'Modificado Correctamente',
+                    text: "Tu ancheta ha sido modificada correctamente",
+                    icon: 'success',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+                if (values.image) {
+                    const formdata = new FormData();
+                    formdata.append('image', values.image);
+                    formdata.append('oldImage', oldImage);
+                    axios.put(`${apiUrl}/api/admin/anchetas/anchetaedit/` + id, formdata)
+                }
+                navigate("/dashboard/anchetas");
+            })
         }
-    };
+      };
 
     const handleReset = () => {
-        setValues(initialValues);
-        setImageUrl(null);
-        setNombreError(''); 
-        setDescripcionError(''); 
         dispatch({ type: 'ResetInsumos' });
+        fetchData();  
+        setInitialInsumos(true); 
+        setNombreError(''); 
+        setDescripcionError('');
     };
 
     const handleChangePage = (event, newPage) => {
@@ -227,36 +238,47 @@ function AddAncheta() {
     const filteredUsers = filter(data, (_nombre) => _nombre.NombreInsumo.toLowerCase().indexOf(filterName.toLowerCase()) !== -1);
 
     const isNotFound = !filteredUsers.length && !!filterName;
-
-    const dataLength = state ? (data.length - state.length) : (data.length);
     
+    const dataLength = state ? (data.length - state.length) : (data.length);
+
+    console.log(state)
+
+    if (InitialInsumos) {
+        data.forEach((insumo) => {
+            const dataInsumoItem = dataInsumo.find(item => item.ID_Insumo === insumo.ID_Insumo);
+            if (dataInsumoItem) {
+                dispatch({ type: 'AddInsumo', payload: { ...insumo, Cantidad: dataInsumoItem.Cantidad, Precio: insumo.PrecioUnitario } });
+                setInitialInsumos(false);
+            }
+        });
+    }
+
     return (
-    <Container maxWidth={"xl"}>
+    <Container maxWidth="xl">
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-            <Typography variant="h4" gutterBottom>Crear Ancheta</Typography>
+            <Typography variant="h4" gutterBottom>Editar Ancheta</Typography>
             <Link to="/dashboard/anchetas">
                 <Button variant="contained" startIcon={<Iconify icon="ph:arrow-left" />}>
                 Volver
                 </Button>
             </Link>
-            
         </Stack>
-        <form onSubmit={handleSubmit} onReset={handleReset} encType="multipart/form-data">
+        <form onSubmit={handleUpdate} onReset={handleReset} encType="multipart/form-data">
             <Grid container spacing={2}>
-                <Grid item md={4} >
+                <Grid item md={4}>
                     <TextField fullWidth style={{ marginBottom: '16px' }} label="Nombre" variant="outlined" id="NombreAncheta" name="NombreAncheta" value={values.NombreAncheta} onChange={handleInput} error={nombreError !== ''}  helperText={nombreError} />
                     <TextField multiline rows={4} fullWidth style={{ marginBottom: '16px' }} label="Descripción" variant="outlined" id="Descripcion" name="Descripcion" value={values.Descripcion} onChange={handleInput} error={descripcionError !== ''}  helperText={descripcionError}/>
                     <Card elevation={3} style={{ marginBottom: '16px' }}>
                     {values.image && (
                         <div>
-                            <CardMedia component="img" alt="" height="235px" image={imageUrl}/> 
-                            <IconButton color="trash" sx={{position: "absolute", top: "8px",right: "8px",}} onClick={() => {
-                                setImageUrl(null);
+                            <CardMedia component="img" alt="" height="235px" image={imageUrlEdit || `http://localhost:4000/anchetas/` + values.image}/> 
+                            <IconButton color="trash" sx={{position: "absolute", top: "0px", right: "8px"}} onClick={() => {
+                                setImageUrlEdit(null);
                                 setValues((prev) => ({ ...prev, image: null }));
                             }}>
                                 <Iconify icon="mingcute:delete-fill" class="big-icon" />
                             </IconButton>
-                        </div>    
+                        </div>
                     )}
                     {!values.image && (
                         <CardHeader component="label" sx={{backgroundColor: "#f5f5f5", cursor: "pointer", textAlign: "center", padding: "24px", marginBottom: "0px", height: "235px"}}
@@ -288,7 +310,7 @@ function AddAncheta() {
                                             <Iconify icon="ph:trash" class="big-icon" />
                                         </IconButton>
                                     </ListItemIcon>
-                                    <Grid item sm={6} xs={6}>
+                                    <Grid item sm={6} xs={7}>
                                         <ListItemText
                                             primaryTypographyProps={{ style: {fontSize: '14px'} }}
                                             primary={insumo.NombreInsumo}
@@ -299,16 +321,21 @@ function AddAncheta() {
                                 </ListItem>
                             ))}
                         </List>   
-                        )}
+                    )}
                     </Card>
-                    <Typography variant="h5" marginBottom={1}>Total: {formatPrice(Precio)}</Typography>
+                        <Grid container alignItems="center" spacing={1} marginBottom={1}>
+                            <Switch color="switch" id="ID_Estado" name="ID_Estado" checked={isChecked}onChange={handleInput}/>
+                            <Typography>Disponible</Typography>
+                            <div style={{flex: "1"}}></div>
+                            <Typography variant="h5">Total: {formatPrice(Precio)}</Typography>
+                        </Grid>
                     <Stack direction="row" alignItems="center" spacing={1}>
-                        <Button type="submit" variant="contained" color="primary" fullWidth>Crear Ancheta</Button>
+                        <Button type="submit" variant="contained" color="primary" fullWidth>Editar Ancheta</Button>
                         <Button type="reset" variant="contained" color="secondary" fullWidth>Cancelar</Button>
-                    </Stack> 
+                    </Stack>
                 </Grid>
                 <Grid item md={8}>
-                    <Card>
+                    <Card elevation={3} style={{ marginBottom: '12px' }}>
                         <UserListToolbar
                             filterName={filterName}
                             onFilterName={handleFilterByName}
@@ -316,10 +343,8 @@ function AddAncheta() {
                         />
                         <List sx={{ height: '625px', overflowY: 'auto' }}>
                             {filteredUsers.filter(insumo => !insumosAgregados.includes(insumo.ID_Insumo) && insumo.Estado !== 'Agotado').slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((insumo, index) => {
-
                                 insumo.Cantidad = 1;
                                 insumo.Precio = insumo.PrecioUnitario;
-                                
                                 return (
                                     <React.Fragment key={insumo.ID_Insumo}>
                                     <ListItem key={insumo.ID_Insumo} secondaryAction={
@@ -361,11 +386,10 @@ function AddAncheta() {
                         />
                     </Card>
                 </Grid>
-                
             </Grid>
         </form>
     </Container>
     );
 }
 
-export { AddAncheta };
+export { EditAncheta };
