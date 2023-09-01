@@ -38,6 +38,7 @@ import {
     InputLabel,
     Select,
     Grid,
+    Tooltip,
 
 } from '@mui/material';
 
@@ -51,6 +52,7 @@ import socket from '../socket/config'
 
 import { UserListToolbar } from '../sections/@dashboard/user';
 import OrderListHead from '../sections/@dashboard/pedidos/OrderListHead';
+import { VerInsumosPedido } from '../sections/@dashboard/pedidos/modal/details';
 
 const TABLE_HEAD = [
     { id: '' },
@@ -100,7 +102,7 @@ function applySortFilter(array, comparator, filters) {
 }
 
 export default function OrderPage() {
-    const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
+    const apiUrl = process.env.REACT_APP_AMJOR_API_URL_NEW;
 
     const [open, setOpen] = useState({});
 
@@ -138,6 +140,8 @@ export default function OrderPage() {
 
     const [loadingAceptados, setLoadingAceptados] = useState(false)
 
+    const [selectedAnchetaID, setSelectedAnchetaID] = useState(null)
+
 
 
 
@@ -150,6 +154,9 @@ export default function OrderPage() {
             setData(datosActualizados)
         });
 
+        // Emitir un evento para solicitar los pedidos
+        socket.emit('solicitarPedidos');
+
         if (selectedTab === 1) {
             setLoadingAceptados(true);
             setOrder("asc")
@@ -159,7 +166,19 @@ export default function OrderPage() {
             setOrder("desc")
             setOrderBy("ID_Pedido")
         }
-    }, [data, selectedTab]);
+        // Limpiar el evento cuando el componente se desmonta
+        return () => {
+            socket.off('Pedidos');
+        };
+    }, [selectedTab]);
+
+    const prueba = () => {
+        socket.on('Pedidos', datosActualizados => {
+            setData(datosActualizados)
+        });
+
+        const prueba = socket.emit('solicitarPedidos');
+    }
 
     const rojo = (dateString) => {
         const currentDate = new Date();
@@ -222,8 +241,8 @@ export default function OrderPage() {
                 icon: 'warning',
                 showCancelButton: true,
                 cancelButtonText: "Cancelar",
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
+                confirmButtonColor: '#9c27b0',
+                cancelButtonColor: '#343a40',
                 confirmButtonText: 'Si'
             }).then((result) => {
                 if (result.isConfirmed) {
@@ -231,9 +250,10 @@ export default function OrderPage() {
                         .then(res => {
                             Swal.fire(
                                 'Se cambio el estado',
-                                'Your file has been deleted.',
+
                                 'success'
                             )
+                            prueba();
                         })
                         .catch(err => {
                             Swal.fire(
@@ -253,8 +273,8 @@ export default function OrderPage() {
                 icon: 'warning',
                 showCancelButton: true,
                 cancelButtonText: "Cancelar",
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
+                confirmButtonColor: '#9c27b0',
+                cancelButtonColor: '#343a40',
                 confirmButtonText: 'Si'
             }).then((result) => {
                 if (result.isConfirmed) {
@@ -265,6 +285,7 @@ export default function OrderPage() {
                                 'El estado se cambio correctamente.',
                                 'success'
                             )
+                            prueba();
                         })
                         .catch(err => {
                             Swal.fire(
@@ -282,8 +303,8 @@ export default function OrderPage() {
                 icon: 'warning',
                 showCancelButton: true,
                 cancelButtonText: "Cancelar",
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
+                confirmButtonColor: '#9c27b0',
+                cancelButtonColor: '#343a40',
                 confirmButtonText: 'Si'
             }).then((result) => {
                 if (result.isConfirmed) {
@@ -294,6 +315,7 @@ export default function OrderPage() {
                                 'El estado se cambio correctamente.',
                                 'success'
                             )
+                            prueba();
                         })
                         .catch(err => {
                             Swal.fire(
@@ -322,6 +344,7 @@ export default function OrderPage() {
                         title: 'Pedido aceptado correctamente',
                         confirmButtonText: 'OK'
                     })
+                    prueba();
                 }
             })
             .catch(err => {
@@ -349,6 +372,7 @@ export default function OrderPage() {
                         title: 'Pedido rechazado correctamente',
                         confirmButtonText: 'OK'
                     })
+                    prueba();
                 }
             })
             .catch(err => {
@@ -400,12 +424,12 @@ export default function OrderPage() {
         });
     };
 
-    const handleClickOpen = () => {
-        setOpenModal(true);
+    const handleClickOpen = (id) => {
+        setOpenModal(true)
+        setSelectedAnchetaID(id)
     };
-
     const handleCloseModal = () => {
-        setOpenModal(false);
+        setOpenModal(true);
     };
 
     /**
@@ -483,6 +507,7 @@ export default function OrderPage() {
                     <Typography variant="h4" gutterBottom>
                         Pedidos
                     </Typography>
+
                 </Stack>
                 <Card >
                     <Tabs
@@ -491,6 +516,7 @@ export default function OrderPage() {
                         variant="scrollable"
                         textColor="secondary"
                         aria-label="Order Tabs"
+                        sx={{ position: 'relative' }}
                     >
                         <Tab
                             value={0}
@@ -526,28 +552,36 @@ export default function OrderPage() {
                         />
                     </Tabs>
                     <Divider />
-
                     <Box sx={{ overflowX: 'auto' }}>
-                        <Box display="flex" justifyContent="space-between" alignItems="center" p={2}>
+                        <Box display="flex" alignItems="center" justifyContent="space-between" p={2}>
                             <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} placeholder="Buscar pedido..." />
-
-                            {loadingAceptados && (
-                                <FormControl sx={{ m: 1, minWidth: 210, paddingRight: '24px' }}>
-                                    <InputLabel id="demo-simple-select-label">Prioridad</InputLabel>
-                                    <Select
-                                        labelId="demo-simple-select-autowidth-label"
-                                        id="demo-simple-select-autowidth"
-                                        value={semaforo}
-                                        onChange={handleChange}
-                                        autoWidth
-                                        label="Prioridad"
+                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                                {loadingAceptados && (
+                                    <FormControl sx={{ m: 1, minWidth: 210, marginRight: '10px' }}>
+                                        <InputLabel id="demo-simple-select-label">Prioridad</InputLabel>
+                                        <Select
+                                            labelId="demo-simple-select-autowidth-label"
+                                            id="demo-simple-select-autowidth"
+                                            value={semaforo}
+                                            onChange={handleChange}
+                                            autoWidth
+                                            label="Prioridad"
+                                        >
+                                            <MenuItem value={1}>Entrega inmediata</MenuItem>
+                                            <MenuItem value={2}>Entrega próxima</MenuItem>
+                                            <MenuItem value={3}>Entrega a tiempo</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                )}
+                                <Tooltip title="Actualizar tabla" arrow placement="top">
+                                    <IconButton
+                                        onClick={prueba}
+                                        sx={{ marginLeft: '10px' }}
                                     >
-                                        <MenuItem value={1}>Entrega inmediata</MenuItem>
-                                        <MenuItem value={2}>Entrega proxima</MenuItem>
-                                        <MenuItem value={3}>Entrega a tiempo</MenuItem>
-                                    </Select>
-                                </FormControl>
-                            )}
+                                        <Iconify icon={'tabler:reload'} sx={{ width: '35px', height: '35px' }} />
+                                    </IconButton>
+                                </Tooltip>
+                            </div>
                         </Box>
                     </Box>
                     <Scrollbar>
@@ -560,6 +594,7 @@ export default function OrderPage() {
                                     headLabel={TABLE_HEAD}
                                     rowCount={data.length}
                                     numSelected={selected.length}
+                                    onRequestSort={handleRequestSort}
                                 />
                                 <TableBody>
                                     {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
@@ -569,7 +604,7 @@ export default function OrderPage() {
                                         const statusText = Status_Pedido === 1 ? 'En preparación' : Status_Pedido === 2 ? 'Preparado' : 'Despachado'
                                         return (
                                             <React.Fragment key={ID_Pedido}>
-                                                <TableRow hover tabIndex={-1} role="checkbox" >
+                                                <TableRow hover tabIndex={-1} role="checkbox" selected={selectedUser}  >
                                                     <TableCell>
 
                                                     </TableCell>
@@ -625,7 +660,7 @@ export default function OrderPage() {
                                                         <TableCell align="left">
                                                             <Label color={
                                                                 estadoText === 'Pendiente' ? 'warning' :
-                                                                    estadoText === 'Aceptado' ? 'success' :
+                                                                    estadoText === 'Aceptado' ? 'default' :
                                                                         'error'
                                                             }>
                                                                 {sentenceCase(estadoText)}
@@ -636,9 +671,10 @@ export default function OrderPage() {
 
                                                         <TableCell align="left">
                                                             <Label color={
+                                                                //No toma las tildes ni la ñ
                                                                 statusText === 'En preparación' ? 'warning' :
                                                                     statusText === 'Preparado' ? 'warning' :
-                                                                        'error'
+                                                                        'success'
                                                             }>
                                                                 {sentenceCase(statusText)}
                                                             </Label>
@@ -646,12 +682,14 @@ export default function OrderPage() {
                                                     )}
 
                                                     <TableCell sx={{ paddingRight: 0 }}>
-                                                        <IconButton
-                                                            size="large"
-                                                            onClick={() => handleOpenMenu(row.ID_Pedido)}
-                                                        >
-                                                            {open[ID_Pedido] ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-                                                        </IconButton>
+                                                        <Tooltip title="Ver detalle" arrow placement="top">
+                                                            <IconButton
+                                                                size="large"
+                                                                onClick={() => handleOpenMenu(row.ID_Pedido)}
+                                                            >
+                                                                {open[ID_Pedido] ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                                                            </IconButton>
+                                                        </Tooltip>
                                                     </TableCell>
 
                                                     {Estado === 3 ? (
@@ -702,12 +740,14 @@ export default function OrderPage() {
                                                         </TableCell>
                                                     ) : Estado === 4 ? (
                                                         <TableCell sx={{ padding: 0, paddingRight: 0.8 }} width={55} >
-                                                            <IconButton
-                                                                size="large"
-                                                                onClick={() => handleNextState(ID_Pedido, Status_Pedido)}
-                                                            >
-                                                                <Iconify icon={'ooui:double-chevron-start-rtl'} />
-                                                            </IconButton>
+                                                            <Tooltip title="Cambiar de fase" arrow placement="top">
+                                                                <IconButton
+                                                                    size="large"
+                                                                    onClick={() => handleNextState(ID_Pedido, Status_Pedido)}
+                                                                >
+                                                                    <Iconify icon={'ooui:double-chevron-start-rtl'} />
+                                                                </IconButton>
+                                                            </Tooltip>
 
 
                                                         </TableCell>
@@ -744,7 +784,7 @@ export default function OrderPage() {
                                                                                         <IconButton
                                                                                             color="primary"
                                                                                             sx={{ fontSize: "24px" }}
-                                                                                            onClick={handleClickOpen}
+                                                                                            onClick={()=>{handleClickOpen(ancheta.ID_PedidoAnch)}}
                                                                                         >
                                                                                             <Iconify icon="grommet-icons:view" className="big-icon" />
                                                                                         </IconButton>
@@ -801,13 +841,13 @@ export default function OrderPage() {
                                                     }}
                                                 >
                                                     <Typography variant="h6" paragraph>
-                                                        Not found
+                                                        No encontrado
                                                     </Typography>
 
                                                     <Typography variant="body2">
-                                                        No results found for &nbsp;
+                                                        No se encontraron resultados para &nbsp;
                                                         <strong>&quot;{filterName}&quot;</strong>.
-                                                        <br /> Try checking for typos or using complete words.
+                                                        <br /> Intente verificar errores tipográficos o usar palabras completas.
                                                     </Typography>
                                                 </Paper>
                                             </TableCell>
@@ -830,40 +870,7 @@ export default function OrderPage() {
                     />
                 </Card>
             </Container>
-
-            <Dialog
-                fullWidth={true}
-                maxWidth={'sm'}
-                open={openModal}
-                onClose={handleCloseModal}
-            >
-                <DialogTitle>Insumos</DialogTitle>
-                <DialogContent>
-
-                    <React.Fragment >
-                        <Stack direction="row" alignItems="center" spacing={2}>
-
-                            <ListItemText
-                                primaryTypographyProps={{ style: { fontSize: 14 } }}
-                                secondaryTypographyProps={{ style: { fontSize: 14 } }}
-                                primary="Cerveza Aguila light"
-                                secondary="cerveza 200ml"
-                            />
-
-                            <Box >
-                                x1
-                            </Box>
-
-                            <Box sx={{ width: 110, height: 22, textAlign: 'right' }}  >
-                                $200.000
-                            </Box>
-                        </Stack>
-                    </React.Fragment>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleCloseModal}>Cerrar</Button>
-                </DialogActions>
-            </Dialog>
+            <VerInsumosPedido show={openModal} onHide={() => setOpenModal(false)} selectedAnchetaID={selectedAnchetaID}/>
         </>
     );
 }

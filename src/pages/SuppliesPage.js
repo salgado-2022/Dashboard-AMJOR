@@ -208,6 +208,15 @@ export default function SuppliesPage() {
     setOpen(null);
   };
 
+
+  const formatPrice = (price) => {
+    return price.toLocaleString('es-CO', {
+      style: 'currency',
+      currency: 'COP',
+      minimumFractionDigits: 0,
+    });
+  };
+
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0;
 
   const filteredUsers = applySortFilter(data, getComparator(order, orderBy), filterName);
@@ -264,13 +273,13 @@ export default function SuppliesPage() {
                         </TableCell>
                         <TableCell >
                           <Typography variant="subtitle2" noWrap>
-                            <Skeleton variant="rounded" width={45} height={22}/>
+                            <Skeleton variant="rounded" width={45} height={22} />
                           </Typography>
                         </TableCell>
 
                         <TableCell align="left"><Skeleton variant="rounded" width={166} height={22} /></TableCell>
-                        <TableCell align="left"><Skeleton variant="rounded" width={165} height={22}/></TableCell>
-                        <TableCell align="left"><Skeleton variant="rounded" width={48} height={22}/></TableCell>
+                        <TableCell align="left"><Skeleton variant="rounded" width={165} height={22} /></TableCell>
+                        <TableCell align="left"><Skeleton variant="rounded" width={48} height={22} /></TableCell>
 
                         <TableCell align="left">
                           <Label ><Skeleton variant="rounded" width={66} height={22} /></Label>
@@ -322,7 +331,7 @@ export default function SuppliesPage() {
 
                           <TableCell align="left">{NombreInsumo}</TableCell>
                           <TableCell align="left">{Descripcion}</TableCell>
-                          <TableCell align="left">{PrecioUnitario}</TableCell>
+                          <TableCell align="left">{formatPrice(PrecioUnitario)}</TableCell>
                           <TableCell align="left">
                             <Label color={(Estado === 'Agotado' && 'error') || 'success'}>{sentenceCase(Estado)}</Label>
                           </TableCell>
