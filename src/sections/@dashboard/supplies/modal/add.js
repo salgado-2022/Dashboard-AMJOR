@@ -148,12 +148,11 @@ function AddInsumo({ open, onClose, fetchData }) {
                             <TextField fullWidth sx={{ marginBottom: '16px' }} label="Nombre" variant="outlined" id="NombreInsumo" name="NombreInsumo" value={values.NombreInsumo} onChange={handleInput} error={nombreError !== ''}  helperText={nombreError}/>
                             <TextField fullWidth sx={{ marginBottom: '16px' }} label="Descripción" variant="outlined" id="Descripcion" name="Descripcion" value={values.Descripcion} onChange={handleInput} error={descripcionError !== ''}  helperText={descripcionError}/>
                             <TextField fullWidth type="number" sx={{ marginBottom: '16px' }} label="Precio" variant="outlined" id="PrecioUnitario" name="PrecioUnitario" value={values.PrecioUnitario} onChange={handleInput} error={precioError !== ''}  helperText={precioError}/>
-                            <input type="password"></input>
                         </Grid>
                     </Grid>
                     <DialogActions> 
-                        <Button type="submit" variant="contained" color="primary"  sx={{ marginTop: '8px' }}>Crear Insumo</Button>
-                        <Button variant="contained" color="secondary" onClick={handleCloseModal}  sx={{marginTop: '8px'}}>Cancelar</Button>
+                        <Button type="submit" variant="contained" color="primary" fullWidth sx={{ marginTop: '8px' }}>Crear Insumo</Button>
+                        <Button variant="contained" color="secondary" onClick={handleCloseModal} fullWidth sx={{marginTop: '8px'}}>Cancelar</Button>
                     </DialogActions> 
                 </form>           
             </DialogContent>        
