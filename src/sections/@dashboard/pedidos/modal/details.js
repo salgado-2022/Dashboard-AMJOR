@@ -7,7 +7,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-function VerInsumos(props) {
+function VerInsumosPedido(props) {
     const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
 
     const { selectedAnchetaID, onHide, show } = props;
@@ -36,7 +36,7 @@ function VerInsumos(props) {
         if (id) {
             const fetchData = async () => {
                 try {
-                    const res = await axios.get(`${apiUrl}/api/admin/anchetas/insancheta/` + id);
+                    const res = await axios.get(`${apiUrl}/api/admin/pedidos/detalle/ancheta/` + id);
                     setInsumo(res.data);
                     setIsLoading(false);
                 } catch (err) {
@@ -45,24 +45,12 @@ function VerInsumos(props) {
                 }
             };
 
-            axios.get(`${apiUrl}/api/admin/anchetas/anchellamada/` + id)
-                .then(res => {
-                    setDataA(prevValues => ({
-                        ...prevValues,
-                        NombreAncheta: res.data[0].NombreAncheta,
-                        Descripcion: res.data[0].Descripcion,
-                        PrecioUnitario: res.data[0].PrecioUnitario,
-                        image: res.data[0].image
-                    }));
-                })
-                .catch(err => {
-                    console.log(err);
-                    setIsLoading(false);
-                });
 
             fetchData();// Llama a la API al cargar el componente
         }
     }, [id]);
+
+    console.log(data)
 
     return (
         <Dialog onClose={onHide} open={show} TransitionComponent={Transition}>
@@ -77,15 +65,6 @@ function VerInsumos(props) {
                     </div>
                 ) : (
                     <>
-                        <Grid container spacing={2}>
-                            <Grid item md={6}>
-                                <Typography fontSize="24px" marginBottom="6px">{dataA.NombreAncheta}</Typography>
-                                <Typography>{dataA.Descripcion}</Typography>
-                            </Grid>
-                            <Grid item md={6}>
-                                <img src={`${apiUrl}/anchetas/` + dataA.image} alt="" />
-                            </Grid>
-                        </Grid>
                         <div style={{ padding: "10px" }}>
                             <br />
                             <table className="table">
@@ -101,10 +80,10 @@ function VerInsumos(props) {
                                     {data.map((insumos, index) => {
                                         return (
                                             <tr key={index}>
-                                                <th scope="row">{insumos.ID_Insumos_Ancheta}</th>
+                                                <th scope="row">{insumos.ID_PedidoInsumo}</th>
                                                 <td>{insumos.NombreInsumo}</td>
                                                 <td>{insumos.Cantidad}</td>
-                                                <td>{formatPrice(insumos.Total)}</td>
+                                                <td>{formatPrice(insumos.Precio)}</td>
                                             </tr>
                                         );
                                     })}
@@ -115,10 +94,10 @@ function VerInsumos(props) {
                 )}
             </DialogContent>
             <DialogActions>
-                <Typography variant="h4">Total: {formatPrice(dataA.PrecioUnitario)}</Typography>
+                {/* <Typography variant="h4">Total: {formatPrice(dataA.PrecioUnitario)}</Typography> */}
             </DialogActions>
         </Dialog>
     );
 }
 
-export { VerInsumos };
+export { VerInsumosPedido };
