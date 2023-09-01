@@ -2,21 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import Swal from 'sweetalert2';
 import axios from 'axios';
-import {
-  Button,
-  TextField,
-  Grid,
-  MenuItem,
-  Typography,
-  Switch,
-  Slide,
-  Dialog,
-  DialogContent
-} from '@mui/material';
-
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
+import { Button, TextField, Modal, Grid, MenuItem, Typography, Switch, Paper } from '@mui/material';
 
 function EditarUsuario(props) {
   const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
@@ -39,7 +25,6 @@ function EditarUsuario(props) {
   const [contrasenaError, setContrasenaError] = useState(false);
   const [guardadoExitoso, setGuardadoExitoso] = useState(false);
   const [isUsuarioActivo, setIsUsuarioActivo] = useState(false);
-  
 
   const handleInput = (event) => {
     const { name, value, type, checked } = event.target;
@@ -71,7 +56,6 @@ function EditarUsuario(props) {
             documento: userData.Documento_Cliente,
             nombre: userData.Nombre_Cliente,
             estado: userData.Estado,
-
           }));
           setSelectedRol(userData.ID_Rol);
           setIsUsuarioActivo(userData.Estado === 1);
@@ -107,11 +91,11 @@ function EditarUsuario(props) {
     event.preventDefault();
     const correoValido = validateEmail(values.correo);
     setCorreoError(!correoValido);
-  
+
     if (values.contrasena) {
       const contrasenaValida = validatePassword(values.contrasena);
       setContrasenaError(!contrasenaValida);
-  
+
       if (!contrasenaValida) {
         return;
       }
@@ -119,15 +103,15 @@ function EditarUsuario(props) {
     if (!correoValido) {
       return;
     }
-  
+
     const selectedRole = roles.find((rol) => rol.ID_Rol === selectedRol);
     const nuevoID_Rol = selectedRole.ID_Rol;
-  
+
     setValues((prevValues) => ({
       ...prevValues,
       ID_Rol: nuevoID_Rol,
     }));
-  
+
     axios
       .put(`${apiUrl}/api/admin/usuario/usuariarioedit/${id}`, values)
       .then((res) => {
@@ -145,7 +129,6 @@ function EditarUsuario(props) {
       })
       .catch((err) => console.log(err));
   };
-  
 
   const validateEmail = (email) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -164,8 +147,16 @@ function EditarUsuario(props) {
   });
 
   return (
-    <Dialog onClose={onHide} open={show} TransitionComponent={Transition}>
-      <DialogContent>
+    <Modal onClose={onHide} open={show}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+        }}
+      >
+        <Paper elevation={3} style={{ padding: '16px', borderRadius: '8px', width: '100%', maxWidth: '600px' }}>
           <h2 style={{ textAlign: 'center', marginBottom: '24px' }}>Editar datos de Usuario</h2>
           <form onSubmit={handleUpdate} id="editarUsuario">
             <Grid container spacing={2}>
@@ -247,13 +238,7 @@ function EditarUsuario(props) {
             </TextField>
             <Grid item xs={12}>
               <Grid container alignItems="center" spacing={1} style={{ marginTop: '16px' }}>
-                <Switch
-                  color="switch"
-                  id="estado"
-                  name="estado"
-                  checked={isUsuarioActivo}
-                  onChange={handleInput}
-                />
+                <Switch color="switch" id="estado" name="estado" checked={isUsuarioActivo} onChange={handleInput} />
                 <Typography>Usuario Activo</Typography>
               </Grid>
             </Grid>
@@ -270,8 +255,9 @@ function EditarUsuario(props) {
               </Grid>
             </Grid>
           </form>
-      </DialogContent>
-    </Dialog>
+        </Paper>
+      </div>
+    </Modal>
   );
 }
 

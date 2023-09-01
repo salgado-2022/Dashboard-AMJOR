@@ -17,7 +17,7 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Slide
+  Slide,
 } from '@mui/material';
 import axios from 'axios';
 import Swal from 'sweetalert2';
@@ -85,9 +85,7 @@ function ConfiFormulario({ onClose }) {
       errors.rol = 'Debes ingresar un rol.';
     }
 
-    const selectedPermissions = Object.keys(permissionsMap).filter(
-      (permissionId) => permissionsMap[permissionId]
-    );
+    const selectedPermissions = Object.keys(permissionsMap).filter((permissionId) => permissionsMap[permissionId]);
 
     if (selectedPermissions.length === 0) {
       errors.permissions = 'Debes seleccionar al menos un permiso.';

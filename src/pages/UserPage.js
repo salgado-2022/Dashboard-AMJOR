@@ -14,7 +14,6 @@ import {
   Avatar,
   Button,
   Popover,
-  Checkbox,
   TableRow,
   MenuItem,
   TableBody,
@@ -35,7 +34,6 @@ import { EditarUsuario } from '../sections/@dashboard/user/modal/editar';
 // sections
 import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
 import OrderListHead from '../sections/@dashboard/pedidos/OrderListHead';
-
 
 // ----------------------------------------------------------------------
 
@@ -110,7 +108,7 @@ export default function UserPage() {
         setData(res.data);
         setTimeout(() => {
           setLoading(false);
-        }, 1000)
+        }, 1000);
       })
       .catch((err) => console.log(err));
   };
@@ -221,10 +219,9 @@ export default function UserPage() {
             Usuarios
           </Typography>
           <Button variant="contained" onClick={handleOpenModal} startIcon={<Iconify icon="eva:plus-fill" />}>
-
             Crear nuevo usuario
           </Button>
-          <UsuariosFormulario2 open={openModal} onClose={handleCloseModal} fetchData={fetchData}/>
+          <UsuariosFormulario2 open={openModal} onClose={handleCloseModal} fetchData={fetchData} />
         </Stack>
         <Card>
           <UserListToolbar
@@ -244,14 +241,11 @@ export default function UserPage() {
                     headLabel={TABLE_HEAD}
                     rowCount={data.length}
                     numSelected={selected.length}
-
                   />
                   <TableBody>
-
                     {Array.from({ length: rowsPerPage }).map((_, index) => (
-                      <TableRow key={index} hover role="checkbox" >
-                        <TableCell width={38}>
-                        </TableCell>
+                      <TableRow key={index} hover role="checkbox">
+                        <TableCell width={38}></TableCell>
                         <TableCell component="th" scope="row" padding="none" width={87}>
                           <Stack direction="row" alignItems="center" spacing={2}>
                             <Skeleton variant="circular" width={40} height={40} />
@@ -278,25 +272,22 @@ export default function UserPage() {
                         </TableCell>
 
                         <TableCell align="left" width={113}>
-                          <Label ><Skeleton variant="rounded" width={50} height={22} /></Label>
+                          <Label>
+                            <Skeleton variant="rounded" width={50} height={22} />
+                          </Label>
                         </TableCell>
 
-                        <TableCell align="left" width={92} >
-                          <IconButton
-                            size="large"
-                            color="inherit"
-                          >
+                        <TableCell align="left" width={92}>
+                          <IconButton size="large" color="inherit">
                             <Iconify icon={'eva:more-vertical-fill'} />
                           </IconButton>
                         </TableCell>
                       </TableRow>
                     ))}
-
                   </TableBody>
                 </Table>
               </TableContainer>
             ) : (
-
               <TableContainer sx={{ minWidth: 1200 }}>
                 <Table>
                   <OrderListHead
@@ -313,8 +304,7 @@ export default function UserPage() {
                       const estadoText = Estado === 1 ? 'Activo' : 'Inactivo'; // Texto del estado según el valor
                       return (
                         <TableRow hover tabIndex={-1} role="checkbox" selected={selectedUser}>
-                          <TableCell >
-                          </TableCell>
+                          <TableCell></TableCell>
                           <TableCell component="th" scope="row" padding="none">
                             <Stack direction="row" alignItems="center" spacing={2}>
                               <Avatar alt="" src="" />
@@ -323,22 +313,18 @@ export default function UserPage() {
                               </Typography>
                             </Stack>
                           </TableCell>
-                          <TableCell key={Documento} >
-                            {Documento}
-                          </TableCell>
-                          <TableCell key={Nombre} >
+                          <TableCell key={Documento}>{Documento}</TableCell>
+                          <TableCell key={Nombre}>
                             {Nombre} {Apellido}
                           </TableCell>
-                          <TableCell key={correo} >
-                            {correo}
+                          <TableCell key={correo}>{correo}</TableCell>
+                          <TableCell key={Nombre_Rol}>{row.Nombre_Rol}</TableCell>
+                          <TableCell>
+                            <Label color={(estadoText === 'Activo' && 'success') || 'error'}>
+                              {sentenceCase(estadoText)}
+                            </Label>
                           </TableCell>
-                          <TableCell key={Nombre_Rol} >
-                            {row.Nombre_Rol}
-                          </TableCell>
-                          <TableCell >
-                            <Label color={(estadoText === 'Activo' && 'success') || 'error'}>{sentenceCase(estadoText)}</Label>
-                          </TableCell>
-                          <TableCell >
+                          <TableCell>
                             <IconButton
                               size="large"
                               color="inherit"
@@ -409,7 +395,6 @@ export default function UserPage() {
                   )}
                 </Table>
               </TableContainer>
-
             )}
           </Scrollbar>
           <TablePagination
@@ -423,7 +408,12 @@ export default function UserPage() {
           />
         </Card>
       </Container>
-      <EditarUsuario show={modalShow} onHide={() => setModalShow(false)} fetchData={fetchData} selectedUsuarioID={selectedUser1} />
+      <EditarUsuario
+        show={modalShow}
+        onHide={() => setModalShow(false)}
+        fetchData={fetchData}
+        selectedUsuarioID={selectedUser1}
+      />
     </>
   );
 }
