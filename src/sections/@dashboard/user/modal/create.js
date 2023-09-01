@@ -13,7 +13,7 @@ import {
   IconButton,
   Dialog,
   DialogContent,
-  Slide
+  Slide,
 } from '@mui/material';
 import axios from 'axios';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
@@ -23,11 +23,11 @@ import Swal from 'sweetalert2';
 
 const NoNumberArrowsTextField = styled(TextField)(({ theme }) => ({
   '& input[type=number]': {
-      MozAppearance: 'textfield', // Firefox
-      '&::-webkit-outer-spin-button, &::-webkit-inner-spin-button': {
-          WebkitAppearance: 'none',
-          margin: 0,
-      },
+    MozAppearance: 'textfield', // Firefox
+    '&::-webkit-outer-spin-button, &::-webkit-inner-spin-button': {
+      WebkitAppearance: 'none',
+      margin: 0,
+    },
   },
 }));
 
@@ -37,27 +37,26 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-
 function UsuariosFormulario2({ open, onClose, fetchData }) {
   const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
 
   const [values, setValues] = useState({
     Documento: '',
-        Nombre: '',
-        Apellidos: '',
-        Telefono: '',
-        Email: '',
-        Password: '',
+    Nombre: '',
+    Apellidos: '',
+    Telefono: '',
+    Email: '',
+    Password: '',
     rol: '',
   });
 
   const [validationErrors, setValidationErrors] = useState({
     Documento: false,
-        Nombre: false,
-        Apellidos: false,
-        Telefono: false,
-        Email: false,
-        Password: false,
+    Nombre: false,
+    Apellidos: false,
+    Telefono: false,
+    Email: false,
+    Password: false,
     rol: false,
   });
   const [roles, setRoles] = useState([]);
@@ -71,44 +70,44 @@ function UsuariosFormulario2({ open, onClose, fetchData }) {
   const resetForm = () => {
     setValues({
       Documento: '',
-        Nombre: '',
-        Apellidos: '',
-        Telefono: '',
-        Email: '',
-        Password: '',
-    rol: '',
+      Nombre: '',
+      Apellidos: '',
+      Telefono: '',
+      Email: '',
+      Password: '',
+      rol: '',
     });
     setValidationErrors({
       Documento: false,
-        Nombre: false,
-        Apellidos: false,
-        Telefono: false,
-        Email: false,
-        Password: false,
-    rol: false,
+      Nombre: false,
+      Apellidos: false,
+      Telefono: false,
+      Email: false,
+      Password: false,
+      rol: false,
     });
   };
 
-    const [documentoInput, setDocumentoInput] = useState(null);
+  const [documentoInput, setDocumentoInput] = useState(null);
 
-    const [nameInput, setNameInput] = useState(null)
+  const [nameInput, setNameInput] = useState(null);
 
-    const [lastName, setLastName] = useState(null)
+  const [lastName, setLastName] = useState(null);
 
-    const [telInput, setTelInput] = useState(null)
+  const [telInput, setTelInput] = useState(null);
 
-    const [emailInput, setEmailInput] = useState(null);
+  const [emailInput, setEmailInput] = useState(null);
 
-    const [passwordInput, setPasswordInput] = useState(null);
+  const [passwordInput, setPasswordInput] = useState(null);
 
-    const documentoRegex = /^\d{1,10}$/;
+  const documentoRegex = /^\d{1,10}$/;
 
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    
-    //Validacion para que acepte ñ y espacios en blanco
-    const textRegex = /^[a-zA-Z0-9ñÑ\s]+$/;
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/
+  //Validacion para que acepte ñ y espacios en blanco
+  const textRegex = /^[a-zA-Z0-9ñÑ\s]+$/;
+
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
 
   useEffect(() => {
     axios
@@ -130,81 +129,78 @@ function UsuariosFormulario2({ open, onClose, fetchData }) {
   };
 
   const handleBlur = (event) => {
-    const { name, value } = event.target
+    const { name, value } = event.target;
 
     if (name === 'Documento') {
-        if (!value) {
-            setDocumentoInput('Campo obligatorio')
-        } else if (!documentoRegex.test(value)) {
-            setDocumentoInput('Documento invalido')
-        } else {
+      if (!value) {
+        setDocumentoInput('Campo obligatorio');
+      } else if (!documentoRegex.test(value)) {
+        setDocumentoInput('Documento invalido');
+      } else {
+        setDocumentoInput(null);
+        axios.post(`${apiUrl}/api/validate/documento`, values).then((res) => {
+          if (res.data.Status === 'Success') {
             setDocumentoInput(null);
-            axios.post(`${apiUrl}/api/validate/documento`, values)
-                .then(res => {
-                    if (res.data.Status === "Success") {
-                        setDocumentoInput(null)
-                    } else if (res.data.Status === "Exists") {
-                        setDocumentoInput('El documento ya se encuentra registrado')
-                    }
-                })
-        }
+          } else if (res.data.Status === 'Exists') {
+            setDocumentoInput('El documento ya se encuentra registrado');
+          }
+        });
+      }
     }
     if (name === 'Email') {
-        if (!value) {
-            setEmailInput('Campo obligatorio')
-        } else if (!emailRegex.test(value)) {
-            setEmailInput('Correo invalido')
-        } else {
-            setEmailInput(null);
+      if (!value) {
+        setEmailInput('Campo obligatorio');
+      } else if (!emailRegex.test(value)) {
+        setEmailInput('Correo invalido');
+      } else {
+        setEmailInput(null);
 
-            axios.post(`${apiUrl}/api/validate/email`, values)
-                .then(res => {
-                    if (res.data.Status === "Success") {
-                        setEmailInput(null)
-                    } else if (res.data.Status === "Exists") {
-                        setEmailInput('El correo ya esta registrado')
-                    }
-                })
-        }
+        axios.post(`${apiUrl}/api/validate/email`, values).then((res) => {
+          if (res.data.Status === 'Success') {
+            setEmailInput(null);
+          } else if (res.data.Status === 'Exists') {
+            setEmailInput('El correo ya esta registrado');
+          }
+        });
+      }
     }
     if (name === 'Telefono') {
-        if (!value) {
-            setTelInput('Campo obligatorio')
-        } else if (!documentoRegex.test(value)) {
-            setTelInput('Telefono invalido')
-        } else {
-            setTelInput(null)
-        }
+      if (!value) {
+        setTelInput('Campo obligatorio');
+      } else if (!documentoRegex.test(value)) {
+        setTelInput('Telefono invalido');
+      } else {
+        setTelInput(null);
+      }
     }
     if (name === 'Nombre') {
-        if (!value) {
-            setNameInput('Campo obligatorio')
-        } else if (!textRegex.test(value)) {
-            setNameInput('Nombre invalido')
-        } else {
-            setNameInput(null)
-        }
+      if (!value) {
+        setNameInput('Campo obligatorio');
+      } else if (!textRegex.test(value)) {
+        setNameInput('Nombre invalido');
+      } else {
+        setNameInput(null);
+      }
     }
     if (name === 'Apellidos') {
-        if (!value) {
-            setLastName('Campo obligatorio')
-        } else if (!textRegex.test(value)) {
-            setLastName('Apellido invalido')
-        } else {
-            setLastName(null)
-        }
+      if (!value) {
+        setLastName('Campo obligatorio');
+      } else if (!textRegex.test(value)) {
+        setLastName('Apellido invalido');
+      } else {
+        setLastName(null);
+      }
     }
     if (name === 'Password') {
-        if (!value) {
-            setPasswordInput('Campo obligatorio')
-        } else if (!passwordRegex.test(value)) {
-            setPasswordInput('Contraseña invalida')
-        } else {
-            setPasswordInput(null)
-        }
+      if (!value) {
+        setPasswordInput('Campo obligatorio');
+      } else if (!passwordRegex.test(value)) {
+        setPasswordInput('Contraseña invalida');
+      } else {
+        setPasswordInput(null);
+      }
     }
-};
-
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -257,50 +253,44 @@ function UsuariosFormulario2({ open, onClose, fetchData }) {
   };
 
   return (
-    <Dialog
-      open={open}
-      onClose={handleCloseModal}
-      TransitionComponent={Transition}
-    >
-      <DialogContent
-      >
+    <Dialog open={open} onClose={handleCloseModal} TransitionComponent={Transition}>
+      <DialogContent>
         <h2 style={{ marginBottom: '16px', textAlign: 'center' }}>Crear un nuevo usuario</h2>
         <form onSubmit={handleSubmit}>
-        <Grid container spacing={2}>
-                            <Grid item xs={12} sm={6}>
-                                <NoNumberArrowsTextField
-                                    label="Documento"
-                                    name="documento"
-                                    type="number"
-                                    margin="dense"
-                                    fullWidth
-                                    color="secondary"
-                                    value={values.documento}
-                                    onChange={handleInputChange}
-                                    onBlur={handleBlur}
-                                     error={documentoInput !== null}
-                                    helperText={documentoInput}
-                                    inputProps={{
-                                        inputMode: 'numeric',
-                                        pattern: '[0-9]*',
-                                    }}
-                                />
-                          
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    label="Nombre"
-                                    name="nombre"
-                                    type="text"
-                                    margin="dense"
-                                    color="secondary"
-                                    fullWidth
-                                    value={values.nombre}
-                                    onChange={handleInputChange}
-                                    onBlur={handleBlur}
-                                    error={nameInput !== null}
-                                    helperText={nameInput}
-                                />
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <NoNumberArrowsTextField
+                label="Documento"
+                name="documento"
+                type="number"
+                margin="dense"
+                fullWidth
+                color="secondary"
+                value={values.documento}
+                onChange={handleInputChange}
+                onBlur={handleBlur}
+                error={documentoInput !== null}
+                helperText={documentoInput}
+                inputProps={{
+                  inputMode: 'numeric',
+                  pattern: '[0-9]*',
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Nombre"
+                name="nombre"
+                type="text"
+                margin="dense"
+                color="secondary"
+                fullWidth
+                value={values.nombre}
+                onChange={handleInputChange}
+                onBlur={handleBlur}
+                error={nameInput !== null}
+                helperText={nameInput}
+              />
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
@@ -325,7 +315,7 @@ function UsuariosFormulario2({ open, onClose, fetchData }) {
                 margin="dense"
                 fullWidth
                 error={telInput !== null}
-                                    helperText={telInput}
+                helperText={telInput}
               />
             </Grid>
             <Grid item xs={12}>
@@ -401,7 +391,6 @@ function UsuariosFormulario2({ open, onClose, fetchData }) {
                 resetForm();
                 onClose();
               }}
-              
             >
               Crear Usuario
             </Button>

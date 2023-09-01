@@ -168,6 +168,8 @@ export default function ListaConfiguracion() {
       });
   };
 
+  
+
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
@@ -220,6 +222,7 @@ export default function ListaConfiguracion() {
     setSelectedConfiguracionID(ID_Rol);
     setModalShow(true);
     setOpen(null);
+    setShowDeleteMenu(false); 
   };
 
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0;
@@ -261,9 +264,9 @@ export default function ListaConfiguracion() {
                   />
                   <TableBody>
                     {Array.from({ length: rowsPerPage }).map((_, index) => (
-                      <TableRow key={index} hover role="checkbox">
-                        <TableCell padding="checkbox">
-                          <Checkbox />
+                      <TableRow key={index} hover role="swict">
+                        <TableCell padding="swict">
+                          <swict />
                         </TableCell>
                         <TableCell component="th" scope="row" padding="none">
                           <Stack direction="row" alignItems="center" spacing={2}>
@@ -305,19 +308,21 @@ export default function ListaConfiguracion() {
                 <TableBody>
                   {filteredRol.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
                     const { ID_Rol, Nombre_Rol, estado } = row;
-                    const selectedConfiguracionID = selected.indexOf(ID_Rol) !== -1;
+                    const selectedConfiguracion = selected.indexOf(ID_Rol) !== -1;
+                    console.table( selectedConfiguracionID);
+                    console.log("error sdfsdfased");
                     const estadoText = estado === 1 ? 'Activo' : 'Inactivo';
                     return (
                       <TableRow
                         hover
                         key={ID_Rol}
                         tabIndex={-1}
-                        role="checkbox"
-                        selected={selected.indexOf(ID_Rol) !== -1}
+                        role="swict"
+                        selected={selectedConfiguracion}
                       >
                         <TableCell padding="checkbox">
                           <Checkbox
-                            checked={selected.indexOf(ID_Rol) !== -1}
+                            checked={selectedConfiguracion}
                             onClick={(event) => handleClick(event, ID_Rol)}
                           />
                         </TableCell>
@@ -344,32 +349,32 @@ export default function ListaConfiguracion() {
                             <Iconify icon={'eva:more-vertical-fill'} />
                           </IconButton>
                           <Popover
-                            open={Boolean(open) && showDeleteMenu}
-                            anchorEl={open}
-                            onClose={handleCloseMenu}
-                            anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-                            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-                            PaperProps={{
-                              sx: {
-                                p: 1,
-                                width: 140,
-                                '& .MuiMenuItem-root': {
-                                  px: 1,
-                                  typography: 'body2',
-                                  borderRadius: 0.75,
-                                },
-                              },
-                            }}
-                          >
-                            <MenuItem sx={{ color: 'warning.main' }} onClick={() => handleEditar(ID_Rol)}>
-                                <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
-                                Editar
-                              </MenuItem>
-                              <MenuItem sx={{ color: 'error.main' }} onClick={() => handleDelete(selectedConfiguracionID)}>
-                                <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
-                                Eliminar
-                              </MenuItem>
-                          </Popover>
+  open={Boolean(open)}
+  anchorEl={open}
+  onClose={handleCloseMenu}
+  anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
+  transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+  PaperProps={{
+    sx: {
+      p: 1,
+      width: 140,
+      '& .MuiMenuItem-root': {
+        px: 1,
+        typography: 'body2',
+        borderRadius: 0.75,
+      },
+    },
+  }}
+>
+  <MenuItem sx={{ color: 'warning.main' }} onClick={() => handleEditar(selectedConfiguracionID)}>
+    <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
+    Editar
+  </MenuItem>
+  <MenuItem sx={{ color: 'error.main' }} onClick={() => handleDelete(selectedConfiguracionID)}>
+    <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
+    Eliminar
+  </MenuItem>
+</Popover>
                         </TableCell>
                       </TableRow>
                     );
@@ -419,11 +424,9 @@ export default function ListaConfiguracion() {
       <EditarConfi
         show={modalShow}
         onHide={() => setModalShow(false)}
-        selectedConfiguracionID={selectedConfiguracionID}
-        onEditSuccess={() => {
-          setModalShow(false);
-          fetchData();
-        }}
+        selectedConfiguracionID={selectedConfiguracionID }
+        
+        fetchData={fetchData}
       />
     </>
   );
