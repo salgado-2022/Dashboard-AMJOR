@@ -1,7 +1,7 @@
 import { Helmet } from 'react-helmet-async';
 import { filter } from 'lodash';
 import { sentenceCase } from 'change-case';
-import { useState, useEffect, useCallback} from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Swal from 'sweetalert2';
@@ -118,7 +118,7 @@ export default function AnchetasPage() {
         }, 1000)
       })
       .catch((err) => console.log(err));
-    }, [apiUrl]);
+  }, [apiUrl]);
 
   useEffect(() => {
     setLoading(true);
@@ -202,12 +202,20 @@ export default function AnchetasPage() {
     setSelectedAncheta(idSelectedUser);
     navigate("/dashboard/anchetas/editarancheta", { state: { idAncheta: selectedAncheta } });
   };
-  
+
 
   const handleDetalle = (idSelectedUser) => {
-    setSelectedAncheta(idSelectedUser); 
+    setSelectedAncheta(idSelectedUser);
     setModalShowDetalle(true);
     setOpen(null);
+  };
+
+  const formatPrice = (price) => {
+    return price.toLocaleString('es-CO', {
+      style: 'currency',
+      currency: 'COP',
+      minimumFractionDigits: 0,
+    });
   };
 
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0;
@@ -215,7 +223,7 @@ export default function AnchetasPage() {
   const filteredUsers = applySortFilter(data, getComparator(order, orderBy), filterName);
 
   const isNotFound = !filteredUsers.length && !!filterName;
-  
+
   return (
     <>
       <Helmet>
@@ -338,7 +346,7 @@ export default function AnchetasPage() {
 
                           <TableCell align="left">{NombreAncheta}</TableCell>
                           <TableCell align="left">{Descripcion}</TableCell>
-                          <TableCell align="left">{PrecioUnitario}</TableCell>
+                          <TableCell align="left">{formatPrice(PrecioUnitario)}</TableCell>
                           <TableCell align="left">
                             <Label color={(Estado === 'Agotado' && 'error') || 'success'}>{sentenceCase(Estado)}</Label>
                           </TableCell>
@@ -438,7 +446,7 @@ export default function AnchetasPage() {
         </Card>
       </Container>
 
-      <VerInsumos show={modalShowDetalle} onHide={() => setModalShowDetalle(false)} selectedAnchetaID={selectedAncheta}/>
+      <VerInsumos show={modalShowDetalle} onHide={() => setModalShowDetalle(false)} selectedAnchetaID={selectedAncheta} />
     </>
   );
 }

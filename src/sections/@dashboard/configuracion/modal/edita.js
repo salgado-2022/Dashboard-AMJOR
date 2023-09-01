@@ -17,13 +17,13 @@ import {
   Grid,
   Slide,
   Dialog,
-  DialogContent
+  DialogContent,
+  DialogActions,
 } from '@mui/material';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
-
 
 function EditarConfi(props) {
   const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
@@ -32,11 +32,11 @@ function EditarConfi(props) {
   const id = selectedConfiguracionID;
   const [selectedPermisos, setSelectedPermisos] = useState([]);
   const [isRolActivo, setIsRolActivo] = useState(false);
-  const [permisos, setPermisos] = useState([]);
+  const [permissions, setPermissions] = useState([]);
+  const [permissionsMap, setPermissionsMap] = useState({});
   const [values, setValues] = useState({
     Nombre_Rol: '',
     estado: '',
-    Permisos: [],
   });
 
   const handleInput = (event) => {
@@ -45,18 +45,12 @@ function EditarConfi(props) {
     if (type === 'checkbox') {
       if (name === 'estado') {
         setIsRolActivo(checked);
+        setValues((prev) => ({ ...prev, [name]: checked }));
       } else {
-        if (checked) {
-          setSelectedPermisos((prevSelectedPermisos) => [...prevSelectedPermisos, value]);
-        } else {
-          setSelectedPermisos((prevSelectedPermisos) =>
-            prevSelectedPermisos.filter((permiso) => permiso !== value)
-          );
-        }
+        setSelectedPermisos((prevSelectedPermisos) =>
+          checked ? [...prevSelectedPermisos, value] : prevSelectedPermisos.filter((permiso) => permiso !== value)
+        );
       }
-    } else if (type === 'select-multiple') {
-      const selectedOptions = Array.from(event.target.selectedOptions, (option) => option.value);
-      setValues((prev) => ({ ...prev, [name]: selectedOptions }));
     } else {
       setValues((prev) => ({ ...prev, [name]: value }));
     }
@@ -71,12 +65,11 @@ function EditarConfi(props) {
   };
 
   const handleCloseModal = () => {
-    onHide(); // Cerrar la modal
+    onHide();
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    // Realizar las operaciones necesarias antes de cerrar la modal
     try {
       await handleUpdate();
       handleCloseModal();
@@ -92,7 +85,7 @@ function EditarConfi(props) {
         estado: values.estado,
         Permisos: selectedPermisos,
       };
-      await axios.put(`${apiUrl}/api/admin/configuracion/editarRol/${id}`, updatedData);
+      await axios.put(`${apiUrl}/api/admin/configuracion/confiedit/${id}`, updatedData);
       Swal.fire({
         title: 'Modificado Correctamente',
         text: 'Tu rol se ha sido modificado correctamente',
@@ -116,97 +109,120 @@ function EditarConfi(props) {
     }
   };
 
+  const loadPermissions = () => {
+    axios
+      .get(`${apiUrl}/api/admin/listpermisos`)
+      .then((res) => {
+        const permissionsData = {};
+        res.data.forEach((permission) => {
+          permissionsData[permission.ID_Permiso] = false;
+        });
+        setPermissionsMap(permissionsData);
+        setPermissions(res.data);
+      })
+      .catch((err) => {
+        console.error('Error al cargar la lista de permisos:', err);
+      });
+  };
+
+  const loadPermissionsForRole = () => {
+    axios
+      .get(`${apiUrl}/api/admin/configuracion/confillamada/${id}`)
+      .then((res) => {
+        setValues({
+          Nombre_Rol: res.data.Nombre_Rol,
+          estado: res.data.estado,
+        });
+        setIsRolActivo(res.data.estado === 1);
+        setSelectedPermisos(res.data.permisos.map((permiso) => permiso.ID_Permiso));
+
+        const permissionsData = {};
+        res.data.permisos.forEach((permiso) => {
+          permissionsData[permiso.ID_Permiso] = true;
+        });
+        setPermissionsMap(permissionsData);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   useEffect(() => {
     if (show) {
-      axios
-        .get(`${apiUrl}/api/admin/configuracion/confillamada/${id}`)
-        .then((res) => {
-          console.log(res);
-          setValues((prevValues) => ({
-            ...prevValues,
-            Nombre_Rol: res.data.Nombre_Rol,
-            estado: res.data.estado,
-          }));
-          setIsRolActivo(res.data.estado === 1);
-          setPermisos(res.data.permisos.map((permiso) => permiso.ID_Permiso));
-          setSelectedPermisos(res.data.permisos.map((permiso) => permiso.ID_Permiso));
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      loadPermissionsForRole();
     }
+    loadPermissions();
   }, [id, show]);
 
   return (
-    <Dialog
-      open={show}
-      onClose={handleCloseModal}
-      TransitionComponent={Transition}
-    >
-      <DialogContent>
+    <Dialog open={show} onClose={handleCloseModal} TransitionComponent={Transition}>
+      <DialogContent sx={{ width: '600px' }}>
         <Typography variant="h5" align="center" sx={{ mb: 4 }}>
           Editar Roles y los permisos
         </Typography>
-        <form onSubmit={handleSubmit}>
-          <Stack spacing={3}>
-            <TextField
-              fullWidth
-              id="Nombre_Rol"
-              name="Nombre_Rol"
-              label="Nombre del Rol"
-              value={values.Nombre_Rol}
-              onChange={handleInput}
-            />
-            <TableContainer component={Paper}>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Permiso</TableCell>
-                    <TableCell align="center">Seleccionar</TableCell>
+        <Stack spacing={3}>
+          <TextField
+            fullWidth
+            id="Nombre_Rol"
+            name="Nombre_Rol"
+            label="Nombre del Rol"
+            value={values.Nombre_Rol}
+            onChange={handleInput}
+          />
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Permiso</TableCell>
+                  <TableCell align="center">Seleccionar</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {permissions.map((permiso) => (
+                  <TableRow key={permiso.ID_Permiso}>
+                    <TableCell>{permiso.NombrePermiso}</TableCell>
+                    <TableCell align="center">
+                      <Switch
+                        checked={selectedPermisos.includes(permiso.ID_Permiso)}
+                        onChange={() => handleSwitchChange(permiso.ID_Permiso)}
+                      />
+                    </TableCell>
                   </TableRow>
-                </TableHead>
-                <TableBody>
-                  {permisos.map((permiso) => (
-                    <TableRow key={permiso.ID_Permiso}>
-                      <TableCell>{permiso.NombrePermiso}</TableCell>
-                      <TableCell align="center">
-                        <Switch
-                          checked={selectedPermisos.includes(permiso.ID_Permiso)}
-                          onChange={() => handleSwitchChange(permiso.ID_Permiso)}
-                        />
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-            <Grid item xs={12}>
-              <Grid container alignItems="center" spacing={1} style={{ marginTop: '16px' }}>
-                <Switch
-                  color="success"
-                  id="estado"
-                  name="estado"
-                  checked={isRolActivo}
-                  onChange={handleInput}
-                />
-                <Typography>Rol Activo</Typography>
-              </Grid>
-            </Grid>
-            <Grid container spacing={1}>
-              <Grid item xs={6}>
-                <Button type="submit" variant="contained" color="primary" fullWidth>
-                  Guardar cambios
-                </Button>
-              </Grid>
-              <Grid item xs={6}>
-                <Button variant="contained" color="secondary" fullWidth onClick={handleCloseModal}>
-                  Cancelar
-                </Button>
-              </Grid>
-            </Grid>
-          </Stack>
-        </form>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Stack>
       </DialogContent>
+      <Grid item xs={12}>
+        <Grid container alignItems="center" spacing={-1} style={{ marginTop: '1px' }}>
+          <Switch color="switch" id="estado" name="estado" checked={isRolActivo} onChange={handleInput} />
+          <Typography>Rol Activo</Typography>
+        </Grid>
+      </Grid>
+      <DialogActions>
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          id="modRol"
+          fullWidth
+          style={{ marginTop: '8px' }}
+          onClick={handleSubmit}
+        >
+          Modificar el rol
+        </Button>
+        <Button
+          variant="contained"
+          color="secondary"
+          id="cancelarRol"
+          fullWidth
+          style={{ marginTop: '8px' }}
+          onClick={handleCloseModal}
+        >
+          Cancelar
+        </Button>
+      </DialogActions>
     </Dialog>
   );
 }

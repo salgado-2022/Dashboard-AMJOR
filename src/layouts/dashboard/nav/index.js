@@ -84,8 +84,7 @@ export default function Nav({ openNav, onCloseNav }) {
 
   
   const filteredNavConfig = navConfig.filter(configItem => data.includes(configItem.title));
-  console.log(filteredNavConfig)
-  console.log(data)
+
 
 
 
