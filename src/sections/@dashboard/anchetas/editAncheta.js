@@ -35,6 +35,7 @@ import { Insumoscontext } from './context/Context';
 
 function EditAncheta() {
     const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
+    const deployApiUrl = process.env.REACT_APP_AMJOR_DEPLOY_API_URL;
 
     const location = useLocation();
     const id = location.state?.idAncheta;
@@ -190,7 +191,7 @@ function EditAncheta() {
             formdata.append('PrecioUnitario', Precio.toString());
             formdata.append('ID_Estado', values.ID_Estado);
             formdata.append('Insumos', JSON.stringify(states));
-            axios.put(`${apiUrl}/api/admin/anchetas/anchetaedit/` + id, formdata)
+            axios.put(`${deployApiUrl}/api/admin/anchetas/anchetaedit/` + id, formdata)
             .then(res => {
                 console.log(res);
                 Swal.fire({
@@ -204,7 +205,7 @@ function EditAncheta() {
                     const formdata = new FormData();
                     formdata.append('image', values.image);
                     formdata.append('oldImage', oldImage);
-                    axios.put(`${apiUrl}/api/admin/anchetas/anchetaedit/` + id, formdata)
+                    axios.put(`${deployApiUrl}/api/admin/anchetas/anchetaedit/` + id, formdata)
                 }
                 navigate("/dashboard/anchetas");
             })
@@ -271,7 +272,7 @@ function EditAncheta() {
                     <Card elevation={3} style={{ marginBottom: '16px' }}>
                     {values.image && (
                         <div>
-                            <CardMedia component="img" alt="" height="235px" image={imageUrlEdit || `http://localhost:4000/anchetas/` + values.image}/> 
+                            <CardMedia component="img" alt="" height="235px" image={imageUrlEdit || `${deployApiUrl}/anchetas/` + values.image}/> 
                             <IconButton color="trash" sx={{position: "absolute", top: "0px", right: "8px"}} onClick={() => {
                                 setImageUrlEdit(null);
                                 setValues((prev) => ({ ...prev, image: null }));
