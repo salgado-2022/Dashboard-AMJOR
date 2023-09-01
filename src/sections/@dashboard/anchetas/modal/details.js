@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Dialog, TextField, Button, DialogActions, Grid, DialogContent, Typography } from '@mui/material';
+import { Dialog, DialogTitle, IconButton, DialogActions, Grid, DialogContent, Typography, Slide } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+    return <Slide direction="up" ref={ref} {...props} />;
+  });
 
 function VerInsumos(props) {
     const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
@@ -60,22 +65,27 @@ function VerInsumos(props) {
     }, [id]);
 
     return (
-        <Dialog onClose={onHide} open={show}>
-            <DialogContent>
+        <Dialog onClose={onHide} open={show} TransitionComponent={Transition}>
+            <DialogTitle>Detalles de la ancheta</DialogTitle>
+            <IconButton onClick={onHide} sx={{position: 'absolute', right: 8, top: 8, color: (theme) => theme.palette.grey[500] }}>
+                <CloseIcon />
+            </IconButton>
+            <DialogContent dividers>
                 {isLoading ? (
                     <div className="text-center">
                         <h3>Espera un momento...</h3>
                     </div>
                 ) : (
                     <>
-                        <div className="section" style={{ display: "flex", justifyContent: "space-between", padding: "10px" }}>
-                            <div className="text">
-                                <br />
-                                <h1 style={{ margin: "0", fontSize: '24px' }}>{dataA.NombreAncheta}</h1>
-                                <p style={{ marginRight: "10px", fontSize: '15px' }}>{dataA.Descripcion}</p>
-                            </div>
-                            <img src={`${apiUrl}/anchetas/` + dataA.image} alt="" style={{ marginTop: "30px", maxWidth: "300px" }} />
-                        </div>
+                    <Grid container spacing={2}>
+                        <Grid item md={6}>
+                            <Typography fontSize="24px" marginBottom="6px">{dataA.NombreAncheta}</Typography>
+                            <Typography>{dataA.Descripcion}</Typography>
+                        </Grid>
+                        <Grid item md={6}>
+                            <img src={`${apiUrl}/anchetas/` + dataA.image} alt=""/>
+                        </Grid>
+                    </Grid>
                         <div style={{ padding: "10px" }}>
                             <br />
                             <table className="table">
@@ -100,11 +110,13 @@ function VerInsumos(props) {
                                     })}
                                 </tbody>
                             </table>
-                            <h4>Total: {formatPrice(dataA.PrecioUnitario)}</h4>
                         </div>
                     </>
                 )}
             </DialogContent>
+            <DialogActions>
+                <Typography variant="h4">Total: {formatPrice(dataA.PrecioUnitario)}</Typography>
+            </DialogActions>
         </Dialog>
     );
 }
