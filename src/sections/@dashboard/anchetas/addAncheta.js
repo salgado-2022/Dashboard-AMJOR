@@ -244,7 +244,7 @@ function AddAncheta() {
         </Stack>
         <form onSubmit={handleSubmit} onReset={handleReset} encType="multipart/form-data">
             <Grid container spacing={2}>
-                <Grid item md={5} >
+                <Grid item md={4} >
                     <TextField fullWidth style={{ marginBottom: '16px' }} label="Nombre" variant="outlined" id="NombreAncheta" name="NombreAncheta" value={values.NombreAncheta} onChange={handleInput} error={nombreError !== ''}  helperText={nombreError} />
                     <TextField multiline rows={4} fullWidth style={{ marginBottom: '16px' }} label="Descripción" variant="outlined" id="Descripcion" name="Descripcion" value={values.Descripcion} onChange={handleInput} error={descripcionError !== ''}  helperText={descripcionError}/>
                     <Card elevation={3} style={{ marginBottom: '16px' }}>
@@ -308,7 +308,7 @@ function AddAncheta() {
                         <Button type="reset" variant="contained" color="secondary" fullWidth>Cancelar</Button>
                     </Stack> 
                 </Grid>
-                <Grid item md={7}>
+                <Grid item md={8}>
                     <Card>
                         <UserListToolbar
                             filterName={filterName}
