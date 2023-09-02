@@ -37,7 +37,6 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import Iconify from '../components/iconify';
 import Scrollbar from '../components/scrollbar';
 import Label from '../components/label';
-import socket from '../socket/config'
 
 import { UserListToolbar } from '../sections/@dashboard/user';
 import OrderListHead from '../sections/@dashboard/pedidos/OrderListHead';
@@ -86,6 +85,8 @@ function applySortFilter(array, comparator, query) {
 
 export default function SalesPage() {
     const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
+
+    const apiUrlImage = process.env.REACT_APP_AMJOR_API_URL_NEW;
 
     const [open, setOpen] = useState({});
 
@@ -321,7 +322,7 @@ export default function SalesPage() {
 
                                                                                     <Avatar
                                                                                         alt=''
-                                                                                        src={`${apiUrl}/anchetas/` + ancheta.image}
+                                                                                        src={`${apiUrlImage}/anchetas/` + ancheta.image}
                                                                                         variant="rounded"
                                                                                         sx={{ width: 52, height: 52, borderRadius: "10px" }}
                                                                                     />
