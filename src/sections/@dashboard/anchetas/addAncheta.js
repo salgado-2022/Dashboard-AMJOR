@@ -196,7 +196,9 @@ function AddAncheta() {
                             confirmButtonText: 'OK'
                         });
                     }
-                    navigate("/dashboard/anchetas");
+                    setTimeout(() => {
+                        navigate("/dashboard/anchetas");
+                    }, 500)
                 })
         }
     };

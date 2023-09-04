@@ -5,7 +5,7 @@ import CloseIcon from '@mui/icons-material/Close';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
-});
+  });
 
 function VerInsumos(props) {
     const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
@@ -29,7 +29,7 @@ function VerInsumos(props) {
         }
         return 'N/A'; // Otra opción es retornar un valor predeterminado en caso de que price no sea un número válido
     };
-
+    
 
     useEffect(() => {
         setIsLoading(true);
@@ -67,7 +67,7 @@ function VerInsumos(props) {
     return (
         <Dialog onClose={onHide} open={show} TransitionComponent={Transition}>
             <DialogTitle>Detalles de la ancheta</DialogTitle>
-            <IconButton onClick={onHide} sx={{ position: 'absolute', right: 8, top: 8, color: (theme) => theme.palette.grey[500] }}>
+            <IconButton onClick={onHide} sx={{position: 'absolute', right: 8, top: 8, color: (theme) => theme.palette.grey[500] }}>
                 <CloseIcon />
             </IconButton>
             <DialogContent dividers>
@@ -77,15 +77,15 @@ function VerInsumos(props) {
                     </div>
                 ) : (
                     <>
-                        <Grid container spacing={2}>
-                            <Grid item md={6}>
-                                <Typography fontSize="24px" marginBottom="6px">{dataA.NombreAncheta}</Typography>
-                                <Typography>{dataA.Descripcion}</Typography>
-                            </Grid>
-                            <Grid item md={6}>
-                                <img src={`${apiUrl}/anchetas/` + dataA.image} alt="" />
-                            </Grid>
+                    <Grid container spacing={2}>
+                        <Grid item md={6}>
+                            <Typography fontSize="24px" marginBottom="6px">{dataA.NombreAncheta}</Typography>
+                            <Typography>{dataA.Descripcion}</Typography>
                         </Grid>
+                        <Grid item md={6}>
+                            <img src={`${apiUrl}/anchetas/` + dataA.image} alt=""/>
+                        </Grid>
+                    </Grid>
                         <div style={{ padding: "10px" }}>
                             <br />
                             <table className="table">
