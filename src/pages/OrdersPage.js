@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import axios from "axios";
 import { Helmet } from 'react-helmet-async';
 import { sentenceCase } from 'change-case';
+
+// axios 
+import axios from "axios";
+
 // import Swal from 'sweetalert2';
 import Swal from 'sweetalert2';
 
@@ -48,7 +51,6 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import Iconify from '../components/iconify';
 import Scrollbar from '../components/scrollbar';
 import Label from '../components/label';
-import socket from '../socket/config'
 
 import { UserListToolbar } from '../sections/@dashboard/user';
 import OrderListHead from '../sections/@dashboard/pedidos/OrderListHead';
@@ -103,6 +105,7 @@ function applySortFilter(array, comparator, filters) {
 
 export default function OrderPage() {
     const apiUrl = process.env.REACT_APP_AMJOR_API_URL_NEW;
+    const apiUrlLocal = process.env.REACT_APP_AMJOR_API_URL;
 
     const [open, setOpen] = useState({});
 
@@ -143,19 +146,9 @@ export default function OrderPage() {
     const [selectedAnchetaID, setSelectedAnchetaID] = useState(null)
 
 
-
-
-    /* The above code is a useEffect hook in JavaScript. It is used to handle side effects in functional
-    components in React. */
     useEffect(() => {
-        /* El código anterior está escuchando un evento 'Pedidos' en una conexión de socket. 
-        Cuando se activa el evento, recibe datos actualizados y los establece mediante la función `setData`. */
-        socket.on('Pedidos', datosActualizados => {
-            setData(datosActualizados)
-        });
 
-        // Emitir un evento para solicitar los pedidos
-        socket.emit('solicitarPedidos');
+        AxiosData()
 
         if (selectedTab === 1) {
             setLoadingAceptados(true);
@@ -166,18 +159,20 @@ export default function OrderPage() {
             setOrder("desc")
             setOrderBy("ID_Pedido")
         }
-        // Limpiar el evento cuando el componente se desmonta
-        return () => {
-            socket.off('Pedidos');
-        };
     }, [selectedTab]);
 
-    const prueba = () => {
-        socket.on('Pedidos', datosActualizados => {
-            setData(datosActualizados)
-        });
-
-        const prueba = socket.emit('solicitarPedidos');
+    const AxiosData = () => {
+        axios.get(`${apiUrlLocal}/api/admin/listar/pedido`)
+            .then((res) => {
+                setData(res.data)
+            })
+            .catch((err) => {
+                Swal.fire(
+                    'Error en el servidor',
+                    'Comunicarse con soporte.',
+                    'error'
+                )
+            })
     }
 
     const rojo = (dateString) => {
@@ -215,7 +210,7 @@ export default function OrderPage() {
 
         if (!anchetas[ID_Ancheta]) {
             try {
-                const res = await axios.get(`${apiUrl}/api/admin/pedidos/detalle/` + ID_Ancheta);
+                const res = await axios.get(`${apiUrlLocal}/api/admin/pedidos/detalle/` + ID_Ancheta);
                 setAnchetas((prevAnchetas) => ({
                     ...prevAnchetas,
                     [ID_Ancheta]: res.data,
@@ -246,14 +241,14 @@ export default function OrderPage() {
                 confirmButtonText: 'Si'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    axios.put(`${apiUrl}/api/admin/pedido/status/preparacion/` + idPedido)
+                    axios.put(`${apiUrlLocal}/api/admin/pedido/status/preparacion/` + idPedido)
                         .then(res => {
                             Swal.fire(
                                 'Se cambio el estado',
-
+                                'El estado se cambio correctamente.',
                                 'success'
                             )
-                            prueba();
+                            AxiosData();
                         })
                         .catch(err => {
                             Swal.fire(
@@ -278,14 +273,14 @@ export default function OrderPage() {
                 confirmButtonText: 'Si'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    axios.put(`${apiUrl}/api/admin/pedido/status/preparado/` + idPedido)
+                    axios.put(`${apiUrlLocal}/api/admin/pedido/status/preparado/` + idPedido)
                         .then(res => {
                             Swal.fire(
                                 'Se cambio el estado',
                                 'El estado se cambio correctamente.',
                                 'success'
                             )
-                            prueba();
+                            AxiosData();
                         })
                         .catch(err => {
                             Swal.fire(
@@ -308,14 +303,14 @@ export default function OrderPage() {
                 confirmButtonText: 'Si'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    axios.put(`${apiUrl}/api/admin/pedido/status/despachado/` + idPedido)
+                    axios.put(`${apiUrlLocal}/api/admin/pedido/status/despachado/` + idPedido)
                         .then(res => {
                             Swal.fire(
                                 'Se cambio el estado',
                                 'El estado se cambio correctamente.',
                                 'success'
                             )
-                            prueba();
+                            AxiosData();
                         })
                         .catch(err => {
                             Swal.fire(
@@ -336,7 +331,7 @@ export default function OrderPage() {
             cliente: cliente
         }
 
-        axios.get(`${apiUrl}/api/admin/pedidos/success`, { params: data })
+        axios.get(`${apiUrlLocal}/api/admin/pedidos/success`, { params: data })
             .then(res => {
                 if (res.data.Success === true) {
                     Swal.fire({
@@ -344,7 +339,7 @@ export default function OrderPage() {
                         title: 'Pedido aceptado correctamente',
                         confirmButtonText: 'OK'
                     })
-                    prueba();
+                    AxiosData();
                 }
             })
             .catch(err => {
@@ -364,7 +359,7 @@ export default function OrderPage() {
             cliente: cliente
         }
 
-        axios.get(`${apiUrl}/api/admin/pedidos/refused`, { params: data })
+        axios.get(`${apiUrlLocal}/api/admin/pedidos/refused`, { params: data })
             .then(res => {
                 if (res.data.Success === true) {
                     Swal.fire({
@@ -372,7 +367,7 @@ export default function OrderPage() {
                         title: 'Pedido rechazado correctamente',
                         confirmButtonText: 'OK'
                     })
-                    prueba();
+                    AxiosData();
                 }
             })
             .catch(err => {
@@ -575,7 +570,7 @@ export default function OrderPage() {
                                 )}
                                 <Tooltip title="Actualizar tabla" arrow placement="top">
                                     <IconButton
-                                        onClick={prueba}
+                                        onClick={AxiosData}
                                         sx={{ marginLeft: '10px' }}
                                     >
                                         <Iconify icon={'tabler:reload'} sx={{ width: '35px', height: '35px' }} />
@@ -784,7 +779,7 @@ export default function OrderPage() {
                                                                                         <IconButton
                                                                                             color="primary"
                                                                                             sx={{ fontSize: "24px" }}
-                                                                                            onClick={()=>{handleClickOpen(ancheta.ID_PedidoAnch)}}
+                                                                                            onClick={() => { handleClickOpen(ancheta.ID_PedidoAnch) }}
                                                                                         >
                                                                                             <Iconify icon="grommet-icons:view" className="big-icon" />
                                                                                         </IconButton>
@@ -870,7 +865,7 @@ export default function OrderPage() {
                     />
                 </Card>
             </Container>
-            <VerInsumosPedido show={openModal} onHide={() => setOpenModal(false)} selectedAnchetaID={selectedAnchetaID}/>
+            <VerInsumosPedido show={openModal} onHide={() => setOpenModal(false)} selectedAnchetaID={selectedAnchetaID} />
         </>
     );
 }

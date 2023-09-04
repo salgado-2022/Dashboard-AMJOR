@@ -28,6 +28,7 @@ import {
     CircularProgress,
     Divider,
     Tooltip,
+    TextField,
 
 } from '@mui/material';
 
@@ -37,7 +38,6 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import Iconify from '../components/iconify';
 import Scrollbar from '../components/scrollbar';
 import Label from '../components/label';
-import socket from '../socket/config'
 
 import { UserListToolbar } from '../sections/@dashboard/user';
 import OrderListHead from '../sections/@dashboard/pedidos/OrderListHead';
@@ -87,6 +87,8 @@ function applySortFilter(array, comparator, query) {
 export default function SalesPage() {
     const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
 
+    const apiUrlImage = process.env.REACT_APP_AMJOR_API_URL_NEW;
+
     const [open, setOpen] = useState({});
 
     const [page, setPage] = useState(0);
@@ -103,7 +105,6 @@ export default function SalesPage() {
 
     const [data, setData] = useState([]);
 
-
     const [anchetas, setAnchetas] = useState([])
 
     const [selectedAncheta, setSelectedAncheta] = useState(null);
@@ -111,6 +112,11 @@ export default function SalesPage() {
     const [openModal, setOpenModal] = useState(false)
 
     const [selectedAnchetaID, setSelectedAnchetaID] = useState(null)
+
+    const [startDate, setStartDate] = useState('');
+
+    const [endDate, setEndDate] = useState('');
+
 
 
 
@@ -206,7 +212,28 @@ export default function SalesPage() {
 
     const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0;
 
-    const filteredUsers = applySortFilter(data, getComparator(order, orderBy), filterName);
+    const filteredUsers = applySortFilter(
+        data,
+        getComparator(order, orderBy),
+        filterName
+    ).filter((row) => {
+        const deliveryDateUTC = new Date(row.Fecha_Entrega); // Convertir la fecha de la fila a UTC
+        const startFilterDateUTC = startDate ? new Date(startDate + 'T00:00:00.000Z') : null; // Convertir la fecha de inicio a UTC
+        const endFilterDateUTC = endDate ? new Date(endDate + 'T23:59:59.999Z') : null; // Convertir la fecha de fin a UTC
+
+        // Filtrar por rango de fechas en UTC
+        if (startFilterDateUTC && endFilterDateUTC) {
+            return deliveryDateUTC >= startFilterDateUTC && deliveryDateUTC <= endFilterDateUTC;
+        } else if (startFilterDateUTC) {
+            return deliveryDateUTC >= startFilterDateUTC;
+        } else if (endFilterDateUTC) {
+            return deliveryDateUTC <= endFilterDateUTC;
+        }
+        return true; // Si no se establecen fechas de inicio o fin, no se aplica el filtro.
+    });
+
+
+
 
     const isNotFound = !filteredUsers.length && !!filterName;
 
@@ -228,8 +255,28 @@ export default function SalesPage() {
                     <Box sx={{ overflowX: 'auto' }}>
                         <Box display="flex" alignItems="center" justifyContent="space-between" p={2}>
                             <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} placeholder="Buscar venta..." />
+                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                                <TextField
+                                    id="start-date"
+                                    variant="outlined"
+                                    type="date"
+                                    value={startDate}
+                                    onChange={(e) => setStartDate(e.target.value)}
+                                    sx={{ m: 1, minWidth: 210, marginRight: '10px' }}
+                                />
+
+                                <TextField
+                                    id="end-date"
+                                    variant="outlined"
+                                    type="date"
+                                    value={endDate}
+                                    onChange={(e) => setEndDate(e.target.value)}
+                                    sx={{ m: 1, minWidth: 210, marginRight: '10px' }}
+                                />
+                            </div>
                         </Box>
                     </Box>
+
                     <Scrollbar>
 
                         <TableContainer sx={{ minWidth: 1000 }}>
@@ -321,7 +368,7 @@ export default function SalesPage() {
 
                                                                                     <Avatar
                                                                                         alt=''
-                                                                                        src={`${apiUrl}/anchetas/` + ancheta.image}
+                                                                                        src={`${apiUrlImage}/anchetas/` + ancheta.image}
                                                                                         variant="rounded"
                                                                                         sx={{ width: 52, height: 52, borderRadius: "10px" }}
                                                                                     />

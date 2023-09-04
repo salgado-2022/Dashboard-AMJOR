@@ -207,7 +207,9 @@ function EditAncheta() {
                     formdata.append('oldImage', oldImage);
                     axios.put(`${deployApiUrl}/api/admin/anchetas/anchetaedit/` + id, formdata)
                 }
-                navigate("/dashboard/anchetas");
+                setTimeout(() => {
+                    navigate("/dashboard/anchetas");
+                }, 500)
             })
         }
       };

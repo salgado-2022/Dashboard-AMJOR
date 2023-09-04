@@ -45,12 +45,9 @@ function VerInsumosPedido(props) {
                 }
             };
 
-
             fetchData();// Llama a la API al cargar el componente
         }
     }, [id]);
-
-    console.log(data)
 
     return (
         <Dialog onClose={onHide} open={show} TransitionComponent={Transition}>
