@@ -93,11 +93,11 @@ export default function SalesPage() {
 
     const [page, setPage] = useState(0);
 
-    const [order, setOrder] = useState('desc');
+    const [order, setOrder] = useState('asc');
 
     const [selected, setSelected] = useState([]);
 
-    const [orderBy, setOrderBy] = useState('ID_Pedido');
+    const [orderBy, setOrderBy] = useState('Fecha_Entrega');
 
     const [filterName, setFilterName] = useState('');
 

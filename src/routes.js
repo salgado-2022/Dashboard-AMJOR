@@ -13,6 +13,7 @@ import { AddAncheta } from './sections/@dashboard/anchetas/addAncheta';
 import { EditAncheta } from './sections/@dashboard/anchetas/editAncheta';
 import { ConfiFormulario } from './sections/@dashboard/configuracion/modal/crearte';
 import SalesPage from './pages/Sales';
+import Profile from './pages/profile';
 
 const apiUrl = process.env.REACT_APP_AMJOR_LANDING_URL
 
@@ -48,6 +49,7 @@ export default function Router() {
         { path: 'anchetas/editarancheta', element: <EditAncheta /> },
         { path: 'confi', element: <ListaConfiguracion />},
         { path: 'crearte', element: <ConfiFormulario/>}, 
+        { path: 'profile', element: <Profile/>},
       ],
     },
     {
