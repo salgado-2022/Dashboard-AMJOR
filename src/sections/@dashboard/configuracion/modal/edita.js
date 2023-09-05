@@ -228,3 +228,4 @@ function EditarConfi(props) {
 }
 
 export { EditarConfi };
+
