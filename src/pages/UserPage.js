@@ -303,7 +303,7 @@ export default function UserPage() {
                       const selectedUser = selected.indexOf(idUsuario) !== -1;
                       const estadoText = Estado === 1 ? 'Activo' : 'Inactivo'; // Texto del estado según el valor
                       return (
-                        <TableRow hover tabIndex={-1} role="checkbox" selected={selectedUser}>
+                        <TableRow key={row.idUsuario} hover tabIndex={-1} role="checkbox" selected={selectedUser}>
                           <TableCell></TableCell>
                           <TableCell component="th" scope="row" padding="none">
                             <Stack direction="row" alignItems="center" spacing={2}>

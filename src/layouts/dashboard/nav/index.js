@@ -54,6 +54,7 @@ export default function Nav({ openNav, onCloseNav }) {
 
   const [nombre, setNombre] = useState(null);
   const [rol, setRol] = useState(null);
+  const [img, setImg] = useState();
 
   useEffect(() => {
 
@@ -74,9 +75,10 @@ export default function Nav({ openNav, onCloseNav }) {
     if (token) {
       axios.get(`${apiUrl}/api/search/${token}`)
         .then((res) => {
-          const { Nombre, Nombre_Rol } = res.data[0]
+          const { Nombre, Nombre_Rol, img } = res.data[0]
           setNombre(Nombre);
           setRol(Nombre_Rol);
+          setImg(img)
         })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -102,7 +104,7 @@ export default function Nav({ openNav, onCloseNav }) {
       <Box sx={{ mb: 5, mx: 2.5 }}>
         <Link underline="none">
           <StyledAccount>
-            <Avatar src={account.photoURL} alt="photoURL" />
+            <Avatar src={`${apiUrl}/usuario/${img}`} alt="photoURL" />
 
             <Box sx={{ ml: 2 }}>
               <Typography variant="subtitle2" sx={{ color: 'text.primary' }}>
