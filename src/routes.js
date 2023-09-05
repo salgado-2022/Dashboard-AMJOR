@@ -4,6 +4,7 @@ import DashboardLayout from './layouts/dashboard';
 import SimpleLayout from './layouts/simple';
 import UserPage from './pages/UserPage';
 import ListaConfiguracion from './pages/ConfigurationPage';
+import ParteCliente from './pages/ClientesPages';
 import Page404 from './pages/Page404';
 import OrdersPage from './pages/OrdersPage';
 import DashboardAppPage from './pages/DashboardAppPage';
@@ -48,6 +49,7 @@ export default function Router() {
         { path: 'anchetas/editarancheta', element: <EditAncheta /> },
         { path: 'confi', element: <ListaConfiguracion />},
         { path: 'crearte', element: <ConfiFormulario/>}, 
+        { path: 'clientes', element: <ParteCliente/>},
       ],
     },
     {

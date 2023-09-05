@@ -178,7 +178,7 @@ function ConfiFormulario({ onClose }) {
             style={{ marginTop: '8px' }}
             onClick={() => {
               validarRolPermiso();
-              onClose();
+              handleCloseModal();
             }}
           >
             Crear el rol
