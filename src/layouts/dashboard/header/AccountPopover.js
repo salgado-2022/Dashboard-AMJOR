@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 // @mui
 import { alpha } from '@mui/material/styles';
 import { Box, Divider, Typography, Stack, MenuItem, Avatar, IconButton, Popover } from '@mui/material';
+import { Link } from 'react-router-dom';
 // mocks_
 import account from '../../../_mock/account';
 
@@ -10,30 +11,24 @@ import axios from 'axios';
 //sweetalert2
 import Swal from 'sweetalert2';
 
+import Cookies from 'js-cookie';
+import jwt_decode from 'jwt-decode';
+
 // ----------------------------------------------------------------------
 
-const MENU_OPTIONS = [
-  {
-    label: 'Home',
-    icon: 'eva:home-fill',
-  },
-  {
-    label: 'Profile',
-    icon: 'eva:person-fill',
-  },
-  {
-    label: 'Settings',
-    icon: 'eva:settings-2-fill',
-  },
-];
 
 // ----------------------------------------------------------------------
 
 export default function AccountPopover() {
   const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
   const landingUrl = process.env.REACT_APP_AMJOR_LANDING_URL;
+  const apiUrlDeploy = process.env.REACT_APP_AMJOR_API_URL_NEW;
 
   const [open, setOpen] = useState(null);
+  const [user, setUser] = useState(null);
+  const [data, setData] = useState([]);
+  const [img, setImg] = useState();
+  const [loading, setLoading] = useState(true)
 
   const handleOpen = (event) => {
     setOpen(event.currentTarget);
@@ -77,6 +72,25 @@ export default function AccountPopover() {
       .catch((err) => console.log(err));
   };
 
+
+  useEffect(() => {
+    const token = Cookies.get('token');
+    if (token) {
+      const decodedToken = jwt_decode(token);
+      setUser(decodedToken.userId);
+
+      axios.get(`${apiUrl}/api/checkout/searchuserinfo/${decodedToken.userId}`)
+        .then(res => {
+          setData(res.data);
+          setImg(res.data[0].img)
+          setLoading(false);
+        })
+        .catch(error => {
+          console.error("Error al obtener la información del usuario:", error);
+        });
+    }
+  }, [user, apiUrl]);
+
   return (
     <>
       <IconButton
@@ -96,7 +110,7 @@ export default function AccountPopover() {
           }),
         }}
       >
-        <Avatar src={account.photoURL} alt="photoURL" />
+        <Avatar src={`${apiUrl}/usuario/${img}`} alt="photoURL" />
       </IconButton>
 
       <Popover
@@ -118,23 +132,40 @@ export default function AccountPopover() {
           },
         }}
       >
-        <Box sx={{ my: 1.5, px: 2.5 }}>
-          <Typography variant="subtitle2" noWrap>
-            {account.displayName}
-          </Typography>
-          <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {account.email}
-          </Typography>
-        </Box>
+        {loading ? (
+          <Box sx={{ my: 1.5, px: 2.5 }}>
+
+            <Typography variant="subtitle2" noWrap>
+
+            </Typography>
+
+            <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
+
+            </Typography>
+          </Box>
+        ) : (
+          <Box sx={{ my: 1.5, px: 2.5 }}>
+
+            <Typography variant="subtitle2" noWrap>
+              {data[0].Nombre}
+            </Typography>
+
+            <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
+              {data[0].correo}
+            </Typography>
+          </Box>
+        )}
 
         <Divider sx={{ borderStyle: 'dashed' }} />
 
         <Stack sx={{ p: 1 }}>
-          {MENU_OPTIONS.map((option) => (
-            <MenuItem key={option.label} onClick={handleClose}>
-              {option.label}
+
+          <Link to="/dashboard/profile" style={{ color: '#000' }}>
+            <MenuItem onClick={handleClose}>
+              Mi Perfil
             </MenuItem>
-          ))}
+          </Link>
+
         </Stack>
 
         <Divider sx={{ borderStyle: 'dashed' }} />

@@ -145,30 +145,50 @@ export default function ListaConfiguracion() {
     }
   
     axios
-      .delete(`${apiUrl}/api/admin/configuracion/Confidel/${selectedConfiguracionID}`)
-      .then((res) => {
-        console.log(res);
-        fetchData();
-        Swal.fire({
-          title: 'Eliminado Correctamente',
-          text: 'El rol se ha sido eliminado correctamente',
-          icon: 'success',
-          showConfirmButton: false,
-          timer: 1500,
-        });
-        handleCloseMenu();
-      })
-      .catch((err) => {
-        console.log(err);
+    .get(`${apiUrl}/api/admin/usuario/usullamada/${selectedConfiguracionID}`)
+    .then((res) => {
+      if (res.data.length > 0) {
+        // Mostrar una alerta porque el rol está en uso por usuarios
         Swal.fire({
           title: 'Error',
-          text: 'Ocurrió un error al eliminar el rol.',
+          text: 'No se puede eliminar el rol. Está en uso por usuarios.',
           icon: 'error',
         });
+      } else {
+        // El rol no está en uso, proceder con la eliminación
+        axios
+          .delete(`${apiUrl}/api/admin/configuracion/Confidel/${selectedConfiguracionID}`)
+          .then((res) => {
+            console.log(res);
+            fetchData();
+            Swal.fire({
+              title: 'Eliminado Correctamente',
+              text: 'El rol se ha sido eliminado correctamente',
+              icon: 'success',
+              showConfirmButton: false,
+              timer: 1500,
+            });
+            handleCloseMenu();
+          })
+          .catch((err) => {
+            console.log(err);
+            Swal.fire({
+              title: 'Error',
+              text: 'Ocurrió un error al eliminar el rol.',
+              icon: 'error',
+            });
+          });
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      Swal.fire({
+        title: 'Error',
+        text: 'Ocurrió un error al verificar el uso del rol por usuarios.',
+        icon: 'error',
       });
-  };
-
-  
+    });
+};
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';

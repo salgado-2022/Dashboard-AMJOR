@@ -640,7 +640,6 @@ export default function OrderPage() {
                                                                 secondaryTypographyProps={{ style: { fontSize: 14 } }}
                                                                 primary={Direccion_Entrega}
                                                                 secondary={Municipio + " - " + Barrio}
-
                                                             />
 
                                                         </Stack>
@@ -651,7 +650,6 @@ export default function OrderPage() {
                                                     <TableCell align="left">{formatPrice(Precio_Total)}</TableCell>
 
                                                     {Status_Pedido === 0 ? (
-
                                                         <TableCell align="left">
                                                             <Label color={
                                                                 estadoText === 'Pendiente' ? 'warning' :

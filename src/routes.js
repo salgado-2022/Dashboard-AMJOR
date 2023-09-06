@@ -4,6 +4,7 @@ import DashboardLayout from './layouts/dashboard';
 import SimpleLayout from './layouts/simple';
 import UserPage from './pages/UserPage';
 import ListaConfiguracion from './pages/ConfigurationPage';
+import ParteCliente from './pages/ClientesPages';
 import Page404 from './pages/Page404';
 import OrdersPage from './pages/OrdersPage';
 import DashboardAppPage from './pages/DashboardAppPage';
@@ -13,6 +14,7 @@ import { AddAncheta } from './sections/@dashboard/anchetas/addAncheta';
 import { EditAncheta } from './sections/@dashboard/anchetas/editAncheta';
 import { ConfiFormulario } from './sections/@dashboard/configuracion/modal/crearte';
 import SalesPage from './pages/Sales';
+import Profile from './pages/profile';
 
 const apiUrl = process.env.REACT_APP_AMJOR_LANDING_URL
 
@@ -48,6 +50,8 @@ export default function Router() {
         { path: 'anchetas/editarancheta', element: <EditAncheta /> },
         { path: 'confi', element: <ListaConfiguracion />},
         { path: 'crearte', element: <ConfiFormulario/>}, 
+        { path: 'profile', element: <Profile/>},
+        { path: 'clientes', element: <ParteCliente/>},
       ],
     },
     {

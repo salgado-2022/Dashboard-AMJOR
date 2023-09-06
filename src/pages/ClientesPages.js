@@ -39,13 +39,15 @@ import OrderListHead from '../sections/@dashboard/pedidos/OrderListHead';
 
 const TABLE_HEAD = [
   { id: 'w', label: '', alignRight: false },
-  { id: 'idUsuario', label: 'ID', alignRight: false },
+  { id: 'ID_Cliente', label: 'ID', alignRight: false },
   { id: 'documento', label: 'Documento', alignRight: false },
   { id: 'nombre', label: 'Nombres', alignRight: false },
   { id: 'correo', label: 'Correo', alignRight: false },
+  { id: 'telefono', label: 'Telefono', alignRight: false },
   { id: 'rol', label: 'Rol del Usuario', alignRight: false },
   { id: 'estado', label: 'Estado', alignRight: false },
   { id: '', label: '', alignRight: false },
+  
 ];
 
 // ----------------------------------------------------------------------
@@ -78,7 +80,7 @@ function applySortFilter(array, comparator, query) {
   }
   return stabilizedThis.map((el) => el[0]);
 }
-export default function UserPage() {
+export default function ParteCliente() {
   const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
 
   const [open, setOpen] = useState(null);
@@ -94,6 +96,10 @@ export default function UserPage() {
   const [openModal, setOpenModal] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  const roleMapping = {
+    2: 'Cliente'
+  };
+
   //Modal Editar Usuario
   const [modalShow, setModalShow] = useState(false);
 
@@ -103,7 +109,7 @@ export default function UserPage() {
 
   const fetchData = () => {
     axios
-      .get(`${apiUrl}/api/admin/usuario`)
+      .get(`${apiUrl}/api/admin/cliente`)
       .then((res) => {
         setData(res.data);
         setTimeout(() => {
@@ -210,13 +216,13 @@ export default function UserPage() {
   return (
     <>
       <Helmet>
-        <title> Usuarios | AMJOR </title>
+        <title> Clientes | AMJOR </title>
       </Helmet>
 
       <Container maxWidth="xl">
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            Usuarios
+            Clientes
           </Typography>
           <Button variant="contained" onClick={handleOpenModal} startIcon={<Iconify icon="eva:plus-fill" />}>
             Crear nuevo usuario
@@ -228,7 +234,7 @@ export default function UserPage() {
             numSelected={selected.length}
             filterName={filterName}
             onFilterName={handleFilterByName}
-            placeholder="Buscar usuario..."
+            placeholder="Buscar cliente..."
           />
 
           <Scrollbar>
@@ -299,11 +305,11 @@ export default function UserPage() {
                   />
                   <TableBody>
                     {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                      const { idUsuario, Documento, Nombre, Apellido, correo, Nombre_Rol, Estado } = row;
+                      const { idUsuario, Documento, Nombre, correo, Telefono, ID_Rol, Estado } = row;
                       const selectedUser = selected.indexOf(idUsuario) !== -1;
                       const estadoText = Estado === 1 ? 'Activo' : 'Inactivo'; // Texto del estado según el valor
                       return (
-                        <TableRow key={row.idUsuario} hover tabIndex={-1} role="checkbox" selected={selectedUser}>
+                        <TableRow hover tabIndex={-1} role="checkbox" selected={selectedUser}>
                           <TableCell></TableCell>
                           <TableCell component="th" scope="row" padding="none">
                             <Stack direction="row" alignItems="center" spacing={2}>
@@ -314,11 +320,11 @@ export default function UserPage() {
                             </Stack>
                           </TableCell>
                           <TableCell key={Documento}>{Documento}</TableCell>
-                          <TableCell key={Nombre}>
-                            {Nombre} {Apellido}
-                          </TableCell>
-                          <TableCell key={correo}>{correo}</TableCell>
-                          <TableCell key={Nombre_Rol}>{row.Nombre_Rol}</TableCell>
+                          <TableCell key={Nombre}> {Nombre}</TableCell>
+                          <TableCell key={correo}> {correo}</TableCell>
+                          <TableCell key={Telefono}>{Telefono}</TableCell>
+                          <TableCell key={ID_Rol}>{roleMapping[ID_Rol]}</TableCell>
+
                           <TableCell>
                             <Label color={(estadoText === 'Activo' && 'success') || 'error'}>
                               {sentenceCase(estadoText)}
