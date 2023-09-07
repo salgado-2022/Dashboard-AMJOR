@@ -67,6 +67,11 @@ function getComparator(order, orderBy) {
 }
 
 function applySortFilter(array, comparator, query) {
+  // Verificar si 'array' es una matriz
+  if (!Array.isArray(array)) {
+    console.error("No se pudo obtener la información de las anchetas.");
+    return [];
+  }
   const stabilizedThis = array.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
@@ -80,7 +85,8 @@ function applySortFilter(array, comparator, query) {
 }
 
 export default function AnchetasPage() {
-  const apiUrl = process.env.REACT_APP_AMJOR_API_URL_NEW;
+  const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
+  const deployApiUrl = process.env.REACT_APP_AMJOR_DEPLOY_API_URL;
 
   const navigate = useNavigate();
 
@@ -334,7 +340,7 @@ export default function AnchetasPage() {
 
                           <TableCell component="th" scope="row" padding="none">
                             <Stack direction="row" alignItems="center" spacing={2}>
-                              <Avatar alt="" src={`${apiUrl}/anchetas/` + image} />
+                              <Avatar alt="" src={`${deployApiUrl}/anchetas/` + image} />
                             </Stack>
                           </TableCell>
 
