@@ -104,8 +104,8 @@ function applySortFilter(array, comparator, filters) {
 }
 
 export default function OrderPage() {
-    const apiUrl = process.env.REACT_APP_AMJOR_API_URL_NEW;
-    const apiUrlLocal = process.env.REACT_APP_AMJOR_API_URL;
+    const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
+    const deployApiUrl = process.env.REACT_APP_AMJOR_DEPLOY_API_URL;
 
     const [open, setOpen] = useState({});
 
@@ -162,7 +162,7 @@ export default function OrderPage() {
     }, [selectedTab]);
 
     const AxiosData = () => {
-        axios.get(`${apiUrlLocal}/api/admin/listar/pedido`)
+        axios.get(`${apiUrl}/api/admin/listar/pedido`)
             .then((res) => {
                 setData(res.data)
             })
@@ -210,7 +210,7 @@ export default function OrderPage() {
 
         if (!anchetas[ID_Ancheta]) {
             try {
-                const res = await axios.get(`${apiUrlLocal}/api/admin/pedidos/detalle/` + ID_Ancheta);
+                const res = await axios.get(`${apiUrl}/api/admin/pedidos/detalle/` + ID_Ancheta);
                 setAnchetas((prevAnchetas) => ({
                     ...prevAnchetas,
                     [ID_Ancheta]: res.data,
@@ -241,7 +241,7 @@ export default function OrderPage() {
                 confirmButtonText: 'Si'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    axios.put(`${apiUrlLocal}/api/admin/pedido/status/preparacion/` + idPedido)
+                    axios.put(`${apiUrl}/api/admin/pedido/status/preparacion/` + idPedido)
                         .then(res => {
                             Swal.fire(
                                 'Se cambio el estado',
@@ -273,7 +273,7 @@ export default function OrderPage() {
                 confirmButtonText: 'Si'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    axios.put(`${apiUrlLocal}/api/admin/pedido/status/preparado/` + idPedido)
+                    axios.put(`${apiUrl}/api/admin/pedido/status/preparado/` + idPedido)
                         .then(res => {
                             Swal.fire(
                                 'Se cambio el estado',
@@ -293,7 +293,7 @@ export default function OrderPage() {
             })
         } else if (statusPedido === 2) {
             Swal.fire({
-                title: '¿Estas seguro?',
+                title: '¿Estás seguro?',
                 text: "El estado del pedido cambiara a DESPACHADO",
                 icon: 'warning',
                 showCancelButton: true,
@@ -303,11 +303,11 @@ export default function OrderPage() {
                 confirmButtonText: 'Si'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    axios.put(`${apiUrlLocal}/api/admin/pedido/status/despachado/` + idPedido)
+                    axios.put(`${apiUrl}/api/admin/pedido/status/despachado/` + idPedido)
                         .then(res => {
                             Swal.fire(
-                                'Se cambio el estado',
-                                'El estado se cambio correctamente.',
+                                'Se cambió el estado',
+                                'El estado se cambió correctamente.',
                                 'success'
                             )
                             AxiosData();
@@ -331,7 +331,7 @@ export default function OrderPage() {
             cliente: cliente
         }
 
-        axios.get(`${apiUrlLocal}/api/admin/pedidos/success`, { params: data })
+        axios.get(`${apiUrl}/api/admin/pedidos/success`, { params: data })
             .then(res => {
                 if (res.data.Success === true) {
                     Swal.fire({
@@ -359,7 +359,7 @@ export default function OrderPage() {
             cliente: cliente
         }
 
-        axios.get(`${apiUrlLocal}/api/admin/pedidos/refused`, { params: data })
+        axios.get(`${apiUrl}/api/admin/pedidos/refused`, { params: data })
             .then(res => {
                 if (res.data.Success === true) {
                     Swal.fire({
@@ -611,7 +611,7 @@ export default function OrderPage() {
                                                     </TableCell>
                                                     <TableCell>
                                                         <Stack direction="row" alignItems="center" spacing={2}>
-                                                            <Avatar alt='' src={`${apiUrl}/anchetas/` + image} />
+                                                            <Avatar alt='' src={`${deployApiUrl}/usuario/` + image} />
                                                             <Typography hidden={true}>
                                                                 {ID_Cliente}
                                                             </Typography>
@@ -762,7 +762,7 @@ export default function OrderPage() {
 
                                                                                     <Avatar
                                                                                         alt=''
-                                                                                        src={`${apiUrl}/anchetas/` + ancheta.image}
+                                                                                        src={`${deployApiUrl}/anchetas/` + ancheta.image}
                                                                                         variant="rounded"
                                                                                         sx={{ width: 52, height: 52, borderRadius: "10px" }}
                                                                                     />

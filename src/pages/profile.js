@@ -65,7 +65,7 @@ const NoNumberArrowsTextField = styled(TextField)(({ theme }) => ({
 
 export default function Profile() {
     const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
-    const apiUrlImage = process.env.REACT_APP_AMJOR_API_URL_NEW;
+    const apiUrlDeploy = process.env.REACT_APP_AMJOR_DEPLOY_API_URL;
 
 
     const [values, setValues] = useState({

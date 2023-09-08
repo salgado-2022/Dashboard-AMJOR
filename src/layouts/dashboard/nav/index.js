@@ -42,6 +42,7 @@ Nav.propTypes = {
 
 export default function Nav({ openNav, onCloseNav }) {
   const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
+  const deployApiUrl = process.env.REACT_APP_AMJOR_DEPLOY_API_URL;
 
   const { pathname } = useLocation();
 
@@ -104,7 +105,7 @@ export default function Nav({ openNav, onCloseNav }) {
       <Box sx={{ mb: 5, mx: 2.5 }}>
         <Link underline="none">
           <StyledAccount>
-            <Avatar src={`${apiUrl}/usuario/${img}`} alt="photoURL" />
+            <Avatar src={`${deployApiUrl}/usuario/${img}`} alt="photoURL" />
 
             <Box sx={{ ml: 2 }}>
               <Typography variant="subtitle2" sx={{ color: 'text.primary' }}>
