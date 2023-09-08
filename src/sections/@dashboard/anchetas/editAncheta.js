@@ -1,21 +1,21 @@
 import React, { useState, useEffect, useCallback, useContext } from "react";
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { 
-    Container, 
-    Grid, 
-    Button, 
-    TextField, 
-    Typography, 
-    Stack, 
-    Card, 
-    CardHeader, 
-    CardContent, 
-    List, 
-    ListItem, 
-    ListItemIcon, 
-    ListItemText, 
-    IconButton, 
-    TablePagination, 
+import {
+    Container,
+    Grid,
+    Button,
+    TextField,
+    Typography,
+    Stack,
+    Card,
+    CardHeader,
+    CardContent,
+    List,
+    ListItem,
+    ListItemIcon,
+    ListItemText,
+    IconButton,
+    TablePagination,
     Paper,
     Switch,
     CardMedia,
@@ -122,7 +122,7 @@ function EditAncheta() {
         };
     }, [dispatch, fetchData]);
 
-   const handleInput = (event) => {
+    const handleInput = (event) => {
         const { name, value, type, checked } = event.target;
 
         if (type === 'checkbox') {
@@ -192,56 +192,56 @@ function EditAncheta() {
             formdata.append('ID_Estado', values.ID_Estado);
             formdata.append('Insumos', JSON.stringify(states));
             axios.put(`${deployApiUrl}/api/admin/anchetas/anchetaedit/` + id, formdata)
-            .then(res => {
-                console.log(res);
-                Swal.fire({
-                    title: 'Modificado Correctamente',
-                    text: "Tu ancheta ha sido modificada correctamente",
-                    icon: 'success',
-                    showConfirmButton: false,
-                    timer: 1500
-                });
-                if (values.image) {
-                    const formdata = new FormData();
-                    formdata.append('image', values.image);
-                    formdata.append('oldImage', oldImage);
-                    axios.put(`${deployApiUrl}/api/admin/anchetas/anchetaedit/` + id, formdata)
-                }
-                setTimeout(() => {
-                    navigate("/dashboard/anchetas");
-                }, 500)
-            })
+                .then(res => {
+                    console.log(res);
+                    Swal.fire({
+                        title: 'Modificado Correctamente',
+                        text: "Tu ancheta ha sido modificada correctamente",
+                        icon: 'success',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                    if (values.image) {
+                        const formdata = new FormData();
+                        formdata.append('image', values.image);
+                        formdata.append('oldImage', oldImage);
+                        axios.put(`${deployApiUrl}/api/admin/anchetas/anchetaedit/` + id, formdata)
+                    }
+                    setTimeout(() => {
+                        navigate("/dashboard/anchetas");
+                    }, 500)
+                })
         }
-      };
+    };
 
     const handleReset = () => {
         dispatch({ type: 'ResetInsumos' });
-        fetchData();  
-        setInitialInsumos(true); 
-        setNombreError(''); 
+        fetchData();
+        setInitialInsumos(true);
+        setNombreError('');
         setDescripcionError('');
     };
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
-      };
-    
+    };
+
     const handleChangeRowsPerPage = (event) => {
         setPage(0);
         setRowsPerPage(parseInt(event.target.value, 10));
-      };
+    };
 
     const handleFilterByName = (event) => {
         setPage(0);
         setFilterName(event.target.value);
-      };
+    };
 
     const emptyRows = page > 0 ? Math.max(0, (page + 1) * rowsPerPage - data.length) : 0;
 
     const filteredUsers = filter(data, (_nombre) => _nombre.NombreInsumo.toLowerCase().indexOf(filterName.toLowerCase()) !== -1);
 
     const isNotFound = !filteredUsers.length && !!filterName;
-    
+
     const dataLength = state ? (data.length - state.length) : (data.length);
 
     console.log(state)
@@ -257,141 +257,141 @@ function EditAncheta() {
     }
 
     return (
-    <Container maxWidth="xl">
-        <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-            <Typography variant="h4" gutterBottom>Editar Ancheta</Typography>
-            <Link to="/dashboard/anchetas">
-                <Button variant="contained" startIcon={<Iconify icon="ph:arrow-left" />}>
-                Volver
-                </Button>
-            </Link>
-        </Stack>
-        <form onSubmit={handleUpdate} onReset={handleReset} encType="multipart/form-data">
-            <Grid container spacing={2}>
-                <Grid item md={4}>
-                    <TextField fullWidth style={{ marginBottom: '16px' }} label="Nombre" variant="outlined" id="NombreAncheta" name="NombreAncheta" value={values.NombreAncheta} onChange={handleInput} error={nombreError !== ''}  helperText={nombreError} />
-                    <TextField multiline rows={4} fullWidth style={{ marginBottom: '16px' }} label="Descripción" variant="outlined" id="Descripcion" name="Descripcion" value={values.Descripcion} onChange={handleInput} error={descripcionError !== ''}  helperText={descripcionError}/>
-                    <Card elevation={3} style={{ marginBottom: '16px' }}>
-                    {values.image && (
-                        <div>
-                            <CardMedia component="img" alt="" height="235px" image={imageUrlEdit || `${deployApiUrl}/anchetas/` + values.image}/> 
-                            <IconButton color="trash" sx={{position: "absolute", top: "0px", right: "8px"}} onClick={() => {
-                                setImageUrlEdit(null);
-                                setValues((prev) => ({ ...prev, image: null }));
-                            }}>
-                                <Iconify icon="mingcute:delete-fill" class="big-icon" />
-                            </IconButton>
-                        </div>
-                    )}
-                    {!values.image && (
-                        <CardHeader component="label" sx={{backgroundColor: "#f5f5f5", cursor: "pointer", textAlign: "center", padding: "24px", marginBottom: "0px", height: "235px"}}
-                            title={
-                            <div style={{fontSize: "48px", marginBottom: "21px"}}>
-                                <input type="file" className="form-control" id="image" name="image" accept=".jpg, .png" onChange={handleInput} style={{ display: "none" }} />
-                                <Iconify icon="fluent:image-add-20-regular" class="big-icon"/>
-                            </div>  
-                            }
-                        />
-                    )}
-                    {state.length === 0 ? (<CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '235px', color: "#98a4b0" }}><Typography variant="body1">Sin Insumos</Typography></CardContent>
-                    ) : (
-                        <List sx={{ height: "235px", overflowY: 'auto'}}>
-                            {state.map((insumo) => (
-                                <ListItem key={insumo.ID_Insumo} secondaryAction={
-                                    <div>
-                                        <IconButton color="primary" onClick={() => dispatch({ type: 'Decrement', payload: insumo })}>
-                                            <RemoveIcon sx={{ fontSize: '16px' }}/>
-                                        </IconButton>
-                                        <TextField type="number" value={insumo.Cantidad} onChange={(event) => dispatch({ type: "SetCantidad", payload: { idInsumo: insumo.ID_Insumo, cantidad: event.target.value } })} inputProps={{ style: { textAlign: 'center', fontSize: '14px', width: '15px', height: '5px' } }}/>
-                                        <IconButton color="primary" onClick={() => dispatch({ type: 'Increment', payload: insumo })}>
-                                            <AddIcon sx={{ fontSize: '16px' }}/>
-                                        </IconButton>
-                                    </div>
-                                }>
-                                    <ListItemIcon aria-label="delete" onClick={() => dispatch({ type: 'RemoveInsumo', payload: insumo })}>
-                                        <IconButton color="primary" sx={{fontSize: "22px"}}>
-                                            <Iconify icon="ph:trash" class="big-icon" />
-                                        </IconButton>
-                                    </ListItemIcon>
-                                    <Grid item sm={6} xs={7}>
-                                        <ListItemText
-                                            primaryTypographyProps={{ style: {fontSize: '14px'} }}
-                                            primary={insumo.NombreInsumo}
-                                            secondaryTypographyProps={{ style: {fontSize: '14px'} }}
-                                            secondary={formatPrice(insumo.Precio * insumo.Cantidad)}
-                                        />
-                                    </Grid>  
-                                </ListItem>
-                            ))}
-                        </List>   
-                    )}
-                    </Card>
+        <Container maxWidth="xl">
+            <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+                <Typography variant="h4" gutterBottom>Editar Ancheta</Typography>
+                <Link to="/dashboard/anchetas">
+                    <Button variant="contained" startIcon={<Iconify icon="ph:arrow-left" />}>
+                        Volver
+                    </Button>
+                </Link>
+            </Stack>
+            <form onSubmit={handleUpdate} onReset={handleReset} encType="multipart/form-data">
+                <Grid container spacing={2}>
+                    <Grid item md={4}>
+                        <TextField fullWidth style={{ marginBottom: '16px' }} label="Nombre" variant="outlined" id="NombreAncheta" name="NombreAncheta" value={values.NombreAncheta} onChange={handleInput} error={nombreError !== ''} helperText={nombreError} />
+                        <TextField multiline rows={4} fullWidth style={{ marginBottom: '16px' }} label="Descripción" variant="outlined" id="Descripcion" name="Descripcion" value={values.Descripcion} onChange={handleInput} error={descripcionError !== ''} helperText={descripcionError} />
+                        <Card elevation={3} style={{ marginBottom: '16px' }}>
+                            {values.image && (
+                                <div>
+                                    <CardMedia component="img" alt="" height="235px" image={imageUrlEdit || `${deployApiUrl}/anchetas/` + values.image} />
+                                    <IconButton color="trash" sx={{ position: "absolute", top: "0px", right: "8px" }} onClick={() => {
+                                        setImageUrlEdit(null);
+                                        setValues((prev) => ({ ...prev, image: null }));
+                                    }}>
+                                        <Iconify icon="mingcute:delete-fill" class="big-icon" />
+                                    </IconButton>
+                                </div>
+                            )}
+                            {!values.image && (
+                                <CardHeader component="label" sx={{ backgroundColor: "#f5f5f5", cursor: "pointer", textAlign: "center", padding: "24px", marginBottom: "0px", height: "235px" }}
+                                    title={
+                                        <div style={{ fontSize: "48px", marginBottom: "21px" }}>
+                                            <input type="file" className="form-control" id="image" name="image" accept=".jpg, .png" onChange={handleInput} style={{ display: "none" }} />
+                                            <Iconify icon="fluent:image-add-20-regular" class="big-icon" />
+                                        </div>
+                                    }
+                                />
+                            )}
+                            {state.length === 0 ? (<CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '235px', color: "#98a4b0" }}><Typography variant="body1">Sin Insumos</Typography></CardContent>
+                            ) : (
+                                <List sx={{ height: "235px", overflowY: 'auto' }}>
+                                    {state.map((insumo) => (
+                                        <ListItem key={insumo.ID_Insumo} secondaryAction={
+                                            <div>
+                                                <IconButton color="primary" onClick={() => dispatch({ type: 'Decrement', payload: insumo })}>
+                                                    <RemoveIcon sx={{ fontSize: '16px' }} />
+                                                </IconButton>
+                                                <TextField type="number" value={insumo.Cantidad} onChange={(event) => dispatch({ type: "SetCantidad", payload: { idInsumo: insumo.ID_Insumo, cantidad: event.target.value } })} inputProps={{ style: { textAlign: 'center', fontSize: '14px', width: '15px', height: '5px' } }} />
+                                                <IconButton color="primary" onClick={() => dispatch({ type: 'Increment', payload: insumo })}>
+                                                    <AddIcon sx={{ fontSize: '16px' }} />
+                                                </IconButton>
+                                            </div>
+                                        }>
+                                            <ListItemIcon aria-label="delete" onClick={() => dispatch({ type: 'RemoveInsumo', payload: insumo })}>
+                                                <IconButton color="primary" sx={{ fontSize: "22px" }}>
+                                                    <Iconify icon="ph:trash" class="big-icon" />
+                                                </IconButton>
+                                            </ListItemIcon>
+                                            <Grid item sm={6} xs={7}>
+                                                <ListItemText
+                                                    primaryTypographyProps={{ style: { fontSize: '14px' } }}
+                                                    primary={insumo.NombreInsumo}
+                                                    secondaryTypographyProps={{ style: { fontSize: '14px' } }}
+                                                    secondary={formatPrice(insumo.Precio * insumo.Cantidad)}
+                                                />
+                                            </Grid>
+                                        </ListItem>
+                                    ))}
+                                </List>
+                            )}
+                        </Card>
                         <Grid container alignItems="center" spacing={1} marginBottom={1}>
-                            <Switch color="switch" id="ID_Estado" name="ID_Estado" checked={isChecked}onChange={handleInput}/>
+                            <Switch color="switch" id="ID_Estado" name="ID_Estado" checked={isChecked} onChange={handleInput} />
                             <Typography>Disponible</Typography>
-                            <div style={{flex: "1"}}></div>
+                            <div style={{ flex: "1" }}></div>
                             <Typography variant="h5">Total: {formatPrice(Precio)}</Typography>
                         </Grid>
-                    <Stack direction="row" alignItems="center" spacing={1}>
-                        <Button type="submit" variant="contained" color="primary" fullWidth>Editar Ancheta</Button>
-                        <Button type="reset" variant="contained" color="secondary" fullWidth>Cancelar</Button>
-                    </Stack>
+                        <Stack direction="row" alignItems="center" spacing={1}>
+                            <Button type="submit" variant="contained" color="primary" fullWidth>Editar Ancheta</Button>
+                            <Button type="reset" variant="contained" color="secondary" fullWidth>Cancelar</Button>
+                        </Stack>
+                    </Grid>
+                    <Grid item md={8}>
+                        <Card elevation={3} style={{ marginBottom: '12px' }}>
+                            <UserListToolbar
+                                filterName={filterName}
+                                onFilterName={handleFilterByName}
+                                placeholder="Buscar Insumo..."
+                            />
+                            <List sx={{ height: '625px', overflowY: 'auto' }}>
+                                {filteredUsers.filter(insumo => !insumosAgregados.includes(insumo.ID_Insumo) && insumo.Estado !== 'Agotado').slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((insumo, index) => {
+                                    insumo.Cantidad = 1;
+                                    insumo.Precio = insumo.PrecioUnitario;
+                                    return (
+                                        <React.Fragment key={insumo.ID_Insumo}>
+                                            <ListItem key={insumo.ID_Insumo} secondaryAction={
+                                                <Typography variant="subtitle2">{formatPrice(insumo.Precio)}</Typography>
+                                            }>
+                                                <ListItemIcon onClick={() => dispatch({ type: 'AddInsumo', payload: insumo })}>
+                                                    <IconButton color="primary" sx={{ fontSize: "32px" }}>
+                                                        <Iconify icon="typcn:plus" class="big-icon" />
+                                                    </IconButton>
+                                                </ListItemIcon>
+                                                <Grid item sm={8} xs={8}>
+                                                    <ListItemText primary={insumo.NombreInsumo} />
+                                                </Grid>
+                                            </ListItem>
+                                            {index < data.length - 1 && <Divider />}
+                                        </React.Fragment>
+                                    );
+                                })}
+                                {isNotFound && (
+                                    <Paper sx={{ textAlign: 'center' }}>
+                                        <Typography variant="h6" paragraph>No encontrado</Typography>
+                                        <Typography variant="body2">No se encontraron resultados para
+                                            &nbsp;<strong>&quot;{filterName}&quot;</strong>.
+                                            <br /> Intente verificar errores tipográficos o usar palabras completas.
+                                        </Typography>
+                                    </Paper>
+                                )}
+                                {emptyRows > 0 && (<ListItem style={{ height: 73 * emptyRows }} />)}
+                            </List>
+                            <TablePagination
+                                rowsPerPageOptions={[10, 25]}
+                                component="div"
+                                count={dataLength}
+                                rowsPerPage={rowsPerPage}
+                                page={page}
+                                onPageChange={handleChangePage}
+                                onRowsPerPageChange={handleChangeRowsPerPage}
+                                labelRowsPerPage="Filas por pagina:"
+                            />
+                        </Card>
+                    </Grid>
                 </Grid>
-                <Grid item md={8}>
-                    <Card elevation={3} style={{ marginBottom: '12px' }}>
-                        <UserListToolbar
-                            filterName={filterName}
-                            onFilterName={handleFilterByName}
-                            placeholder="Buscar Insumo..."
-                        />
-                        <List sx={{ height: '625px', overflowY: 'auto' }}>
-                            {filteredUsers.filter(insumo => !insumosAgregados.includes(insumo.ID_Insumo) && insumo.Estado !== 'Agotado').slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((insumo, index) => {
-                                insumo.Cantidad = 1;
-                                insumo.Precio = insumo.PrecioUnitario;
-                                return (
-                                    <React.Fragment key={insumo.ID_Insumo}>
-                                    <ListItem key={insumo.ID_Insumo} secondaryAction={
-                                        <Typography variant="subtitle2">{formatPrice(insumo.Precio)}</Typography>
-                                    }>
-                                        <ListItemIcon onClick={() => dispatch({ type: 'AddInsumo', payload: insumo })}>
-                                            <IconButton color="primary" sx={{fontSize: "32px"}}>
-                                                <Iconify icon="typcn:plus" class="big-icon" />
-                                            </IconButton>
-                                        </ListItemIcon>
-                                        <Grid item sm={8} xs={8}>
-                                            <ListItemText primary={insumo.NombreInsumo}/>
-                                        </Grid>  
-                                    </ListItem>
-                                    {index < data.length - 1 && <Divider />}
-                                    </React.Fragment>
-                                );
-                            })}
-                            {isNotFound && (
-                                <Paper sx={{textAlign: 'center'}}>
-                                    <Typography variant="h6" paragraph>No encontrado</Typography>
-                                    <Typography variant="body2">No se encontraron resultados para
-                                        &nbsp;<strong>&quot;{filterName}&quot;</strong>.
-                                        <br/> Intente verificar errores tipográficos o usar palabras completas.
-                                    </Typography>
-                                </Paper>
-                            )}
-                            {emptyRows > 0 && (<ListItem style={{ height: 73 * emptyRows }}/>)}
-                        </List>
-                        <TablePagination
-                            rowsPerPageOptions={[10, 25]}
-                            component="div"
-                            count={dataLength}
-                            rowsPerPage={rowsPerPage}
-                            page={page}
-                            onPageChange={handleChangePage}
-                            onRowsPerPageChange={handleChangeRowsPerPage}
-                            labelRowsPerPage="Filas por pagina:"
-                        />
-                    </Card>
-                </Grid>
-            </Grid>
-        </form>
-    </Container>
+            </form>
+        </Container>
     );
 }
 
