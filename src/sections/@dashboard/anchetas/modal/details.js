@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Dialog, DialogTitle, IconButton, DialogActions, Grid, DialogContent, Typography, Slide, Card, CardMedia, Table, TableContainer, TableHead, TableRow, TableCell, TableBody, Skeleton } from '@mui/material';
+import { Dialog, DialogTitle, IconButton, DialogActions, Grid, DialogContent, Typography, Slide } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -9,7 +9,6 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 function VerInsumos(props) {
     const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
-    const deployApiUrl = process.env.REACT_APP_AMJOR_DEPLOY_API_URL;
 
     const { selectedAnchetaID, onHide, show } = props;
     const id = selectedAnchetaID;
@@ -34,14 +33,12 @@ function VerInsumos(props) {
 
     useEffect(() => {
         setIsLoading(true);
-        if (show) {
+        if (id) {
             const fetchData = async () => {
                 try {
                     const res = await axios.get(`${apiUrl}/api/admin/anchetas/insancheta/` + id);
                     setInsumo(res.data);
-                    setTimeout(() => {
-                        setIsLoading(false);
-                    }, 1000)
+                    setIsLoading(false);
                 } catch (err) {
                     console.log(err);
                     setIsLoading(false);
@@ -65,7 +62,7 @@ function VerInsumos(props) {
 
             fetchData();// Llama a la API al cargar el componente
         }
-    }, [id, apiUrl, show]);
+    }, [id]);
 
     return (
         <Dialog onClose={onHide} open={show} TransitionComponent={Transition}>
@@ -75,87 +72,50 @@ function VerInsumos(props) {
             </IconButton>
             <DialogContent dividers>
                 {isLoading ? (
-                    <>
-                    <Grid container spacing={2} marginBottom="16px">
-                        <Grid item md={6}>
-                            <Skeleton variant="text" animation="wave" width={250} height={30} />
-                            <Skeleton variant="text" animation="wave" width={200} height={30} />
-                        </Grid>
-                        <Grid item md={6}>
-                            <Skeleton variant="rounded" animation="wave" width={250} height={260} />
-                        </Grid>
-                    </Grid>
-                    <TableContainer>
-                        <Table>
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell>ID</TableCell>
-                                    <TableCell>Insumo</TableCell>
-                                    <TableCell>Cantidad</TableCell>
-                                    <TableCell>Precio</TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                            {data.map((insumos) => (
-                                <TableRow key={insumos.ID_Insumos_Ancheta}>
-                                    <TableCell><Skeleton variant="text" animation="wave" width={30} height={30}/></TableCell>
-                                    <TableCell><Skeleton variant="text" animation="wave" width={200} height={30}/></TableCell>
-                                    <TableCell><Skeleton variant="text" animation="wave" width={30} height={30}/></TableCell>
-                                    <TableCell><Skeleton variant="text" animation="wave" width={70} height={30}/></TableCell>
-                                </TableRow>
-                            ))}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                    </>
+                    <div className="text-center">
+                        <h3>Espera un momento...</h3>
+                    </div>
                 ) : (
                     <>
-                    <Grid container spacing={2} marginBottom="16px">
+                    <Grid container spacing={2}>
                         <Grid item md={6}>
                             <Typography fontSize="24px" marginBottom="6px">{dataA.NombreAncheta}</Typography>
                             <Typography>{dataA.Descripcion}</Typography>
                         </Grid>
                         <Grid item md={6}>
-                            <Card>
-                                <CardMedia component="img" alt="" height="260px" image={`${deployApiUrl}/anchetas/` + dataA.image}/>
-                            </Card>
+                            <img src={`${apiUrl}/anchetas/` + dataA.image} alt=""/>
                         </Grid>
                     </Grid>
-                    <TableContainer>
-                        <Table>
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell>ID</TableCell>
-                                    <TableCell>Insumo</TableCell>
-                                    <TableCell>Cantidad</TableCell>
-                                    <TableCell>Precio</TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                            {data.map((insumos) => (
-                                <TableRow key={insumos.ID_Insumos_Ancheta}>
-                                    <TableCell>{insumos.ID_Insumos_Ancheta}</TableCell>
-                                    <TableCell>{insumos.NombreInsumo}</TableCell>
-                                    <TableCell>{insumos.Cantidad}</TableCell>
-                                    <TableCell>{formatPrice(insumos.Total)}</TableCell>
-                                </TableRow>
-                            ))}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
+                        <div style={{ padding: "10px" }}>
+                            <br />
+                            <table className="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">ID</th>
+                                        <th scope="col">Insumo</th>
+                                        <th scope="col">Cantidad</th>
+                                        <th scope="col">Precio</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="table-group-divider">
+                                    {data.map((insumos, index) => {
+                                        return (
+                                            <tr key={index}>
+                                                <th scope="row">{insumos.ID_Insumos_Ancheta}</th>
+                                                <td>{insumos.NombreInsumo}</td>
+                                                <td>{insumos.Cantidad}</td>
+                                                <td>{formatPrice(insumos.Total)}</td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
                     </>
                 )}
             </DialogContent>
             <DialogActions>
-                {isLoading ? (
-                    <>
-                    <Skeleton variant="text" animation="wave" width={180} height={50}/>
-                    </>
-                ):(
-                    <>
-                    <Typography variant="h4">Total: {formatPrice(dataA.PrecioUnitario)}</Typography>
-                    </>
-                )}
+                <Typography variant="h4">Total: {formatPrice(dataA.PrecioUnitario)}</Typography>
             </DialogActions>
         </Dialog>
     );
