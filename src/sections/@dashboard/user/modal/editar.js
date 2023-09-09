@@ -4,6 +4,19 @@ import Swal from 'sweetalert2';
 import axios from 'axios';
 import { Button, TextField, Slide, Grid, MenuItem, Typography, Switch, Paper, Dialog, DialogContent } from '@mui/material';
 
+// Función para validar un correo electrónico
+function validateEmail(email) {
+  // Utiliza una expresión regular para validar el formato del correo electrónico
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}
+
+// Función para validar una contraseña (puedes personalizar esta función según tus requisitos)
+function validatePassword(password) {
+  // Por ejemplo, puedes verificar que la contraseña tenga al menos 8 caracteres
+  return password.length >= 8;
+}
+
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -115,7 +128,7 @@ function EditarUsuario(props) {
         setNombreError('');
       }
     }
-    
+
     if (name === 'apellido') {
       if (!value) {
         setApellidoError('Campo obligatorio');
@@ -125,7 +138,7 @@ function EditarUsuario(props) {
         setApellidoError('');
       }
     }
-    
+
     if (name === 'telefono') {
       if (!value) {
         setTelefonoError('Campo obligatorio');
@@ -135,7 +148,7 @@ function EditarUsuario(props) {
         setTelefonoError('');
       }
     }
-    
+
     if (name === 'correo') {
       if (!value) {
         setCorreoError('Campo obligatorio');
@@ -245,23 +258,23 @@ function EditarUsuario(props) {
 
     const documentoValido = /^[0-9]+$/.test(values.documento) && values.documento.length >= 8 && values.documento.length <= 10;
     setDocumentoError(!documentoValido);
-  
+
     const nombreValido = /^[a-zA-ZñÑ\s]+$/.test(values.nombre) && values.nombre.length >= 4;
     setNombreError(!nombreValido);
-  
+
     const apellidoValido = /^[a-zA-ZñÑ\s]+$/.test(values.apellido) && values.apellido.length >= 5;
     setApellidoError(!apellidoValido);
-  
+
     const telefonoValido = /^[0-9]+$/.test(values.telefono) && values.telefono.length >= 7 && values.telefono.length <= 11;
     setTelefonoError(!telefonoValido);
-  
+
     const correoValido = validateEmail(values.correo);
     setCorreoError(!correoValido);
-  
+
     if (values.contrasena) {
       const contrasenaValida = validatePassword(values.contrasena);
       setContrasenaError(!contrasenaValida);
-  
+
       if (!contrasenaValida) {
         return;
       }
@@ -270,15 +283,15 @@ function EditarUsuario(props) {
     if (!documentoValido || !nombreValido || !apellidoValido || !telefonoValido || !correoValido) {
       return;
     }
-  
+
     const selectedRole = roles.find((rol) => rol.ID_Rol === selectedRol);
     const nuevoID_Rol = selectedRole.ID_Rol;
-  
+
     setValues((prevValues) => ({
       ...prevValues,
       ID_Rol: nuevoID_Rol,
     }));
-  
+
     axios
       .put(`${apiUrl}/api/admin/usuario/usuariarioedit/${id}`, values)
       .then((res) => {
@@ -297,7 +310,7 @@ function EditarUsuario(props) {
         }, 50);
       })
       .catch((err) => console.log(err));
-  };  
+  };
 
   const resetFields = () => {
     setValues({
@@ -327,146 +340,146 @@ function EditarUsuario(props) {
   return (
     <Dialog open={show} onClose={onHide} TransitionComponent={Transition}>
       <DialogContent>
-          <h2 style={{ textAlign: 'center', marginBottom: '24px' }}>Editar datos de Usuario</h2>
-          <form onSubmit={handleUpdate} id="editarUsuario">
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Documento"
-                  variant="outlined"
-                  type="number"
-                  name="documento"
-                  value={values.documento}
-                  onChange={handleInput}
-                  onBlur={handleBlur}
-                  error={!!documentoError}
-                  helperText={documentoError}
-                  style={{ marginTop: '16px' }}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Nombre"
-                  variant="outlined"
-                  type="text"
-                  name="nombre"
-                  value={values.nombre}
-                  onChange={handleInput}
-                  onBlur={handleBlur}
-                  error={!!nombreError}
-                  helperText={nombreError}
-                  style={{ marginTop: '16px' }}
-                />
-              </Grid>
+        <h2 style={{ textAlign: 'center', marginBottom: '24px' }}>Editar datos de Usuario</h2>
+        <form onSubmit={handleUpdate} id="editarUsuario">
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Documento"
+                variant="outlined"
+                type="number"
+                name="documento"
+                value={values.documento}
+                onChange={handleInput}
+                onBlur={handleBlur}
+                error={!!documentoError}
+                helperText={documentoError}
+                style={{ marginTop: '16px' }}
+              />
             </Grid>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Apellido"
-                  variant="outlined"
-                  type="text"
-                  name="apellido"
-                  value={values.apellido}
-                  onChange={handleInput}
-                  onBlur={handleBlur}
-                  error={!!apellidoError}
-                  helperText={apellidoError}
-                  style={{ marginTop: '16px' }}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Correo"
-                  variant="outlined"
-                  type="email"
-                  name="correo"
-                  value={values.correo}
-                  onChange={handleInput}
-                  onBlur={handleBlur}
-                  error={!!correoError}
-                  helperText={correoError}
-                  style={{ marginTop: '16px' }}
-                />
-              </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Nombre"
+                variant="outlined"
+                type="text"
+                name="nombre"
+                value={values.nombre}
+                onChange={handleInput}
+                onBlur={handleBlur}
+                error={!!nombreError}
+                helperText={nombreError}
+                style={{ marginTop: '16px' }}
+              />
             </Grid>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Telefono"
-                  variant="outlined"
-                  type="number"
-                  name="telefono"
-                  value={values.telefono}
-                  onChange={handleInput}
-                  onBlur={handleBlur}
-                  error={!!telefonoError}
-                  helperText={telefonoError}
-                  style={{ marginTop: '16px' }}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Contraseña"
-                  variant="outlined"
-                  type={showPassword ? 'text' : 'password'}
-                  name="contrasena"
-                  value={values.contrasena}
-                  onChange={handleInput}
-                  onBlur={handleBlur}
-                  error={!!contrasenaError}
-                  helperText={contrasenaError}
-                  style={{ marginTop: '16px' }}
-                  InputProps={{
-                    endAdornment: (
-                      <Button onClick={toggleShowPassword}>
-                        {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
-                      </Button>
-                    ),
-                  }}
-                />
-              </Grid>
+          </Grid>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Apellido"
+                variant="outlined"
+                type="text"
+                name="apellido"
+                value={values.apellido}
+                onChange={handleInput}
+                onBlur={handleBlur}
+                error={!!apellidoError}
+                helperText={apellidoError}
+                style={{ marginTop: '16px' }}
+              />
             </Grid>
-            <TextField
-              select
-              fullWidth
-              label="Rol"
-              variant="outlined"
-              name="ID_Rol"
-              value={selectedRol}
-              onChange={(event) => setSelectedRol(event.target.value)}
-              error={!!rolError}
-              helperText={rolError}
-              style={{ marginTop: '16px' }}
-            >
-              {roles.map((rol, index) => (
-                <MenuItem key={index} value={rol.ID_Rol}>
-                  <Typography>{rol.Nombre_Rol || 'Nombre no disponible'}</Typography>
-                </MenuItem>
-              ))}
-            </TextField>
-            <Grid container alignItems="center" spacing={1} style={{ marginTop: '16px' }}>
-              <Switch color="switch" id="estado" name="estado" checked={isUsuarioActivo} onChange={handleInput} />
-              <Typography>Usuario Activo</Typography>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Correo"
+                variant="outlined"
+                type="email"
+                name="correo"
+                value={values.correo}
+                onChange={handleInput}
+                onBlur={handleBlur}
+                error={!!correoError}
+                helperText={correoError}
+                style={{ marginTop: '16px' }}
+              />
             </Grid>
-            <Grid container spacing={2} style={{ marginTop: '16px' }}>
-              <Grid item xs={12} sm={6}>
-                <Button type="submit" variant="contained" color="primary" fullWidth>
-                  Guardar cambios
-                </Button>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Button variant="contained" color="secondary" fullWidth onClick={handleCancelClick}>
-                  Cancelar
-                </Button>
-              </Grid>
+          </Grid>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Telefono"
+                variant="outlined"
+                type="number"
+                name="telefono"
+                value={values.telefono}
+                onChange={handleInput}
+                onBlur={handleBlur}
+                error={!!telefonoError}
+                helperText={telefonoError}
+                style={{ marginTop: '16px' }}
+              />
             </Grid>
-          </form>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Contraseña"
+                variant="outlined"
+                type={showPassword ? 'text' : 'password'}
+                name="contrasena"
+                value={values.contrasena}
+                onChange={handleInput}
+                onBlur={handleBlur}
+                error={!!contrasenaError}
+                helperText={contrasenaError}
+                style={{ marginTop: '16px' }}
+                InputProps={{
+                  endAdornment: (
+                    <Button onClick={toggleShowPassword}>
+                      {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
+                    </Button>
+                  ),
+                }}
+              />
+            </Grid>
+          </Grid>
+          <TextField
+            select
+            fullWidth
+            label="Rol"
+            variant="outlined"
+            name="ID_Rol"
+            value={selectedRol}
+            onChange={(event) => setSelectedRol(event.target.value)}
+            error={!!rolError}
+            helperText={rolError}
+            style={{ marginTop: '16px' }}
+          >
+            {roles.map((rol, index) => (
+              <MenuItem key={index} value={rol.ID_Rol}>
+                <Typography>{rol.Nombre_Rol || 'Nombre no disponible'}</Typography>
+              </MenuItem>
+            ))}
+          </TextField>
+          <Grid container alignItems="center" spacing={1} style={{ marginTop: '16px' }}>
+            <Switch color="switch" id="estado" name="estado" checked={isUsuarioActivo} onChange={handleInput} />
+            <Typography>Usuario Activo</Typography>
+          </Grid>
+          <Grid container spacing={2} style={{ marginTop: '16px' }}>
+            <Grid item xs={12} sm={6}>
+              <Button type="submit" variant="contained" color="primary" fullWidth>
+                Guardar cambios
+              </Button>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Button variant="contained" color="secondary" fullWidth onClick={handleCancelClick}>
+                Cancelar
+              </Button>
+            </Grid>
+          </Grid>
+        </form>
       </DialogContent>
     </Dialog>
   );
