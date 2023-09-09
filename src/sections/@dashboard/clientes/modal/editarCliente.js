@@ -19,13 +19,7 @@ const validateEmail = (email) => {
   return regex.test(email);
 };
 
-// Función para validar contraseña
-const validatePassword = (password) => {
-  const regex = /^(?=.*[A-Z])(?=.*\d{2})(?!.*\s).{5,}$/;
-  return regex.test(password);
-};
-
-function EditarUsuario(props) {
+function EditarCliente(props) {
   const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
 
   const { selectedUsuarioID, onHide, show } = props;
@@ -38,16 +32,13 @@ function EditarUsuario(props) {
     apellido: '',
     correo: '',
     telefono: '',
-    contrasena: '',
-    ID_Rol: '',
+    ID_Rol: 'Cliente',
     estado: '',
   });
-  const [showPassword, setShowPassword] = useState(false);
   const [correoError, setCorreoError] = useState('');
   const [documentoError, setDocumentoError] = useState('');
   const [apellidoError, setApellidoError] = useState('');
   const [nombreError, setNombreError] = useState('');
-  const [contrasenaError, setContrasenaError] = useState('');
   const [telefonoError, setTelefonoError] = useState('');
   const [guardadoExitoso, setGuardadoExitoso] = useState(false);
   const [isUsuarioActivo, setIsUsuarioActivo] = useState(false);
@@ -59,7 +50,6 @@ function EditarUsuario(props) {
     Apellido: null,
     Telefono: null,
     Email: null,
-    Password: null,
     rol: null,
   });
 
@@ -70,8 +60,7 @@ function EditarUsuario(props) {
       Apellido: '',
       Telefono: '',
       Email: '',
-      Password: '',
-      rol: '',
+      rol: 'Cliente',
     });
     setValidationErrors({
       Documento: null,
@@ -97,11 +86,6 @@ function EditarUsuario(props) {
       setValues((prev) => ({ ...prev, [name]: value }));
     }
   };
-
-  const toggleShowPassword = () => {
-    setShowPassword(!showPassword);
-  };
-
   const handleBlur = (event) => {
     const { name, value } = event.target;
 
@@ -167,24 +151,6 @@ function EditarUsuario(props) {
         });
       }
     }
-
-    if (name === 'contrasena') {
-      if (!value) {
-        setContrasenaError('Campo obligatorio');
-      } else if (!validatePassword(value)) {
-        setContrasenaError('Contraseña inválida');
-      } else {
-        setContrasenaError('');
-      }
-    }
-
-    if (name === 'ID_Rol') {
-      if (!value) {
-        setRolError('Campo obligatorio');
-      } else {
-        setRolError('');
-      }
-    }
   };
 
   const [dataLoaded, setDataLoaded] = useState(false);
@@ -234,28 +200,16 @@ function EditarUsuario(props) {
         apellido: '',
         correo: '',
         telefono: '',
-        contrasena: '',
-        ID_Rol: '',
+        ID_Rol: 'Cliente',
         estado: '',
       });
-      setShowPassword(false);
       setCorreoError('');
-      setContrasenaError('');
       setGuardadoExitoso(false);
       setIsUsuarioActivo(false);
       // Marca que la carga fue exitosa al ocultar el componente
       setDataLoaded(true);
     }
   }, [id, show]);
-
-  useEffect(() => {
-    axios
-      .get(`${apiUrl}/api/admin/configuracion`)
-      .then((res) => {
-        setRoles(res.data);
-      })
-      .catch((err) => console.log(err));
-  }, [apiUrl]);
 
   const handleUpdate = (event) => {
     event.preventDefault();
@@ -275,14 +229,6 @@ function EditarUsuario(props) {
     const correoValido = validateEmail(values.correo);
     setCorreoError(!correoValido);
   
-    if (values.contrasena) {
-      const contrasenaValida = validatePassword(values.contrasena);
-      setContrasenaError(!contrasenaValida);
-  
-      if (!contrasenaValida) {
-        return;
-      }
-    }
 
     if (!documentoValido || !nombreValido || !apellidoValido || !telefonoValido || !correoValido) {
       return;
@@ -323,8 +269,7 @@ function EditarUsuario(props) {
       apellido: '',
       correo: '',
       telefono: '',
-      contrasena: '',
-      ID_Rol: '',
+      ID_Rol: 'Cliente',
       estado: '',
     });
     setDocumentoError('');
@@ -332,7 +277,6 @@ function EditarUsuario(props) {
     setApellidoError('');
     setCorreoError('');
     setTelefonoError('');
-    setContrasenaError('');
     setRolError('');
   };
 
@@ -352,7 +296,7 @@ function EditarUsuario(props) {
         }}
       >
         <Paper elevation={3} style={{ padding: '16px', borderRadius: '8px', width: '100%', maxWidth: '600px' }}>
-          <h2 style={{ textAlign: 'center', marginBottom: '24px' }}>Editar datos de Usuario</h2>
+          <h2 style={{ textAlign: 'center', marginBottom: '24px' }}>Editar datos del Cliente</h2>
           <form onSubmit={handleUpdate} id="editarUsuario">
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
@@ -419,7 +363,7 @@ function EditarUsuario(props) {
               </Grid>
             </Grid>
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={12}>
                 <TextField
                   fullWidth
                   label="Telefono"
@@ -434,46 +378,19 @@ function EditarUsuario(props) {
                   style={{ marginTop: '16px' }}
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Contraseña"
-                  variant="outlined"
-                  type={showPassword ? 'text' : 'password'}
-                  name="contrasena"
-                  value={values.contrasena}
-                  onChange={handleInput}
-                  onBlur={handleBlur}
-                  error={!!contrasenaError}
-                  helperText={contrasenaError}
-                  style={{ marginTop: '16px' }}
-                  InputProps={{
-                    endAdornment: (
-                      <Button onClick={toggleShowPassword}>
-                        {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
-                      </Button>
-                    ),
-                  }}
-                />
-              </Grid>
             </Grid>
             <TextField
-              select
               fullWidth
               label="Rol"
               variant="outlined"
+              type="text"
               name="ID_Rol"
-              value={selectedRol}
-              onChange={(event) => setSelectedRol(event.target.value)}
-              error={!!rolError}
-              helperText={rolError}
+              value="Cliente" // Valor fijo "Cliente"
+              InputProps={{
+                readOnly: true, // Hace que el campo sea de solo lectura
+              }}
               style={{ marginTop: '16px' }}
             >
-              {roles.map((rol, index) => (
-                <MenuItem key={index} value={rol.ID_Rol}>
-                  <Typography>{rol.Nombre_Rol || 'Nombre no disponible'}</Typography>
-                </MenuItem>
-              ))}
             </TextField>
             <Grid container alignItems="center" spacing={1} style={{ marginTop: '16px' }}>
               <Switch color="switch" id="estado" name="estado" checked={isUsuarioActivo} onChange={handleInput} />
@@ -498,4 +415,4 @@ function EditarUsuario(props) {
   );
 }
 
-export { EditarUsuario };
+export { EditarCliente };

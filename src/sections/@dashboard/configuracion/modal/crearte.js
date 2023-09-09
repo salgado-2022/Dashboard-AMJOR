@@ -102,8 +102,6 @@ function ConfiFormulario({ onClose }) {
               icon: 'success',
             }).then(() => {
               onClose();
-              handleCloseModal();
-              window.location.reload();
             });
           } else {
             setErrorMessages({ ...errorMessages, general: 'Error al crear el rol.' });
@@ -112,6 +110,9 @@ function ConfiFormulario({ onClose }) {
         .catch((err) => {
           console.log(err);
           setErrorMessages({ ...errorMessages, general: 'Error en la solicitud.' });
+        })
+        .finally(() => {
+          handleCloseModal(); // Asegúrate de que se cierre el modal sin importar si la solicitud tuvo éxito o no
         });
     } else {
       setErrorMessages(errors);
@@ -130,7 +131,7 @@ function ConfiFormulario({ onClose }) {
         Crear nuevo rol
       </Button>
       <Dialog open={modalOpen} onClose={handleCloseModal} TransitionComponent={Transition} fullWidth>
-        <DialogTitle>Crear un nuevo rol</DialogTitle>
+        <DialogTitle variant="h5" align="center" sx={{ mb: 1 }}>Crear un nuevo rol</DialogTitle>
         <DialogContent dividers>
           <TextField
             label="Nuevo rol"
@@ -177,8 +178,14 @@ function ConfiFormulario({ onClose }) {
             fullWidth
             style={{ marginTop: '8px' }}
             onClick={() => {
-              validarRolPermiso();
-              handleCloseModal();
+              validarRolPermiso()
+                .then(() => {
+                  // Cerrar el modal solo si el rol se creó correctamente
+                  onClose();
+                })
+                .catch((errors) => {
+                  // Manejar errores si es necesario
+                });
             }}
           >
             Crear el rol

@@ -19,19 +19,15 @@ import axios from 'axios';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import Swal from 'sweetalert2';
 
-//----------------------------------------------------------------
-
 const NoNumberArrowsTextField = styled(TextField)(({ theme }) => ({
   '& input[type=number]': {
-    MozAppearance: 'textfield', // Firefox
+    MozAppearance: 'textfield',
     '&::-webkit-outer-spin-button, &::-webkit-inner-spin-button': {
       WebkitAppearance: 'none',
       margin: 0,
     },
   },
 }));
-
-//----------------------------------------------------------------
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -43,7 +39,7 @@ function UsuariosFormulario2({ open, onClose, fetchData }) {
   const [values, setValues] = useState({
     Documento: '',
     Nombre: '',
-    Apellidos: '',
+    Apellido: '',
     Telefono: '',
     Email: '',
     Password: '',
@@ -51,14 +47,15 @@ function UsuariosFormulario2({ open, onClose, fetchData }) {
   });
 
   const [validationErrors, setValidationErrors] = useState({
-    Documento: false,
-    Nombre: false,
-    Apellidos: false,
-    Telefono: false,
-    Email: false,
-    Password: false,
-    rol: false,
+    Documento: null,
+    Nombre: null,
+    Apellido: null,
+    Telefono: null,
+    Email: null,
+    Password: null,
+    rol: null,
   });
+
   const [roles, setRoles] = useState([]);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -71,42 +68,27 @@ function UsuariosFormulario2({ open, onClose, fetchData }) {
     setValues({
       Documento: '',
       Nombre: '',
-      Apellidos: '',
+      Apellido: '',
       Telefono: '',
       Email: '',
       Password: '',
       rol: '',
     });
     setValidationErrors({
-      Documento: false,
-      Nombre: false,
-      Apellidos: false,
-      Telefono: false,
-      Email: false,
-      Password: false,
-      rol: false,
+      Documento: null,
+      Nombre: null,
+      Apellido: null,
+      Telefono: null,
+      Email: null,
+      Password: null,
+      rol: null,
     });
   };
 
-  const [documentoInput, setDocumentoInput] = useState(null);
-
-  const [nameInput, setNameInput] = useState(null);
-
-  const [lastName, setLastName] = useState(null);
-
-  const [telInput, setTelInput] = useState(null);
-
-  const [emailInput, setEmailInput] = useState(null);
-
-  const [passwordInput, setPasswordInput] = useState(null);
-
   const documentoRegex = /^\d{1,10}$/;
-
+  const telefonoRegex = /^\d{5,11}$/;
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-
-  //Validacion para que acepte ñ y espacios en blanco
   const textRegex = /^[a-zA-Z0-9ñÑ\s]+$/;
-
   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
 
   useEffect(() => {
@@ -133,71 +115,131 @@ function UsuariosFormulario2({ open, onClose, fetchData }) {
 
     if (name === 'Documento') {
       if (!value) {
-        setDocumentoInput('Campo obligatorio');
+        setValidationErrors((prevErrors) => ({
+          ...prevErrors,
+          Documento: 'Campo obligatorio',
+        }));
       } else if (!documentoRegex.test(value)) {
-        setDocumentoInput('Documento invalido');
+        setValidationErrors((prevErrors) => ({
+          ...prevErrors,
+          Documento: 'Documento inválido',
+        }));
       } else {
-        setDocumentoInput(null);
+        setValidationErrors((prevErrors) => ({
+          ...prevErrors,
+          Documento: null,
+        }));
         axios.post(`${apiUrl}/api/validate/documento`, values).then((res) => {
-          if (res.data.Status === 'Success') {
-            setDocumentoInput(null);
-          } else if (res.data.Status === 'Exists') {
-            setDocumentoInput('El documento ya se encuentra registrado');
+          if (res.data.Status === 'Exists') {
+            setValidationErrors((prevErrors) => ({
+              ...prevErrors,
+              Documento: 'El documento ya se encuentra registrado',
+            }));
           }
         });
       }
     }
-    if (name === 'Email') {
-      if (!value) {
-        setEmailInput('Campo obligatorio');
-      } else if (!emailRegex.test(value)) {
-        setEmailInput('Correo invalido');
-      } else {
-        setEmailInput(null);
 
-        axios.post(`${apiUrl}/api/validate/email`, values).then((res) => {
-          if (res.data.Status === 'Success') {
-            setEmailInput(null);
-          } else if (res.data.Status === 'Exists') {
-            setEmailInput('El correo ya esta registrado');
-          }
-        });
-      }
-    }
-    if (name === 'Telefono') {
-      if (!value) {
-        setTelInput('Campo obligatorio');
-      } else if (!documentoRegex.test(value)) {
-        setTelInput('Telefono invalido');
-      } else {
-        setTelInput(null);
-      }
-    }
     if (name === 'Nombre') {
       if (!value) {
-        setNameInput('Campo obligatorio');
+        setValidationErrors((prevErrors) => ({
+          ...prevErrors,
+          Nombre: 'Campo obligatorio',
+        }));
       } else if (!textRegex.test(value)) {
-        setNameInput('Nombre invalido');
+        setValidationErrors((prevErrors) => ({
+          ...prevErrors,
+          Nombre: 'Nombre inválido',
+        }));
       } else {
-        setNameInput(null);
+        setValidationErrors((prevErrors) => ({
+          ...prevErrors,
+          Nombre: null,
+        }));
       }
     }
-    if (name === 'Apellidos') {
+
+    if (name === 'Apellido') {
       if (!value) {
-        setLastName('Campo obligatorio');
+        setValidationErrors((prevErrors) => ({
+          ...prevErrors,
+          Apellido: 'Campo obligatorio',
+        }));
       } else if (!textRegex.test(value)) {
-        setLastName('Apellido invalido');
+        setValidationErrors((prevErrors) => ({
+          ...prevErrors,
+          Apellido: 'Apellido inválido',
+        }));
       } else {
-        setLastName(null);
+        setValidationErrors((prevErrors) => ({
+          ...prevErrors,
+          Apellido: null,
+        }));
       }
     }
+
+    if (name === 'Telefono') {
+      if (!value) {
+        setValidationErrors((prevErrors) => ({
+          ...prevErrors,
+          Telefono: 'Campo obligatorio',
+        }));
+      } else if (!telefonoRegex.test(value)) {
+        setValidationErrors((prevErrors) => ({
+          ...prevErrors,
+          Telefono: 'Teléfono inválido',
+        }));
+      } else {
+        setValidationErrors((prevErrors) => ({
+          ...prevErrors,
+          Telefono: null,
+        }));
+      }
+    }
+
+    if (name === 'Email') {
+      if (!value) {
+        setValidationErrors((prevErrors) => ({
+          ...prevErrors,
+          Email: 'Campo obligatorio',
+        }));
+      } else if (!emailRegex.test(value)) {
+        setValidationErrors((prevErrors) => ({
+          ...prevErrors,
+          Email: 'Correo inválido',
+        }));
+      } else {
+        setValidationErrors((prevErrors) => ({
+          ...prevErrors,
+          Email: null,
+        }));
+        axios.post(`${apiUrl}/api/validate/email`, values).then((res) => {
+          if (res.data.Status === 'Exists') {
+            setValidationErrors((prevErrors) => ({
+              ...prevErrors,
+              Email: 'El correo ya está registrado',
+            }));
+          }
+        });
+      }
+    }
+
     if (name === 'Password') {
       if (!value) {
-        setPasswordInput('Campo obligatorio');
+        setValidationErrors((prevErrors) => ({
+          ...prevErrors,
+          Password: 'Campo obligatorio',
+        }));
       } else if (!passwordRegex.test(value)) {
-        setPasswordInput('Contraseña invalida');
+        setValidationErrors((prevErrors) => ({
+          ...prevErrors,
+          Password: 'Contraseña inválida',
+        }));
       } else {
-        setPasswordInput(null);
+        setValidationErrors((prevErrors) => ({
+          ...prevErrors,
+          Password: null,
+        }));
       }
     }
   };
@@ -205,50 +247,52 @@ function UsuariosFormulario2({ open, onClose, fetchData }) {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    // Realizar validaciones aquí según las expresiones regulares y reglas
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
-    const telefonoRegex = /^\d{5,11}$/;
-
-    setValidationErrors({
-      documento: !documentoRegex.test(values.documento),
-      correo: !emailRegex.test(values.correo),
-      contrasena: !passwordRegex.test(values.contrasena),
-      nombre: values.Nombre === '',
-      telefono: !telefonoRegex.test(values.telefono),
-      apellidos: values.Apellidos === '',
-      rol: values.rol === '',
-    });
-
-    try {
-      const res = await axios.post(`${apiUrl}/api/crearUsuario`, {
-        correo: values.correo,
-        contrasena: values.contrasena,
-        documento: values.documento,
-        nombre: values.nombre,
-        apellido: values.apellidos,
-        telefono: values.telefono,
-        rol: values.rol,
-      });
-
-      if (res.data.Status === 'Success') {
-        Swal.fire({
-          title: 'Usuario creado correctamente',
-          text: 'El usuario ha sido creado exitosamente.',
-          icon: 'success',
-        }).then(() => {
-          fetchData();
-          handleCloseModal();
+    // Verifica que no haya errores de validación antes de enviar la solicitud
+    if (
+      Object.values(validationErrors).every((error) => error === null)
+    ) {
+      try {
+        const res = await axios.post(`${apiUrl}/api/crearUsuario`, {
+          correo: values.Email,
+          contrasena: values.Password,
+          documento: values.Documento,
+          nombre: values.Nombre,
+          apellido: values.Apellido,
+          telefono: values.Telefono,
+          rol: values.rol,
         });
-      } else if (res.data.Error) {
-        // Si la API devuelve un mensaje de error, mostrarlo
-        Swal.fire({
-          title: 'Error',
-          text: res.data.Error,
-          icon: 'error',
-        });
+
+        if (res.data.Status === 'Success') {
+          // Restablece los errores después de un envío exitoso
+          setValidationErrors({
+            Documento: null,
+            Nombre: null,
+            Apellido: null,
+            Telefono: null,
+            Email: null,
+            Password: null,
+            rol: null,
+          });
+
+          Swal.fire({
+            title: 'Usuario creado correctamente',
+            text: 'El usuario ha sido creado exitosamente.',
+            icon: 'success',
+          }).then(() => {
+            fetchData();
+            handleCloseModal();
+          });
+        } else if (res.data.Error) {
+          // Si la API devuelve un mensaje de error, mostrarlo
+          Swal.fire({
+            title: 'Error',
+            text: res.data.Error,
+            icon: 'error',
+          });
+        }
+      } catch (error) {
+        console.error('Error al crear el usuario:', error);
       }
-    } catch (error) {
-      console.error('Error al crear el usuario:', error);
     }
   };
 
@@ -261,16 +305,16 @@ function UsuariosFormulario2({ open, onClose, fetchData }) {
             <Grid item xs={12} sm={6}>
               <NoNumberArrowsTextField
                 label="Documento"
-                name="documento"
+                name="Documento"
                 type="number"
                 margin="dense"
                 fullWidth
                 color="secondary"
-                value={values.documento}
+                value={values.Documento}
                 onChange={handleInputChange}
                 onBlur={handleBlur}
-                error={documentoInput !== null}
-                helperText={documentoInput}
+                error={validationErrors.Documento !== null}
+                helperText={validationErrors.Documento || ''}
                 inputProps={{
                   inputMode: 'numeric',
                   pattern: '[0-9]*',
@@ -280,69 +324,72 @@ function UsuariosFormulario2({ open, onClose, fetchData }) {
             <Grid item xs={12} sm={6}>
               <TextField
                 label="Nombre"
-                name="nombre"
+                name="Nombre"
                 type="text"
                 margin="dense"
                 color="secondary"
                 fullWidth
-                value={values.nombre}
+                value={values.Nombre}
                 onChange={handleInputChange}
                 onBlur={handleBlur}
-                error={nameInput !== null}
-                helperText={nameInput}
+                error={validationErrors.Nombre !== null}
+                helperText={validationErrors.Nombre || ''}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
-                label="Apellidos"
-                name="apellidos"
+                label="Apellido"
+                name="Apellido"
                 type="text"
-                value={values.apellidos}
+                value={values.Apellido}
                 onChange={handleInputChange}
+                onBlur={handleBlur}
                 margin="dense"
                 fullWidth
-                error={lastName !== null}
-                helperText={lastName}
+                error={validationErrors.Apellido !== null}
+                helperText={validationErrors.Apellido || ''}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
                 label="Teléfono"
-                name="telefono"
+                name="Telefono"
                 type="number"
-                value={values.telefono}
+                value={values.Telefono}
                 onChange={handleInputChange}
+                onBlur={handleBlur}
                 margin="dense"
                 fullWidth
-                error={telInput !== null}
-                helperText={telInput}
+                error={validationErrors.Telefono !== null}
+                helperText={validationErrors.Telefono || ''}
               />
             </Grid>
             <Grid item xs={12}>
               <TextField
                 label="Correo electrónico"
                 type="email"
-                name="correo"
-                value={values.correo}
+                name="Email"
+                value={values.Email}
                 onChange={handleInputChange}
                 onBlur={handleBlur}
                 margin="dense"
                 fullWidth
-                error={emailInput !== null}
-                helperText={emailInput}
+                error={validationErrors.Email !== null}
+                helperText={validationErrors.Email || ''}
               />
             </Grid>
             <Grid item xs={12}>
               <TextField
                 label="Contraseña"
-                name="contrasena"
+                name="Password"
                 type={showPassword ? 'text' : 'password'}
-                value={values.contrasena}
+                value={values.Password}
                 onChange={handleInputChange}
+                onBlur={handleBlur}
                 margin="dense"
                 fullWidth
-                error={passwordInput !== null}
-                helperText={passwordInput}
+                error={validationErrors.Password !== null}
+                helperText={validationErrors.Password || ''}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
@@ -367,8 +414,7 @@ function UsuariosFormulario2({ open, onClose, fetchData }) {
                   value={values.rol}
                   onChange={handleInputChange}
                   margin="dense"
-                  error={validationErrors.rol}
-                  helperText={validationErrors.rol && 'Rol inválido.'}
+                  error={validationErrors.rol !== null}
                 >
                   {roles.map((rol) => (
                     <MenuItem key={rol.ID_Rol} value={rol.ID_Rol}>
@@ -376,6 +422,11 @@ function UsuariosFormulario2({ open, onClose, fetchData }) {
                     </MenuItem>
                   ))}
                 </Select>
+                {validationErrors.rol && (
+                  <div style={{ color: 'red', fontSize: '0.75rem' }}>
+                    {validationErrors.rol}
+                  </div>
+                )}
               </FormControl>
             </Grid>
           </Grid>
