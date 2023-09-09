@@ -193,6 +193,7 @@ export default function UserPage() {
     setSelectedUser(idSelectedUser);
     setModalShow(true);
     setOpen(null);
+    fetchData();
   };
 
   const handleOpenModal = () => {

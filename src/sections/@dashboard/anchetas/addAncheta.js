@@ -1,21 +1,21 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Link, useNavigate } from 'react-router-dom';
-import { 
-    Container, 
-    Grid, 
-    Button, 
-    TextField, 
-    Typography, 
-    Stack, 
-    Card, 
-    CardHeader, 
-    CardContent, 
-    List, 
-    ListItem, 
-    ListItemIcon, 
-    ListItemText, 
-    IconButton, 
-    TablePagination, 
+import {
+    Container,
+    Grid,
+    Button,
+    TextField,
+    Typography,
+    Stack,
+    Card,
+    CardHeader,
+    CardContent,
+    List,
+    ListItem,
+    ListItemIcon,
+    ListItemText,
+    IconButton,
+    TablePagination,
     Paper,
     CardMedia,
     Divider
@@ -71,7 +71,7 @@ function AddAncheta() {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [filterName, setFilterName] = useState('');
-    
+
     const states = state.map(obj => ({ idInsumo: obj.ID_Insumo, cantidad: obj.Cantidad, precio: obj.PrecioUnitario * obj.Cantidad }));
 
     const Precio = state.reduce((Precio, insumo) => {
@@ -85,7 +85,7 @@ function AddAncheta() {
             minimumFractionDigits: 0,
         });
     };
-    
+
     useEffect(() => {
         const fetchData = () => {
             axios
@@ -95,13 +95,13 @@ function AddAncheta() {
                 })
                 .catch((err) => console.log(err));
         };
-        
+
         fetchData();
         return () => {
             dispatch({ type: 'ResetInsumos' });
-        };   
+        };
     }, [dispatch, apiUrl]);
-    
+
     const handleInput = (event) => {
         const { name, value, type } = event.target;
         setValues(prev => ({ ...prev, [name]: value }));
@@ -214,24 +214,24 @@ function AddAncheta() {
     const handleReset = () => {
         setValues(initialValues);
         setImageUrl(null);
-        setNombreError(''); 
-        setDescripcionError(''); 
+        setNombreError('');
+        setDescripcionError('');
         dispatch({ type: 'ResetInsumos' });
     };
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
-      };
-    
+    };
+
     const handleChangeRowsPerPage = (event) => {
         setPage(0);
         setRowsPerPage(parseInt(event.target.value, 10));
-      };
+    };
 
     const handleFilterByName = (event) => {
         setPage(0);
         setFilterName(event.target.value);
-      };
+    };
 
     const emptyRows = page > 0 ? Math.max(0, (page + 1) * rowsPerPage - data.length) : 0;
 
@@ -240,7 +240,7 @@ function AddAncheta() {
     const isNotFound = !filteredUsers.length && !!filterName;
 
     const dataLength = state ? (data.length - state.length) : (data.length);
-    
+
     return (
     <Container maxWidth={"xl"}>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
@@ -328,54 +328,54 @@ function AddAncheta() {
                         <List sx={{ height: '625px', overflowY: 'auto' }}>
                             {filteredUsers.reverse().filter(insumo => !insumosAgregados.includes(insumo.ID_Insumo) && insumo.Estado !== 'Agotado').slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((insumo, index) => {
 
-                                insumo.Cantidad = 1;
-                                insumo.Precio = insumo.PrecioUnitario;
-                                
-                                return (
-                                    <React.Fragment key={insumo.ID_Insumo}>
-                                    <ListItem key={insumo.ID_Insumo} secondaryAction={
-                                        <Typography variant="subtitle2">{formatPrice(insumo.Precio)}</Typography>
-                                    }>
-                                        <ListItemIcon onClick={() => dispatch({ type: 'AddInsumo', payload: insumo })}>
-                                            <IconButton color="primary" sx={{fontSize: "32px"}}>
-                                                <Iconify icon="typcn:plus" class="big-icon" />
-                                            </IconButton>
-                                        </ListItemIcon>
-                                        <Grid item sm={8} xs={8}>
-                                            <ListItemText primary={insumo.NombreInsumo}/>
-                                        </Grid>  
-                                    </ListItem>
-                                    {index < data.length - 1 && <Divider />}
-                                    </React.Fragment>
-                                );
-                            })}
-                            {isNotFound && (
-                                <Paper sx={{textAlign: 'center'}}>
-                                    <Typography variant="h6" paragraph>No encontrado</Typography>
-                                    <Typography variant="body2">No se encontraron resultados para
-                                        &nbsp;<strong>&quot;{filterName}&quot;</strong>.
-                                        <br/> Intente verificar errores tipográficos o usar palabras completas.
-                                    </Typography>
-                                </Paper>
-                            )}
-                            {emptyRows > 0 && (<ListItem style={{ height: 73 * emptyRows }}/>)}
-                        </List>
-                        <TablePagination
-                            rowsPerPageOptions={[10, 25]}
-                            component="div"
-                            count={dataLength}
-                            rowsPerPage={rowsPerPage}
-                            page={page}
-                            onPageChange={handleChangePage}
-                            onRowsPerPageChange={handleChangeRowsPerPage}
-                            labelRowsPerPage="Filas por pagina:"
-                        />
-                    </Card>
+                                    insumo.Cantidad = 1;
+                                    insumo.Precio = insumo.PrecioUnitario;
+
+                                    return (
+                                        <React.Fragment key={insumo.ID_Insumo}>
+                                            <ListItem key={insumo.ID_Insumo} secondaryAction={
+                                                <Typography variant="subtitle2">{formatPrice(insumo.Precio)}</Typography>
+                                            }>
+                                                <ListItemIcon onClick={() => dispatch({ type: 'AddInsumo', payload: insumo })}>
+                                                    <IconButton color="primary" sx={{ fontSize: "32px" }}>
+                                                        <Iconify icon="typcn:plus" class="big-icon" />
+                                                    </IconButton>
+                                                </ListItemIcon>
+                                                <Grid item sm={8} xs={8}>
+                                                    <ListItemText primary={insumo.NombreInsumo} />
+                                                </Grid>
+                                            </ListItem>
+                                            {index < data.length - 1 && <Divider />}
+                                        </React.Fragment>
+                                    );
+                                })}
+                                {isNotFound && (
+                                    <Paper sx={{ textAlign: 'center' }}>
+                                        <Typography variant="h6" paragraph>No encontrado</Typography>
+                                        <Typography variant="body2">No se encontraron resultados para
+                                            &nbsp;<strong>&quot;{filterName}&quot;</strong>.
+                                            <br /> Intente verificar errores tipográficos o usar palabras completas.
+                                        </Typography>
+                                    </Paper>
+                                )}
+                                {emptyRows > 0 && (<ListItem style={{ height: 73 * emptyRows }} />)}
+                            </List>
+                            <TablePagination
+                                rowsPerPageOptions={[10, 25]}
+                                component="div"
+                                count={dataLength}
+                                rowsPerPage={rowsPerPage}
+                                page={page}
+                                onPageChange={handleChangePage}
+                                onRowsPerPageChange={handleChangeRowsPerPage}
+                                labelRowsPerPage="Filas por pagina:"
+                            />
+                        </Card>
+                    </Grid>
+
                 </Grid>
-                
-            </Grid>
-        </form>
-    </Container>
+            </form>
+        </Container>
     );
 }
 
