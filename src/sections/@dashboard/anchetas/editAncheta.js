@@ -50,6 +50,7 @@ function EditAncheta() {
     });
 
     const [nombreError, setNombreError] = useState('');
+    const [currentNombreAncheta, setCurrentNombreAncheta] = useState('');
     const [descripcionError, setDescripcionError] = useState('');
 
     const [isChecked, setIsChecked] = useState(false);
@@ -80,6 +81,7 @@ function EditAncheta() {
         axios.get(`${apiUrl}/api/admin/anchetas/anchellamada/` + id)
             .then(res => {
                 console.log(res);
+                setCurrentNombreAncheta(res.data[0].NombreAncheta);
                 setValues(prevValues => ({
                     ...prevValues,
                     NombreAncheta: res.data[0].NombreAncheta,
@@ -140,13 +142,21 @@ function EditAncheta() {
             }
         }
 
-        if (name === 'NombreAncheta') {
+        if (name === 'NombreAncheta' && value.toLowerCase() !== currentNombreAncheta.toLowerCase()) {
             if (!value) {
                 setNombreError('El nombre es requerido');
             } else if (!/^[^<>%$"!#&/=]*$/.test(value)) {
                 setNombreError('Por favor ingrese un nombre válido');
             } else {
                 setNombreError('');
+                axios.post(`${apiUrl}/api/validate/ancheta`, { NombreAncheta: value })
+                    .then(res => {
+                        if (res.data.Status === "Success") {
+                            setNombreError('')
+                        } else if (res.data.Status === "Exists") {
+                            setNombreError('El nombre ya se encuentra registrado')
+                        }
+                    })
             }
         } else if (name === 'Descripcion') {
             if (!value) {
@@ -345,7 +355,7 @@ function EditAncheta() {
                             placeholder="Buscar Insumo..."
                         />
                         <List sx={{ height: '625px', overflowY: 'auto' }}>
-                            {filteredUsers.filter(insumo => !insumosAgregados.includes(insumo.ID_Insumo) && insumo.Estado !== 'Agotado').slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((insumo, index) => {
+                            {filteredUsers.reverse().filter(insumo => !insumosAgregados.includes(insumo.ID_Insumo) && insumo.Estado !== 'Agotado').slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((insumo, index) => {
                                 insumo.Cantidad = 1;
                                 insumo.Precio = insumo.PrecioUnitario;
                                 return (

@@ -128,6 +128,14 @@ function AddAncheta() {
                 setNombreError('Por favor ingrese un nombre válido');
             } else {
                 setNombreError('');
+                axios.post(`${apiUrl}/api/validate/ancheta`, { NombreAncheta: value })
+                    .then(res => {
+                        if (res.data.Status === "Success") {
+                            setNombreError('')
+                        } else if (res.data.Status === "Exists") {
+                            setNombreError('El nombre ya se encuentra registrado')
+                        }
+                    })
             }
         } else if (name === 'Descripcion') {
             if (!value) {
@@ -318,7 +326,7 @@ function AddAncheta() {
                             placeholder="Buscar Insumo..."
                         />
                         <List sx={{ height: '625px', overflowY: 'auto' }}>
-                            {filteredUsers.filter(insumo => !insumosAgregados.includes(insumo.ID_Insumo) && insumo.Estado !== 'Agotado').slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((insumo, index) => {
+                            {filteredUsers.reverse().filter(insumo => !insumosAgregados.includes(insumo.ID_Insumo) && insumo.Estado !== 'Agotado').slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((insumo, index) => {
 
                                 insumo.Cantidad = 1;
                                 insumo.Precio = insumo.PrecioUnitario;

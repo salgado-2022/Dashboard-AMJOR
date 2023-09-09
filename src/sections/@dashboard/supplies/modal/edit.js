@@ -14,6 +14,7 @@ function EditInsumo(props) {
     const id = selectedInsumoID;
 
     const [nombreError, setNombreError] = useState('');
+    const [currentNombreInsumo, setCurrentNombreInsumo] = useState('');
     const [descripcionError, setDescripcionError] = useState('');
     const [precioError, setPrecioError] = useState('');
 
@@ -36,13 +37,21 @@ function EditInsumo(props) {
             setValues(prev => ({ ...prev, [name]: value }));
         }
 
-        if (name === 'NombreInsumo') {
+        if (name === 'NombreInsumo' && value.toLowerCase() !== currentNombreInsumo.toLowerCase()) {
             if (!value) {
                 setNombreError('El nombre es requerido');
             } else if (!/^[^<>%$"!#&/=]*$/.test(value)) {
                 setNombreError('Por favor ingrese un nombre válido');
             } else {
                 setNombreError('');
+                axios.post(`${apiUrl}/api/validate/insumo`, { NombreInsumo: value })
+                    .then(res => {
+                        if (res.data.Status === "Success") {
+                            setNombreError('')
+                        } else if (res.data.Status === "Exists") {
+                            setNombreError('El nombre ya se encuentra registrado')
+                        }
+                    })
             }
         } else if (name === 'Descripcion') {
             if (!value) {
@@ -74,6 +83,7 @@ function EditInsumo(props) {
             axios.get(`${apiUrl}/api/admin/insumos/insullamada/` + id)
                 .then(res => {
                     console.log(res);
+                    setCurrentNombreInsumo(res.data[0].NombreInsumo);
                     setValues(prevValues => ({
                         ...prevValues,
                         NombreInsumo: res.data[0].NombreInsumo,

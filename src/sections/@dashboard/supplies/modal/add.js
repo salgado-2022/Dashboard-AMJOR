@@ -71,6 +71,14 @@ function AddInsumo({ open, onClose, fetchData }) {
                 setNombreError('Por favor ingrese un nombre válido');
             } else {
                 setNombreError('');
+                axios.post(`${apiUrl}/api/validate/insumo`, { NombreInsumo: value })
+                    .then(res => {
+                        if (res.data.Status === "Success") {
+                            setNombreError('')
+                        } else if (res.data.Status === "Exists") {
+                            setNombreError('El nombre ya se encuentra registrado')
+                        }
+                    })
             }
         } else if (name === 'Descripcion') {
             if (!value) {
@@ -123,7 +131,7 @@ function AddInsumo({ open, onClose, fetchData }) {
                             showConfirmButton: false,
                             timer: 1500
                         });
-                        onClose();
+                        handleCloseModal();
                         fetchData();
                     } else {
                         Swal.fire({
