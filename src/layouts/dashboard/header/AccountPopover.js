@@ -110,7 +110,7 @@ export default function AccountPopover() {
           }),
         }}
       >
-        <Avatar src={`${apiUrl}/usuario/${img}`} alt="photoURL" />
+        <Avatar src={`${apiUrlDeploy}/usuario/${img}`} alt="photoURL" />
       </IconButton>
 
       <Popover

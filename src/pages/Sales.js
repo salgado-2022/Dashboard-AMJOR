@@ -122,7 +122,7 @@ export default function SalesPage() {
 
     useEffect(() => {
         axiosData();
-    })
+    },[])
 
     const axiosData = () => {
         axios.get(`${apiUrl}/api/admin/listar/ventas`)
