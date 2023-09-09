@@ -5,6 +5,7 @@ import { sentenceCase } from 'change-case';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { UsuariosFormulario2 } from '../sections/@dashboard/user/modal/create';
+//import { CrearCliente} from '../sections/@dashboard/clientes/modal/crearCliente';
 // @mui
 import {
   Card,
@@ -29,7 +30,7 @@ import {
 import Iconify from '../components/iconify';
 import Scrollbar from '../components/scrollbar';
 import Label from '../components/label';
-import { EditarUsuario } from '../sections/@dashboard/user/modal/editar';
+import { EditarCliente } from '../sections/@dashboard/clientes/modal/editarCliente';
 
 // sections
 import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
@@ -220,7 +221,7 @@ export default function ParteCliente() {
       </Helmet>
 
       <Container maxWidth="xl">
-        <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+      <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
             Clientes
           </Typography>
@@ -238,7 +239,7 @@ export default function ParteCliente() {
           />
 
           <Scrollbar>
-            {loading ? ( // Mostrar un mensaje de carga si los datos aún están cargando
+            {loading ? ( 
               <TableContainer sx={{ minWidth: 800 }}>
                 <Table>
                   <OrderListHead
@@ -414,7 +415,7 @@ export default function ParteCliente() {
           />
         </Card>
       </Container>
-      <EditarUsuario
+      <EditarCliente
         show={modalShow}
         onHide={() => setModalShow(false)}
         fetchData={fetchData}
