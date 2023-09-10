@@ -4,7 +4,6 @@ import { sentenceCase } from 'change-case';
 import { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import Swal from 'sweetalert2';
 
 // @mui
 import {
@@ -130,25 +129,6 @@ export default function AnchetasPage() {
     setLoading(true);
     fetchData();
   }, [fetchData]);
-
-  const handleDelete = (id) => {
-    axios
-      .delete(`${apiUrl}/api/admin/anchetas/anchetadel/` + id)
-      .then((res) => {
-        console.log(res);
-        Swal.fire({
-          title: 'Eliminado Correctamente',
-          text: 'Tu ancheta ha sido eliminada correctamente',
-          icon: 'success',
-          showConfirmButton: false,
-          timer: 1500,
-        });
-        setTimeout(function () {
-          window.location = 'anchetas';
-        }, 670);
-      })
-      .catch((err) => console.log(err));
-  };
 
   const handleOpenMenu = (event, ID_Ancheta) => {
     setOpen(event.currentTarget);
@@ -384,7 +364,7 @@ export default function AnchetasPage() {
                               },
                             }}
                           >
-                            <MenuItem onClick={() => handleDetalle(selectedAncheta)}>
+                            <MenuItem sx={{ color: 'primary.main' }} onClick={() => handleDetalle(selectedAncheta)}>
                               <Iconify icon={'carbon:view'} sx={{ mr: 2 }} />
                               Detalle
                             </MenuItem>
@@ -392,11 +372,6 @@ export default function AnchetasPage() {
                             <MenuItem sx={{ color: 'warning.main' }} onClick={() => handleEditar(selectedAncheta)}>
                               <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
                               Editar
-                            </MenuItem>
-
-                            <MenuItem sx={{ color: 'error.main' }} onClick={() => handleDelete(selectedAncheta)}>
-                              <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
-                              Eliminar
                             </MenuItem>
                           </Popover>
                         </TableRow>
