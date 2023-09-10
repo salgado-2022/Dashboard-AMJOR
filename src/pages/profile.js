@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom'
 import axios from "axios";
 
 import { Helmet } from 'react-helmet-async';
@@ -46,8 +47,10 @@ export default function Profile() {
     const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
     const deployApiUrl = process.env.REACT_APP_AMJOR_DEPLOY_API_URL;
 
+    const [id, setID] = useState()
     const [imageUrlEdit, setImageUrlEdit] = useState(null);
     const [oldImage, setOldImage] = useState('');
+    const navigate = useNavigate();
     const [values, setValues] = useState({
         Documento: '',
         Nombre: '',
@@ -57,11 +60,19 @@ export default function Profile() {
         img: ''
     });
 
+
+
     useEffect(() => {
+        const token = Cookies.get('token');
+        const decodedToken = jwt_decode(token);
+        setID(decodedToken.userId)
         fetchData();
     }, [])
 
-    const fetchData = () => {
+    console.log(id)
+
+    const fetchData = useCallback(async () => {
+
         const token = Cookies.get('token');
         if (token) {
             const decodedToken = jwt_decode(token);
@@ -83,7 +94,7 @@ export default function Profile() {
                     console.error(err)
                 })
         }
-    }
+    })
 
     const handleReset = () => {
         fetchData();
@@ -97,11 +108,45 @@ export default function Profile() {
             const selectedFileEdit = event.target.files[0];
             if (selectedFileEdit) {
                 setImageUrlEdit(URL.createObjectURL(selectedFileEdit));
-                setValues((prev) => ({ ...prev, image: selectedFileEdit }));
+                setValues((prev) => ({ ...prev, img: selectedFileEdit }));
             }
         }
-
     }
+    console.log(values.img)
+
+    const handleUpdate = (event) => {
+        event.preventDefault();
+
+        const formdata = new FormData();
+        formdata.append('Documento', values.Documento)
+        formdata.append('Nombre', values.Nombre);
+        formdata.append('Apellido', values.Apellido);
+        formdata.append('Telefono', values.Telefono)
+        formdata.append('correo', values.correo)
+        axios.put(`${apiUrl}/api/user/perfil/update/` + id, formdata)
+            .then(res => {
+                Swal.fire({
+                    title: 'Actualizado Correctamente',
+                    text: "Se actualizo correctamente",
+                    icon: 'success',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+                if (values.img) {
+                    const formdata = new FormData();
+                    console.log(values.img)
+                    console.log(oldImage)
+                    formdata.append('image', values.img);
+                    formdata.append('oldImage', oldImage);
+                    axios.put(`${apiUrl}/api/user/perfil/update/` + id, formdata)
+                }
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000)
+            })
+            window.history.back();
+    }
+
 
     return (
         <>
@@ -116,7 +161,7 @@ export default function Profile() {
                     </Typography>
                 </Stack>
 
-                <form onReset={handleReset} encType="multipart/form-data">
+                <form onSubmit={handleUpdate} onReset={handleReset} encType="multipart/form-data">
                     <Grid container spacing={3}>
                         <Grid xs={12} md={4}>
                             <Card>
@@ -125,7 +170,7 @@ export default function Profile() {
 
                                         {values.img && (
                                             <div>
-                                                <CardMedia className="hover-card-header" component="img" alt="" height="235px" image={imageUrlEdit || `${deployApiUrl}/usuario/` + values.img} />
+                                                <CardMedia component="img" alt="" sx={{ width: 150, height: 150, borderRadius: 50 }} image={imageUrlEdit || `${apiUrl}/anchetas/` + values.img} />
                                                 <IconButton color="trash" sx={{ position: "absolute", top: "0px", right: "8px" }} onClick={() => {
                                                     setImageUrlEdit(null);
                                                     setValues((prev) => ({ ...prev, img: null }));
@@ -152,7 +197,7 @@ export default function Profile() {
                                                 }}
                                                 title={
                                                     <div style={{ fontSize: "48px", marginBottom: "21px" }}>
-                                                        <input type="file" className="form-control" id="image" name="image" accept=".jpg, .png, .jpeg" style={{ display: "none" }} />
+                                                        <input type="file" className="form-control" id="img" name="img" accept=".jpg, .png, .jpeg" onChange={handleInput} style={{ display: "none" }} />
                                                         <Iconify icon="fluent:image-add-20-regular" className="big-icon" />
                                                     </div>
                                                 }
