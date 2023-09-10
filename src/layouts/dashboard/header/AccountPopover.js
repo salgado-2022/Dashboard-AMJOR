@@ -3,8 +3,6 @@ import { useState, useEffect } from 'react';
 import { alpha } from '@mui/material/styles';
 import { Box, Divider, Typography, Stack, MenuItem, Avatar, IconButton, Popover } from '@mui/material';
 import { Link } from 'react-router-dom';
-// mocks_
-import account from '../../../_mock/account';
 
 import axios from 'axios';
 
