@@ -1,9 +1,17 @@
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import ReactApexChart from 'react-apexcharts';
 // @mui
 import { Card, CardHeader, Box } from '@mui/material';
 // components
 import { useChart } from '../../../components/chart';
+import { Select, MenuItem } from '@mui/material';
+import { Grid } from '@mui/material';
+
+
+import { format } from 'date-fns';
+import es from 'date-fns/locale/es'; // Importa el locale en español
+
 
 // ----------------------------------------------------------------------
 
@@ -15,18 +23,27 @@ AppWebsiteVisits.propTypes = {
 };
 
 export default function AppWebsiteVisits({ title, subheader, chartLabels, chartData, ...other }) {
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear()); // Año por defecto es el año actual
+  const currentYear = new Date().getFullYear();
+
+
+  // Formatear las fechas
+  const formattedChartLabels = chartLabels.map((dateString) => {
+    const date = new Date(dateString + 'T12:00:00Z'); // Establece la hora a las 12:00 PM en UTC
+    console.log(format(date, 'd MMM', { locale: es }))
+    return format(date, 'd MMM', { locale: es });
+  });
   const chartOptions = useChart({
     plotOptions: { bar: { columnWidth: '16%' } },
     fill: { type: chartData.map((i) => i.fill) },
-    labels: chartLabels,
-    xaxis: { type: 'datetime' },
+    labels: formattedChartLabels,
     tooltip: {
       shared: true,
       intersect: false,
       y: {
         formatter: (y) => {
           if (typeof y !== 'undefined') {
-            return `${y.toFixed(0)} visits`;
+            return `${y.toFixed(0)} `;
           }
           return y;
         },
@@ -36,11 +53,30 @@ export default function AppWebsiteVisits({ title, subheader, chartLabels, chartD
 
   return (
     <Card {...other}>
-      <CardHeader title={title} subheader={subheader} />
-
       <Box sx={{ p: 3, pb: 1 }} dir="ltr">
+        <Grid container alignItems="center">
+          <Grid item xs={8}>
+            <CardHeader title={title} subheader={subheader} />
+          </Grid>
+          <Grid item xs={4} sx={{ textAlign: 'right' }}>
+            <Select
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(e.target.value)}
+            >
+              <MenuItem value={currentYear}>{currentYear}</MenuItem>
+              {/* Agrega más años si es necesario */}
+            </Select>
+          </Grid>
+        </Grid>
         <ReactApexChart type="line" series={chartData} options={chartOptions} height={364} />
       </Box>
     </Card>
   );
+
 }
+
+
+
+
+
+

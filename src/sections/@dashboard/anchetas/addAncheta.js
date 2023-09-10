@@ -178,7 +178,7 @@ function AddAncheta() {
             formdata.append('PrecioUnitario', Precio.toString());
             formdata.append('Insumos', JSON.stringify(states))
             formdata.append('image', values.image);
-            axios.post(`${deployApiUrl}/api/crearAncheta`, formdata)
+            axios.post(`${apiUrl}/api/crearAncheta`, formdata)
                 .then(res => {
                     if (res.data.Status === "Success") {
                         Swal.fire({
