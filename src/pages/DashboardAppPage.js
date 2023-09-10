@@ -120,9 +120,6 @@ export default function DashboardAppPage() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
-  console.log(ventasPorMes)
-
-
   const ventasPorMesFormateado = ventasPorMes.map((venta) => {
     const { Anio, Mes, Dia, Cantidad_Ventas } = venta;
     const fechaFormateada = `${Anio}-${Mes.toString().padStart(2, '0')}-${Dia.toString().padStart(2, '0')}`;

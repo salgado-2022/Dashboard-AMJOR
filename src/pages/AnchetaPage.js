@@ -340,7 +340,7 @@ export default function AnchetasPage() {
 
                           <TableCell component="th" scope="row" padding="none">
                             <Stack direction="row" alignItems="center" spacing={2}>
-                              <Avatar alt="" src={`${apiUrl}/anchetas/` + image} />
+                              <Avatar alt="" src={`${deployApiUrl}/anchetas/` + image} />
                             </Stack>
                           </TableCell>
 

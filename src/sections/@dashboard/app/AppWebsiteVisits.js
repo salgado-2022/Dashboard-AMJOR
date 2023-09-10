@@ -23,14 +23,12 @@ AppWebsiteVisits.propTypes = {
 };
 
 export default function AppWebsiteVisits({ title, subheader, chartLabels, chartData, ...other }) {
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear()); // Año por defecto es el año actual
   const currentYear = new Date().getFullYear();
 
 
   // Formatear las fechas
   const formattedChartLabels = chartLabels.map((dateString) => {
     const date = new Date(dateString + 'T12:00:00Z'); // Establece la hora a las 12:00 PM en UTC
-    console.log(format(date, 'd MMM', { locale: es }))
     return format(date, 'd MMM', { locale: es });
   });
   const chartOptions = useChart({
@@ -59,12 +57,8 @@ export default function AppWebsiteVisits({ title, subheader, chartLabels, chartD
             <CardHeader title={title} subheader={subheader} />
           </Grid>
           <Grid item xs={4} sx={{ textAlign: 'right' }}>
-            <Select
-              value={selectedYear}
-              onChange={(e) => setSelectedYear(e.target.value)}
-            >
-              <MenuItem value={currentYear}>{currentYear}</MenuItem>
-              {/* Agrega más años si es necesario */}
+            <Select            >
+              <MenuItem >2023</MenuItem>
             </Select>
           </Grid>
         </Grid>
@@ -74,9 +68,3 @@ export default function AppWebsiteVisits({ title, subheader, chartLabels, chartD
   );
 
 }
-
-
-
-
-
-
