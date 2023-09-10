@@ -18,6 +18,7 @@ import {
   AppConversionRates,
 } from '../sections/@dashboard/app';
 
+
 import Cookies from "js-cookie";
 import axios from 'axios';
 import { useState, useEffect } from 'react';
@@ -34,6 +35,8 @@ export default function DashboardAppPage() {
   const [totalUsuarios, setTotalUsuarios] = useState(0);
   const [totalPedidosPendientes, setTotalPedidosPendientes] = useState(0);
   const [totalVentas, setTotalVentas] = useState(0);
+  const [ventasPorMes, setVentasPorMes] = useState([]);
+
 
   useEffect(() => {
     axios.get(`${apiUrl}/api/admin/getinfo/totalpedidos`)
@@ -49,7 +52,7 @@ export default function DashboardAppPage() {
         console.error('Error al obtener la cantidad total de pedidos:', error);
       });
 
-      axios.get(`${apiUrl}/api/admin/getinfo/totalusuarios`)
+    axios.get(`${apiUrl}/api/admin/getinfo/totalusuarios`)
       .then((response) => {
         const totalUsuarios = response.data[0]?.total_usuarios;
         if (totalUsuarios !== undefined) {
@@ -74,21 +77,29 @@ export default function DashboardAppPage() {
       .catch((error) => {
         console.error('Error al obtener la cantidad total de pedidos pendientes:', error);
       });
-      
-    axios.get(`${apiUrl}/api/admin/getinfo/totalventas`)
-    .then((response) => {
-      const totalVentas = response.data[0]?.suma_precios_ventas;
-      if (totalVentas !== undefined) {
-        setTotalVentas(totalVentas);
-      } else {
-        console.error('Datos de cantidad de total de ventas no encontrados en la respuesta de la API.');
-      }
-    })
-    .catch((error) => {
-      console.error('Error al obtener la cantidad total de ventas:', error);
-    });
 
-    }, [] );
+    axios.get(`${apiUrl}/api/admin/getinfo/totalventas`)
+      .then((response) => {
+        const totalVentas = response.data[0]?.suma_precios_ventas;
+        if (totalVentas !== undefined) {
+          setTotalVentas(totalVentas);
+        } else {
+          console.error('Datos de cantidad de total de ventas no encontrados en la respuesta de la API.');
+        }
+      })
+      .catch((error) => {
+        console.error('Error al obtener la cantidad total de ventas:', error);
+      });
+
+    axios.get(`${apiUrl}/api/admin/getinfo/ventasmes`)
+      .then((res) => {
+        const data = res.data;
+        setVentasPorMes(data);
+      })
+      .catch((error) => {
+        console.error('Error al obtener los datos de ventas por mes:', error);
+      });
+  }, []);
 
 
   const theme = useTheme();
@@ -99,17 +110,30 @@ export default function DashboardAppPage() {
   const [rol, setRol] = useState(null);
 
   useEffect(() => {
-    if(token) {
+    if (token) {
       axios.get(`${apiUrl}/api/search/${token}`)
-      .then((res) =>{
-          const {Nombre, Nombre_Rol} = res.data[0]
+        .then((res) => {
+          const { Nombre, Nombre_Rol } = res.data[0]
           setNombre(Nombre);
           setRol(Nombre_Rol);
-      })
+        })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
+  const ventasPorMesFormateado = ventasPorMes.map((venta) => {
+    const { Anio, Mes, Dia, Cantidad_Ventas } = venta;
+    const fechaFormateada = `${Anio}-${Mes.toString().padStart(2, '0')}-${Dia.toString().padStart(2, '0')}`;
+    return { fecha: fechaFormateada, cantidadVentas: Cantidad_Ventas };
+  });
 
+  const chartLabels = [];
+  const chartData = [{ name: 'Ventas', type: 'column', fill: 'solid', data: [] }];
+
+  // Construir chartLabels y chartData a partir de ventasPorMesFormateado
+  ventasPorMesFormateado.forEach((venta) => {
+    chartLabels.push(venta.fecha);
+    chartData[0].data.push(venta.cantidadVentas);
+  });
   return (
     <>
       <Helmet>
@@ -139,60 +163,21 @@ export default function DashboardAppPage() {
           </Grid>
 
           <Grid item xs={12} md={6} lg={8}>
+            <Typography>{chartLabels[0]}</Typography>
             <AppWebsiteVisits
-              title="Website Visits"
-              chartLabels={[
-                '01/01/2003',
-                '02/01/2003',
-                '03/01/2003',
-                '04/01/2003',
-                '05/01/2003',
-                '06/01/2003',
-                '07/01/2003',
-                '08/01/2003',
-                '09/01/2003',
-                '10/01/2003',
-                '11/01/2003',
-                '12/01/2003',
-                '12/01/2003',
-              ]}
-              chartData={[
-                {
-                  name: 'Team A',
-                  type: 'column',
-                  fill: 'solid',
-                  data: [23, 11, 22, 27, 13, 22, 37, 21, 44, 22, 30],
-                },
-              ]}
+              title="Ventas del mes"
+              chartLabels={chartLabels}
+              chartData={chartData}
             />
           </Grid>
 
           <Grid item xs={12} md={6} lg={4}>
-            <AppCurrentVisits
-              title="Current Visits"
-              chartData={[
-                { label: 'America', value: 4344 },
-                { label: 'Asia', value: 5435 },
-                { label: 'Europe', value: 1443 },
-                { label: 'Africa', value: 4443 },
-              ]}
-              chartColors={[
-                theme.palette.primary.main,
-                theme.palette.info.main,
-                theme.palette.warning.main,
-                theme.palette.error.main,
-              ]}
-            />
-          </Grid>
-
-          <Grid item xs={12} md={6} lg={8}>
             <AppConversionRates
-              title="Conversion Rates"
-              subheader="(+43%) than last year"
+              title="Anchetas mas vendidas"
               chartData={[
-                { label: 'Italy', value: 400 },
-                { label: 'Japan', value: 430 },
-                { label: 'China', value: 448 },
+                { label: 'Ancheta de cumpleaños', value: 400 },
+                { label: 'Ancheta Navideña', value: 430 },
+                { label: 'Ancheta de hallowen', value: 448 },
                 { label: 'Canada', value: 470 },
                 { label: 'France', value: 540 },
                 { label: 'Germany', value: 580 },
@@ -201,19 +186,6 @@ export default function DashboardAppPage() {
                 { label: 'United States', value: 1200 },
                 { label: 'United Kingdom', value: 1380 },
               ]}
-            />
-          </Grid>
-
-          <Grid item xs={12} md={6} lg={4}>
-            <AppCurrentSubject
-              title="Current Subject"
-              chartLabels={['English', 'History', 'Physics', 'Geography', 'Chinese', 'Math']}
-              chartData={[
-                { name: 'Series 1', data: [80, 50, 30, 40, 100, 20] },
-                { name: 'Series 2', data: [20, 30, 40, 80, 20, 80] },
-                { name: 'Series 3', data: [44, 76, 78, 13, 43, 10] },
-              ]}
-              chartColors={[...Array(6)].map(() => theme.palette.text.secondary)}
             />
           </Grid>
         </Grid>
