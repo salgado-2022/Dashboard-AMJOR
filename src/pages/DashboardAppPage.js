@@ -36,6 +36,7 @@ export default function DashboardAppPage() {
   const [totalPedidosPendientes, setTotalPedidosPendientes] = useState(0);
   const [totalVentas, setTotalVentas] = useState(0);
   const [ventasPorMes, setVentasPorMes] = useState([]);
+  const [anchetasMas, setAnchetasMas] = useState([])
 
 
   useEffect(() => {
@@ -99,6 +100,12 @@ export default function DashboardAppPage() {
       .catch((error) => {
         console.error('Error al obtener los datos de ventas por mes:', error);
       });
+    axios.get(`${apiUrl}/api/admin/getinfo/anchetas/masvendidas`)
+      .then((res) => {
+        const data = res.data;
+        setAnchetasMas(data);
+      });
+
   }, []);
 
 
@@ -132,8 +139,20 @@ export default function DashboardAppPage() {
   // Construir chartLabels y chartData a partir de ventasPorMesFormateado
   ventasPorMesFormateado.forEach((venta) => {
     chartLabels.push(venta.fecha);
-    chartData[0].data.push(venta.cantidadVentas);
+    chartData.push({ fecha: venta.fecha, valor: venta.cantidadVentas });
   });
+
+  const years = chartLabels.map((dateString) => new Date(dateString).getFullYear()).filter((year, index, self) => self.indexOf(year) === index);
+
+  const data = [];
+
+  anchetasMas.forEach((ancheta) => {
+    data.push({ label: ancheta.NombreAncheta, value: ancheta.Cantidad_Vendida })
+  })
+
+
+  console.log(data)
+
   return (
     <>
       <Helmet>
@@ -163,29 +182,18 @@ export default function DashboardAppPage() {
           </Grid>
 
           <Grid item xs={12} md={6} lg={8}>
-            <Typography>{chartLabels[0]}</Typography>
             <AppWebsiteVisits
-              title="Ventas del mes"
+              title="Ventas del año"
               chartLabels={chartLabels}
               chartData={chartData}
+              years={years}
             />
           </Grid>
 
           <Grid item xs={12} md={6} lg={4}>
             <AppConversionRates
               title="Anchetas mas vendidas"
-              chartData={[
-                { label: 'Ancheta de cumpleaños', value: 400 },
-                { label: 'Ancheta Navideña', value: 430 },
-                { label: 'Ancheta de hallowen', value: 448 },
-                { label: 'Canada', value: 470 },
-                { label: 'France', value: 540 },
-                { label: 'Germany', value: 580 },
-                { label: 'South Korea', value: 690 },
-                { label: 'Netherlands', value: 1100 },
-                { label: 'United States', value: 1200 },
-                { label: 'United Kingdom', value: 1380 },
-              ]}
+              chartData={data}
             />
           </Grid>
         </Grid>
