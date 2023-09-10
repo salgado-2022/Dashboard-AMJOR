@@ -50,6 +50,7 @@ function EditAncheta() {
     });
 
     const [nombreError, setNombreError] = useState('');
+    const [currentNombreAncheta, setCurrentNombreAncheta] = useState('');
     const [descripcionError, setDescripcionError] = useState('');
 
     const [isChecked, setIsChecked] = useState(false);
@@ -80,6 +81,7 @@ function EditAncheta() {
         axios.get(`${apiUrl}/api/admin/anchetas/anchellamada/` + id)
             .then(res => {
                 console.log(res);
+                setCurrentNombreAncheta(res.data[0].NombreAncheta);
                 setValues(prevValues => ({
                     ...prevValues,
                     NombreAncheta: res.data[0].NombreAncheta,
@@ -140,13 +142,21 @@ function EditAncheta() {
             }
         }
 
-        if (name === 'NombreAncheta') {
+        if (name === 'NombreAncheta' && value.toLowerCase() !== currentNombreAncheta.toLowerCase()) {
             if (!value) {
                 setNombreError('El nombre es requerido');
             } else if (!/^[^<>%$"!#&/=]*$/.test(value)) {
                 setNombreError('Por favor ingrese un nombre válido');
             } else {
                 setNombreError('');
+                axios.post(`${apiUrl}/api/validate/ancheta`, { NombreAncheta: value })
+                    .then(res => {
+                        if (res.data.Status === "Success") {
+                            setNombreError('')
+                        } else if (res.data.Status === "Exists") {
+                            setNombreError('El nombre ya se encuentra registrado')
+                        }
+                    })
             }
         } else if (name === 'Descripcion') {
             if (!value) {
@@ -332,66 +342,66 @@ function EditAncheta() {
                             <div style={{ flex: "1" }}></div>
                             <Typography variant="h5">Total: {formatPrice(Precio)}</Typography>
                         </Grid>
-                        <Stack direction="row" alignItems="center" spacing={1}>
-                            <Button type="submit" variant="contained" color="primary" fullWidth>Editar Ancheta</Button>
-                            <Button type="reset" variant="contained" color="secondary" fullWidth>Cancelar</Button>
-                        </Stack>
-                    </Grid>
-                    <Grid item md={8}>
-                        <Card elevation={3} style={{ marginBottom: '12px' }}>
-                            <UserListToolbar
-                                filterName={filterName}
-                                onFilterName={handleFilterByName}
-                                placeholder="Buscar Insumo..."
-                            />
-                            <List sx={{ height: '625px', overflowY: 'auto' }}>
-                                {filteredUsers.filter(insumo => !insumosAgregados.includes(insumo.ID_Insumo) && insumo.Estado !== 'Agotado').slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((insumo, index) => {
-                                    insumo.Cantidad = 1;
-                                    insumo.Precio = insumo.PrecioUnitario;
-                                    return (
-                                        <React.Fragment key={insumo.ID_Insumo}>
-                                            <ListItem key={insumo.ID_Insumo} secondaryAction={
-                                                <Typography variant="subtitle2">{formatPrice(insumo.Precio)}</Typography>
-                                            }>
-                                                <ListItemIcon onClick={() => dispatch({ type: 'AddInsumo', payload: insumo })}>
-                                                    <IconButton color="primary" sx={{ fontSize: "32px" }}>
-                                                        <Iconify icon="typcn:plus" class="big-icon" />
-                                                    </IconButton>
-                                                </ListItemIcon>
-                                                <Grid item sm={8} xs={8}>
-                                                    <ListItemText primary={insumo.NombreInsumo} />
-                                                </Grid>
-                                            </ListItem>
-                                            {index < data.length - 1 && <Divider />}
-                                        </React.Fragment>
-                                    );
-                                })}
-                                {isNotFound && (
-                                    <Paper sx={{ textAlign: 'center' }}>
-                                        <Typography variant="h6" paragraph>No encontrado</Typography>
-                                        <Typography variant="body2">No se encontraron resultados para
-                                            &nbsp;<strong>&quot;{filterName}&quot;</strong>.
-                                            <br /> Intente verificar errores tipográficos o usar palabras completas.
-                                        </Typography>
-                                    </Paper>
-                                )}
-                                {emptyRows > 0 && (<ListItem style={{ height: 73 * emptyRows }} />)}
-                            </List>
-                            <TablePagination
-                                rowsPerPageOptions={[10, 25]}
-                                component="div"
-                                count={dataLength}
-                                rowsPerPage={rowsPerPage}
-                                page={page}
-                                onPageChange={handleChangePage}
-                                onRowsPerPageChange={handleChangeRowsPerPage}
-                                labelRowsPerPage="Filas por pagina:"
-                            />
-                        </Card>
-                    </Grid>
+                    <Stack direction="row" alignItems="center" spacing={1}>
+                        <Button type="submit" variant="contained" color="primary" fullWidth>Editar Ancheta</Button>
+                        <Button type="reset" variant="contained" color="secondary" fullWidth>Cancelar</Button>
+                    </Stack>
                 </Grid>
-            </form>
-        </Container>
+                <Grid item md={8}>
+                    <Card elevation={3} style={{ marginBottom: '12px' }}>
+                        <UserListToolbar
+                            filterName={filterName}
+                            onFilterName={handleFilterByName}
+                            placeholder="Buscar Insumo..."
+                        />
+                        <List sx={{ height: '625px', overflowY: 'auto' }}>
+                            {filteredUsers.reverse().filter(insumo => !insumosAgregados.includes(insumo.ID_Insumo) && insumo.Estado !== 'Agotado').slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((insumo, index) => {
+                                insumo.Cantidad = 1;
+                                insumo.Precio = insumo.PrecioUnitario;
+                                return (
+                                    <React.Fragment key={insumo.ID_Insumo}>
+                                    <ListItem key={insumo.ID_Insumo} secondaryAction={
+                                        <Typography variant="subtitle2">{formatPrice(insumo.Precio)}</Typography>
+                                    }>
+                                        <ListItemIcon onClick={() => dispatch({ type: 'AddInsumo', payload: insumo })}>
+                                            <IconButton color="primary" sx={{fontSize: "32px"}}>
+                                                <Iconify icon="typcn:plus" class="big-icon" />
+                                            </IconButton>
+                                        </ListItemIcon>
+                                        <Grid item sm={8} xs={8}>
+                                            <ListItemText primary={insumo.NombreInsumo}/>
+                                        </Grid>  
+                                    </ListItem>
+                                    {index < data.length - 1 && <Divider />}
+                                    </React.Fragment>
+                                );
+                            })}
+                            {isNotFound && (
+                                <Paper sx={{textAlign: 'center'}}>
+                                    <Typography variant="h6" paragraph>No encontrado</Typography>
+                                    <Typography variant="body2">No se encontraron resultados para
+                                        &nbsp;<strong>&quot;{filterName}&quot;</strong>.
+                                        <br/> Intente verificar errores tipográficos o usar palabras completas.
+                                    </Typography>
+                                </Paper>
+                            )}
+                            {emptyRows > 0 && (<ListItem style={{ height: 73 * emptyRows }}/>)}
+                        </List>
+                        <TablePagination
+                            rowsPerPageOptions={[10, 25]}
+                            component="div"
+                            count={dataLength}
+                            rowsPerPage={rowsPerPage}
+                            page={page}
+                            onPageChange={handleChangePage}
+                            onRowsPerPageChange={handleChangeRowsPerPage}
+                            labelRowsPerPage="Filas por pagina:"
+                        />
+                    </Card>
+                </Grid>
+            </Grid>
+        </form>
+    </Container>
     );
 }
 

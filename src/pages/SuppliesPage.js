@@ -133,19 +133,30 @@ export default function SuppliesPage() {
 
   const handleDelete = (id) => {
     axios
-      .delete(`${apiUrl}/api/admin/insumos/insumodel/` + id)
-      .then((res) => {
-        console.log(res);
+    .delete(`${apiUrl}/api/admin/insumos/insumodel/` + id)
+    .then((res) => {
+      console.log(res);
+      console.log('Respuesta del servidor:', res.data);
+      if (res.data.Message === "Error") {
+        Swal.fire({
+          title: 'Error',
+          text: 'Este insumo está siendo utilizado en una ancheta. No se puede eliminar.',
+          icon: 'error',
+          showConfirmButton: false,
+          timer: 1500
+        });
+      } else {
         fetchData();
         Swal.fire({
           title: 'Eliminado Correctamente',
           text: 'Tu insumo ha sido eliminado correctamente',
           icon: 'success',
           showConfirmButton: false,
-          timer: 1500,
+          timer: 1500
         });
-      })
-      .catch((err) => console.log(err));
+      }
+    })
+    .catch((err) => console.log(err));
   };
 
   const handleOpenMenu = (event, ID_Insumo) => {
