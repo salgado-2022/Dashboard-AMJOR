@@ -158,6 +158,42 @@ function EditarConfi(props) {
 
   return (
     <Dialog open={show} onClose={handleCloseModal} TransitionComponent={Transition}>
+<<<<<<< HEAD:src/sections/@dashboard/configuracion/modal/edita.js
+  <DialogTitle >
+    <Typography variant="h5" align="center" sx={{ mb: 1}}>
+      Editar Roles y los permisos
+    </Typography>
+  </DialogTitle>
+  <DialogContent dividers sx={{ width: '600px' }}>
+      <TextField
+        fullWidth
+        id="Nombre_Rol"
+        name="Nombre_Rol"
+        label="Nombre del Rol"
+        value={values.Nombre_Rol}
+        onChange={handleInput}
+      />
+      <br />
+      <br />
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Permiso</TableCell>
+              <TableCell align="center">Seleccionar</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {permissions.map((permiso) => (
+              <TableRow key={permiso.ID_Permiso}>
+                <TableCell>{permiso.NombrePermiso}</TableCell>
+                <TableCell align="center">
+                  <Switch
+                    checked={selectedPermisos.includes(permiso.ID_Permiso)}
+                    onChange={() => handleSwitchChange(permiso.ID_Permiso)}
+                  />
+                </TableCell>
+=======
       <DialogTitle >
         <Typography variant="h5" align="center" sx={{ mb: 1 }}>
           Editar rol y permisos
@@ -181,6 +217,7 @@ function EditarConfi(props) {
               <TableRow>
                 <TableCell>Permiso</TableCell>
                 <TableCell align="center">Seleccionar</TableCell>
+>>>>>>> 476397acee13eeaea81480c89a9238693654acac:src/sections/@dashboard/configuracion/modal/editar.js
               </TableRow>
             </TableHead>
             <TableBody>

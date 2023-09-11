@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import Swal from 'sweetalert2';
 import axios from 'axios';
-import { Button, TextField, Slide, Grid, MenuItem, Typography, Switch, Paper, Dialog, DialogContent } from '@mui/material';
+import { Button, TextField, Slide, Grid, MenuItem, Typography, Switch, Dialog, DialogContent } from '@mui/material';
 
 // Función para validar un correo electrónico
 function validateEmail(email) {
@@ -29,14 +29,14 @@ function EditarUsuario(props) {
   const [roles, setRoles] = useState([]);
   const [selectedRol, setSelectedRol] = useState('');
   const [values, setValues] = useState({
-    documento: '',
-    nombre: '',
-    apellido: '',
-    correo: '',
-    telefono: '',
-    contrasena: '',
+    Documento: '',
+    Nombre: '',
+    Apellido: '',
+    Correo: '',
+    Telefono: '',
+    Contrasena: '',
     ID_Rol: '',
-    estado: '',
+    Estado: '',
   });
   const [showPassword, setShowPassword] = useState(false);
   const [correoError, setCorreoError] = useState('');
@@ -191,56 +191,36 @@ function EditarUsuario(props) {
         .get(`${apiUrl}/api/admin/usuario/usullamada/${id}`)
         .then((res) => {
           const userData = res.data;
-
-          // Verifica si userData tiene los campos esperados antes de asignarlos
-          if (
-            userData &&
-            userData.correo &&
-            userData.Documento_Cliente &&
-            userData.Nombre_Cliente &&
-            userData.Apellido_Cliente &&
-            userData.Telefono_Cliente &&
-            userData.Estado !== undefined
-          ) {
-            setValues((prevValues) => ({
-              ...prevValues,
-              correo: userData.correo,
+          if (userData) {
+            // Actualiza las variables de estado con los datos del usuario
+            setValues({
+              ...values,
               documento: userData.Documento_Cliente,
               nombre: userData.Nombre_Cliente,
               apellido: userData.Apellido_Cliente,
+              correo: userData.correo,
               telefono: userData.Telefono_Cliente,
               estado: userData.Estado,
-            }));
+            });
             setSelectedRol(userData.ID_Rol);
             setIsUsuarioActivo(userData.Estado === 1);
+            setDataLoaded(true); // Marcar los datos como cargados
           } else {
-            // Si los datos no son los esperados, marca que la carga falló
-            setDataLoaded(false);
+            setDataLoaded(false); // Marcar los datos como no cargados si falta userData
           }
         })
         .catch((err) => {
           console.log(err);
-          // Marca que la carga falló en caso de error
-          setDataLoaded(false);
+          setDataLoaded(false); // Marcar los datos como no cargados en caso de error
         });
     } else {
-      setValues({
-        documento: '',
-        nombre: '',
-        apellido: '',
-        correo: '',
-        telefono: '',
-        contrasena: '',
-        ID_Rol: '',
-        estado: '',
-      });
+      resetFields();
       setShowPassword(false);
       setCorreoError('');
       setContrasenaError('');
       setGuardadoExitoso(false);
       setIsUsuarioActivo(false);
-      // Marca que la carga fue exitosa al ocultar el componente
-      setDataLoaded(true);
+      setDataLoaded(true); // Marcar los datos como cargados cuando se oculta el componente
     }
   }, [id, show]);
 
