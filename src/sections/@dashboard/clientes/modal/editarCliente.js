@@ -214,7 +214,7 @@ function EditarCliente(props) {
   const handleUpdate = (event) => {
     event.preventDefault();
 
-    const documentoValido = /^[0-9]+$/.test(values.documento) && values.documento.length >= 8 && values.documento.length <= 10;
+    const documentoValido = /^[0-9]{1,11}$/.test(values.documento);
     setDocumentoError(!documentoValido);
   
     const nombreValido = /^[a-zA-ZñÑ\s]+$/.test(values.nombre) && values.nombre.length >= 4;
@@ -233,22 +233,18 @@ function EditarCliente(props) {
     if (!documentoValido || !nombreValido || !apellidoValido || !telefonoValido || !correoValido) {
       return;
     }
-  
-    const selectedRole = roles.find((rol) => rol.ID_Rol === selectedRol);
-    const nuevoID_Rol = selectedRole.ID_Rol;
-  
     setValues((prevValues) => ({
       ...prevValues,
-      ID_Rol: nuevoID_Rol,
+      ID_Rol: 2,
     }));
   
     axios
-      .put(`${apiUrl}/api/admin/usuario/usuariarioedit/${id}`, values)
+      .put(`${apiUrl}/api/admin/cliente/clienteedit/${id}`, values)
       .then((res) => {
         setGuardadoExitoso(true);
         Swal.fire({
           title: 'Modificado Correctamente',
-          text: 'Tu Usuario se ha sido modificado correctamente',
+          text: 'El cliente ha sido modificado correctamente',
           icon: 'success',
           showConfirmButton: false,
           timer: 2600,

@@ -201,7 +201,7 @@ function EditarConfi(props) {
       </DialogContent>
       <Grid item xs={12}>
         <Grid container alignItems="center" spacing={-1} style={{ marginTop: '1px' }}>
-          <Typography style={{ paddingLeft: '16px'}}>Estado del rol: </Typography>
+          <Typography style={{ paddingLeft: '16px' }}>Estado del rol: </Typography>
           <Switch color="switch" id="estado" name="estado" checked={isRolActivo} onChange={handleInput} />
 
         </Grid>
@@ -234,4 +234,3 @@ function EditarConfi(props) {
 }
 
 export { EditarConfi };
-
