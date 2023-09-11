@@ -31,6 +31,8 @@ import Scrollbar from '../components/scrollbar';
 import Label from '../components/label';
 // sections
 import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
+import OrderListHead from '../sections/@dashboard/pedidos/OrderListHead';
+
 
 import { AddInsumo } from '../sections/@dashboard/supplies/modal/add';
 import { EditInsumo } from '../sections/@dashboard/supplies/modal/edit';
@@ -38,6 +40,7 @@ import { EditInsumo } from '../sections/@dashboard/supplies/modal/edit';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
+  {id: 'a'},
   { id: 'ID_Insumo', label: 'ID', alignRight: false },
   { id: 'NombreInsumo', label: 'Nombre', alignRight: false },
   { id: 'Descripcion', label: 'Descripción', alignRight: false },
@@ -133,30 +136,30 @@ export default function SuppliesPage() {
 
   const handleDelete = (id) => {
     axios
-    .delete(`${apiUrl}/api/admin/insumos/insumodel/` + id)
-    .then((res) => {
-      console.log(res);
-      console.log('Respuesta del servidor:', res.data);
-      if (res.data.Message === "Error") {
-        Swal.fire({
-          title: 'Error',
-          text: 'Este insumo está siendo utilizado en una ancheta. No se puede eliminar.',
-          icon: 'error',
-          showConfirmButton: false,
-          timer: 1500
-        });
-      } else {
-        fetchData();
-        Swal.fire({
-          title: 'Eliminado Correctamente',
-          text: 'Tu insumo ha sido eliminado correctamente',
-          icon: 'success',
-          showConfirmButton: false,
-          timer: 1500
-        });
-      }
-    })
-    .catch((err) => console.log(err));
+      .delete(`${apiUrl}/api/admin/insumos/insumodel/` + id)
+      .then((res) => {
+        console.log(res);
+        console.log('Respuesta del servidor:', res.data);
+        if (res.data.Message === "Error") {
+          Swal.fire({
+            title: 'Error',
+            text: 'Este insumo está siendo utilizado en una ancheta. No se puede eliminar.',
+            icon: 'error',
+            showConfirmButton: false,
+            timer: 1500
+          });
+        } else {
+          fetchData();
+          Swal.fire({
+            title: 'Eliminado Correctamente',
+            text: 'Tu insumo ha sido eliminado correctamente',
+            icon: 'success',
+            showConfirmButton: false,
+            timer: 1500
+          });
+        }
+      })
+      .catch((err) => console.log(err));
   };
 
   const handleOpenMenu = (event, ID_Insumo) => {
@@ -247,7 +250,7 @@ export default function SuppliesPage() {
           <Typography variant="h4" gutterBottom>
             Insumos
           </Typography>
-          <Button variant="contained" style={{ textTransform: 'none'}} startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleOpenModal}>
+          <Button variant="contained" style={{ textTransform: 'none' }} startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleOpenModal}>
             Crear insumo
           </Button>
         </Stack>
@@ -265,7 +268,7 @@ export default function SuppliesPage() {
             {loading ? ( // Mostrar un mensaje de carga si los datos aún están cargando
               <TableContainer sx={{ minWidth: 800 }}>
                 <Table>
-                  <UserListHead
+                  <OrderListHead
                     order={order}
                     orderBy={orderBy}
                     headLabel={TABLE_HEAD}
@@ -280,7 +283,6 @@ export default function SuppliesPage() {
 
                       <TableRow key={index} hover role="checkbox" >
                         <TableCell padding="checkbox">
-                          <Checkbox />
                         </TableCell>
                         <TableCell >
                           <Typography variant="subtitle2" noWrap>
@@ -314,7 +316,7 @@ export default function SuppliesPage() {
             ) : (
               <TableContainer sx={{ minWidth: 800 }}>
                 <Table>
-                  <UserListHead
+                  <OrderListHead
                     order={order}
                     orderBy={orderBy}
                     headLabel={TABLE_HEAD}
@@ -331,7 +333,6 @@ export default function SuppliesPage() {
                       return (
                         <TableRow hover key={ID_Insumo} tabIndex={-1} role="checkbox" selected={selectedUser}>
                           <TableCell padding="checkbox">
-                            <Checkbox checked={selectedUser} onChange={(event) => handleClick(event, ID_Insumo)} />
                           </TableCell>
 
                           <TableCell key={ID_Insumo}>

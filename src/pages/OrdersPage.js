@@ -598,7 +598,7 @@ export default function OrderPage() {
                                 />
                                 <TableBody>
                                     {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                                        const { ID_Pedido, ID_Cliente, Nombre_Cliente, Direccion_Entrega, Fecha_Entrega, Precio_Total, correo, image, Estado, Municipio, Barrio, fecha_creacion, Telefono, Status_Pedido } = row;
+                                        const { ID_Pedido, ID_Cliente, Nombre_Cliente, Direccion_Entrega, Fecha_Entrega, Precio_Total, correo, image, Estado, Municipio, Barrio, fecha_creacion, Telefono, Status_Pedido, foto } = row;
                                         const selectedUser = selected.indexOf(ID_Pedido) !== -1;
                                         const estadoText = Estado === 3 ? 'Pendiente' : Estado === 4 ? 'Aceptado' : 'Rechazado'
                                         const statusText = Status_Pedido === 1 ? 'En preparacion' : Status_Pedido === 2 ? 'Preparado' : 'Despachado'
@@ -616,7 +616,7 @@ export default function OrderPage() {
                                                     </TableCell>
                                                     <TableCell>
                                                         <Stack direction="row" alignItems="center" spacing={2}>
-                                                            <Avatar alt='' src={`${deployApiUrl}/usuario/` + image} />
+                                                            <Avatar alt='' src={`${apiUrl}/anchetas/` + foto} />
                                                             <Typography hidden={true}>
                                                                 {ID_Cliente}
                                                             </Typography>

@@ -34,11 +34,14 @@ import Label from '../components/label';
 // sections
 import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
 import { VerInsumos } from '../sections/@dashboard/anchetas/modal/details';
+import OrderListHead from '../sections/@dashboard/pedidos/OrderListHead';
+
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
   { id: '' },
+  { id: '2' },
   { id: 'ID_Ancheta', label: 'ID', alignRight: false },
   { id: 'NombreAncheta', label: 'Nombre', alignRight: false },
   { id: 'Descripcion', label: 'Descripción', alignRight: false },
@@ -241,7 +244,7 @@ export default function AnchetasPage() {
             {loading ? ( // Mostrar un mensaje de carga si los datos aún están cargando
               <TableContainer sx={{ minWidth: 800 }}>
                 <Table>
-                  <UserListHead
+                  <OrderListHead
                     order={order}
                     orderBy={orderBy}
                     headLabel={TABLE_HEAD}
@@ -256,7 +259,6 @@ export default function AnchetasPage() {
 
                       <TableRow key={index} hover role="checkbox" >
                         <TableCell padding="checkbox">
-                          <Checkbox />
                         </TableCell>
 
                         <TableCell component="th" scope="row" padding="none">
@@ -298,7 +300,7 @@ export default function AnchetasPage() {
 
               <TableContainer sx={{ minWidth: 800 }}>
                 <Table>
-                  <UserListHead
+                  <OrderListHead
                     order={order}
                     orderBy={orderBy}
                     headLabel={TABLE_HEAD}
@@ -315,7 +317,6 @@ export default function AnchetasPage() {
                       return (
                         <TableRow hover key={ID_Ancheta} tabIndex={-1} role="checkbox" selected={selectedUser}>
                           <TableCell padding="checkbox">
-                            <Checkbox checked={selectedUser} onChange={(event) => handleClick(event, ID_Ancheta)} />
                           </TableCell>
 
                           <TableCell component="th" scope="row" padding="none">
