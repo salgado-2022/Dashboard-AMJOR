@@ -175,7 +175,7 @@ function EditAncheta() {
         if (nombreError === "" && descripcionError === "") {
             if (state.length === 0) {
                 Swal.fire({
-                    title: 'Sin Insumos',
+                    title: 'Sin insumos',
                     text: 'No has agregado insumos a la ancheta',
                     icon: 'warning',
                     showConfirmButton: false,
@@ -186,7 +186,7 @@ function EditAncheta() {
 
             if (!values.image) {
                 Swal.fire({
-                    title: 'No hay Imagen',
+                    title: 'No hay imagen',
                     text: "Debes subir una imagen de la ancheta",
                     icon: 'warning',
                     showConfirmButton: false,
@@ -205,7 +205,7 @@ function EditAncheta() {
                 .then(res => {
                     console.log(res);
                     Swal.fire({
-                        title: 'Modificado Correctamente',
+                        title: 'Modificado correctamente',
                         text: "Tu ancheta ha sido modificada correctamente",
                         icon: 'success',
                         showConfirmButton: false,
@@ -269,7 +269,7 @@ function EditAncheta() {
     return (
         <Container maxWidth="xl">
             <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-                <Typography variant="h4" gutterBottom>Editar Ancheta</Typography>
+                <Typography variant="h4" gutterBottom>Editar ancheta</Typography>
                 <Link to="/dashboard/anchetas">
                     <Button variant="contained" startIcon={<Iconify icon="ph:arrow-left" />}>
                         Volver
@@ -279,8 +279,8 @@ function EditAncheta() {
             <form onSubmit={handleUpdate} onReset={handleReset} encType="multipart/form-data">
                 <Grid container spacing={2}>
                     <Grid item md={4}>
-                        <TextField fullWidth style={{ marginBottom: '16px' }} label="Nombre" variant="outlined" id="NombreAncheta" name="NombreAncheta" value={values.NombreAncheta} onChange={handleInput} error={nombreError !== ''} helperText={nombreError} />
-                        <TextField multiline rows={4} fullWidth style={{ marginBottom: '16px' }} label="Descripción" variant="outlined" id="Descripcion" name="Descripcion" value={values.Descripcion} onChange={handleInput} error={descripcionError !== ''} helperText={descripcionError} />
+                        <TextField fullWidth style={{ marginBottom: '16px' }} label="Nombre *" variant="outlined" id="NombreAncheta" name="NombreAncheta" value={values.NombreAncheta} onChange={handleInput} error={nombreError !== ''} helperText={nombreError} />
+                        <TextField multiline rows={4} fullWidth style={{ marginBottom: '16px' }} label="Descripción *" variant="outlined" id="Descripcion" name="Descripcion" value={values.Descripcion} onChange={handleInput} error={descripcionError !== ''} helperText={descripcionError} />
                         <Card elevation={3} style={{ marginBottom: '16px' }}>
                             {values.image && (
                                 <div>
@@ -343,7 +343,7 @@ function EditAncheta() {
                             <Typography variant="h5">Total: {formatPrice(Precio)}</Typography>
                         </Grid>
                     <Stack direction="row" alignItems="center" spacing={1}>
-                        <Button type="submit" variant="contained" color="primary" fullWidth>Editar Ancheta</Button>
+                        <Button type="submit" style={{ textTransform: 'none' }} variant="contained" color="primary" fullWidth>Editar ancheta</Button>
                         <Button type="reset" variant="contained" color="secondary" fullWidth>Cancelar</Button>
                     </Stack>
                 </Grid>
@@ -352,7 +352,7 @@ function EditAncheta() {
                         <UserListToolbar
                             filterName={filterName}
                             onFilterName={handleFilterByName}
-                            placeholder="Buscar Insumo..."
+                            placeholder="Buscar insumo..."
                         />
                         <List sx={{ height: '625px', overflowY: 'auto' }}>
                             {filteredUsers.reverse().filter(insumo => !insumosAgregados.includes(insumo.ID_Insumo) && insumo.Estado !== 'Agotado').slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((insumo, index) => {

@@ -82,7 +82,7 @@ function ConfiFormulario({ onClose }) {
     const errors = {};
 
     if (!rol.trim()) {
-      errors.rol = 'Debes ingresar un rol.';
+      errors.rol = 'Debes ingresar el nombre del rol.';
     }
 
     const selectedPermissions = Object.keys(permissionsMap).filter((permissionId) => permissionsMap[permissionId]);
@@ -125,7 +125,7 @@ function ConfiFormulario({ onClose }) {
         variant="contained"
         color="primary"
         onClick={handleOpenModal}
-        style={{ marginBottom: '16px', float: 'right' }}
+        style={{ textTransform: 'none', marginBottom: '16px', float: 'right' }}
         startIcon={<Iconify icon="eva:plus-fill" />}
       >
         Crear nuevo rol
@@ -134,7 +134,7 @@ function ConfiFormulario({ onClose }) {
         <DialogTitle variant="h5" align="center" sx={{ mb: 1 }}>Crear un nuevo rol</DialogTitle>
         <DialogContent dividers>
           <TextField
-            label="Nuevo rol"
+            label="Nombre del rol"
             fullWidth
             variant="outlined"
             required
@@ -176,7 +176,7 @@ function ConfiFormulario({ onClose }) {
             color="primary"
             id="modRol"
             fullWidth
-            style={{ marginTop: '8px' }}
+            style={{ textTransform: 'none' ,marginTop: '8px' }}
             onClick={() => {
               validarRolPermiso()
                 .then(() => {
@@ -188,7 +188,7 @@ function ConfiFormulario({ onClose }) {
                 });
             }}
           >
-            Crear el rol
+            Crear rol
           </Button>
           <Button
             variant="contained"
