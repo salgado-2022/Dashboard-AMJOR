@@ -235,7 +235,37 @@ function EditarUsuario(props) {
 
   const handleUpdate = (event) => {
     event.preventDefault();
-    
+
+    const documentoValido = /^[0-9]{1,11}$/.test(values.documento);
+    console.log(documentoValido)
+    console.log(values.documento)
+    setDocumentoError(!documentoValido);
+
+    const nombreValido = /^[a-zA-ZñÑ\s]+$/.test(values.nombre) && values.nombre.length >= 4;
+    setNombreError(!nombreValido);
+
+    const apellidoValido = /^[a-zA-ZñÑ\s]+$/.test(values.apellido) && values.apellido.length >= 5;
+    setApellidoError(!apellidoValido);
+
+    const telefonoValido = /^[0-9]+$/.test(values.telefono) && values.telefono.length >= 7 && values.telefono.length <= 11;
+    setTelefonoError(!telefonoValido);
+
+    const correoValido = validateEmail(values.correo);
+    setCorreoError(!correoValido);
+
+    if (values.contrasena) {
+      const contrasenaValida = validatePassword(values.contrasena);
+      setContrasenaError(!contrasenaValida);
+
+      if (!contrasenaValida) {
+        return;
+      }
+    }
+
+    if (!documentoValido || !nombreValido || !apellidoValido || !telefonoValido || !correoValido) {
+      return;
+    }
+
     const selectedRole = roles.find((rol) => rol.ID_Rol === selectedRol);
     const nuevoID_Rol = selectedRole.ID_Rol;
 
@@ -243,14 +273,13 @@ function EditarUsuario(props) {
       ...prevValues,
       ID_Rol: nuevoID_Rol,
     }));
-
     axios
       .put(`${apiUrl}/api/admin/usuario/usuariarioedit/${id}`, values)
       .then((res) => {
         setGuardadoExitoso(true);
         Swal.fire({
-          title: 'Modificado Correctamente',
-          text: 'Tu Usuario se ha sido modificado correctamente',
+          title: 'Modificado correctamente',
+          text: 'El usuario ha sido modificado correctamente',
           icon: 'success',
           showConfirmButton: false,
           timer: 2600,
@@ -292,12 +321,13 @@ function EditarUsuario(props) {
   return (
     <Dialog open={show} onClose={onHide} TransitionComponent={Transition}>
       <DialogContent>
-        <h2 style={{ textAlign: 'center', marginBottom: '24px' }}>Editar datos de Usuario</h2>
+        <h2 style={{ textAlign: 'center', marginBottom: '24px' }}>Editar datos de usuario</h2>
         <form onSubmit={handleUpdate} id="editarUsuario">
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
+                required
                 label="Documento"
                 variant="outlined"
                 type="number"
@@ -313,6 +343,7 @@ function EditarUsuario(props) {
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
+                required
                 label="Nombre"
                 variant="outlined"
                 type="text"
@@ -330,6 +361,7 @@ function EditarUsuario(props) {
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
+                required
                 label="Apellido"
                 variant="outlined"
                 type="text"
@@ -345,6 +377,7 @@ function EditarUsuario(props) {
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
+                required
                 label="Correo"
                 variant="outlined"
                 type="email"
@@ -362,6 +395,7 @@ function EditarUsuario(props) {
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
+                required
                 label="Telefono"
                 variant="outlined"
                 type="number"
@@ -400,6 +434,7 @@ function EditarUsuario(props) {
           <TextField
             select
             fullWidth
+            required
             label="Rol"
             variant="outlined"
             name="ID_Rol"
@@ -416,12 +451,12 @@ function EditarUsuario(props) {
             ))}
           </TextField>
           <Grid container alignItems="center" spacing={1} style={{ marginTop: '16px' }}>
+            <Typography style={{ paddingLeft: '15px' }}>Estado del usuario:</Typography>
             <Switch color="switch" id="estado" name="estado" checked={isUsuarioActivo} onChange={handleInput} />
-            <Typography>Usuario Activo</Typography>
           </Grid>
           <Grid container spacing={2} style={{ marginTop: '16px' }}>
             <Grid item xs={12} sm={6}>
-              <Button type="submit" variant="contained" color="primary" fullWidth>
+              <Button type="submit" style={{ textTransform: 'none' }} variant="contained" color="primary" fullWidth>
                 Guardar cambios
               </Button>
             </Grid>

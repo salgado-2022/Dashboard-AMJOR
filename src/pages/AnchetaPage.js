@@ -222,8 +222,8 @@ export default function AnchetasPage() {
             Anchetas
           </Typography>
           <Link to="/dashboard/anchetas/crearancheta">
-            <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />}>
-              Crear Ancheta
+            <Button style={{ textTransform: 'none' }} variant="contained" startIcon={<Iconify icon="eva:plus-fill" />}>
+              Crear ancheta
             </Button>
           </Link>
         </Stack>

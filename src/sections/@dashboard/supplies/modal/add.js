@@ -125,7 +125,7 @@ function AddInsumo({ open, onClose, fetchData }) {
                 .then(res => {
                     if (res.data.Status === "Success") {
                         Swal.fire({
-                            title: 'Creado Correctamente',
+                            title: 'Creado correctamente',
                             text: "Tu insumo ha sido creado correctamente",
                             icon: 'success',
                             showConfirmButton: false,
@@ -149,17 +149,17 @@ function AddInsumo({ open, onClose, fetchData }) {
     return (
         <Dialog open={open} onClose={handleCloseModal} TransitionComponent={Transition}>
             <DialogContent>
-                <Typography fontSize="32px" marginBottom="16px" textAlign="center">Crear Insumo</Typography>
+                <Typography fontSize="32px" marginBottom="16px" textAlign="center">Crear insumo</Typography>
                 <form onSubmit={handleSubmit}>
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
-                            <TextField fullWidth sx={{ marginBottom: '16px' }} label="Nombre" variant="outlined" id="NombreInsumo" name="NombreInsumo" value={values.NombreInsumo} onChange={handleInput} error={nombreError !== ''}  helperText={nombreError}/>
-                            <TextField fullWidth sx={{ marginBottom: '16px' }} label="Descripción" variant="outlined" id="Descripcion" name="Descripcion" value={values.Descripcion} onChange={handleInput} error={descripcionError !== ''}  helperText={descripcionError}/>
-                            <TextField fullWidth type="number" sx={{ marginBottom: '16px' }} label="Precio" variant="outlined" id="PrecioUnitario" name="PrecioUnitario" value={values.PrecioUnitario} onChange={handleInput} error={precioError !== ''}  helperText={precioError}/>
+                            <TextField fullWidth sx={{ marginBottom: '16px' }} label="Nombre *" variant="outlined" id="NombreInsumo" name="NombreInsumo" value={values.NombreInsumo} onChange={handleInput} error={nombreError !== ''}  helperText={nombreError}/>
+                            <TextField fullWidth sx={{ marginBottom: '16px' }} label="Descripción *" variant="outlined" id="Descripcion" name="Descripcion" value={values.Descripcion} onChange={handleInput} error={descripcionError !== ''}  helperText={descripcionError}/>
+                            <TextField fullWidth type="number" sx={{ marginBottom: '16px' }} label="Precio *" variant="outlined" id="PrecioUnitario" name="PrecioUnitario" value={values.PrecioUnitario} onChange={handleInput} error={precioError !== ''}  helperText={precioError}/>
                         </Grid>
                     </Grid>
                     <DialogActions> 
-                        <Button type="submit" variant="contained" color="primary" fullWidth sx={{ marginTop: '8px' }}>Crear Insumo</Button>
+                        <Button type="submit" variant="contained" color="primary" fullWidth sx={{ textTransform: 'none', marginTop: '8px' }}>Crear insumo</Button>
                         <Button variant="contained" color="secondary" onClick={handleCloseModal} fullWidth sx={{marginTop: '8px'}}>Cancelar</Button>
                     </DialogActions> 
                 </form>           

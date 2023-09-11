@@ -4,7 +4,7 @@ import Swal from 'sweetalert2';
 import { Helmet } from 'react-helmet-async';
 import { filter } from 'lodash';
 import { sentenceCase } from 'change-case';
-import { ConfiFormulario } from '../sections/@dashboard/configuracion/modal/crearte';
+import { ConfiFormulario } from '../sections/@dashboard/configuracion/modal/create';
 
 // @mui
 import {
@@ -31,7 +31,7 @@ import {
 import Iconify from '../components/iconify';
 import Scrollbar from '../components/scrollbar';
 import Label from '../components/label';
-import { EditarConfi } from '../sections/@dashboard/configuracion/modal/edita';
+import { EditarConfi } from '../sections/@dashboard/configuracion/modal/editar';
 
 // sections
 import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
@@ -40,8 +40,8 @@ import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
 
 const TABLE_HEAD = [
   { id: 'ID_Rol', label: 'ID', alignRight: false },
-  { id: 'Nombre_Rol', label: 'Rol', alignRight: false },
-  { id: 'estado', label: 'Estado del Rol', alignRight: false },
+  { id: 'Nombre_Rol', label: 'Nombre del rol', alignRight: false },
+  { id: 'estado', label: 'Estado', alignRight: false },
   { id: '', label: '', alignRight: false },
 ];
 
@@ -99,20 +99,6 @@ export default function ListaConfiguracion() {
   useEffect(() => {
     setLoading(true);
     fetchData();
-  
-    // Configura un intervalo de auto-refresh cada 5 segundos (puedes ajustar el tiempo según tus necesidades)
-    const interval = setInterval(() => {
-      fetchData();
-    }, 1000);
-  
-    // Almacenamos el ID del intervalo en el estado refreshInterval
-    setRefreshInterval(interval);
-  
-    // Esta función se ejecutará cuando el componente se desmonte
-    return () => {
-      // Limpia el intervalo cuando el componente se desmonta
-      clearInterval(interval);
-    };
   }, []);
 
   const fetchData = () => {
@@ -132,63 +118,63 @@ export default function ListaConfiguracion() {
     setSelectedConfiguracionID(ID_Rol);
     setShowDeleteMenu(true);
   };
-  
+
   const handleCloseMenu = () => {
     setOpen(null);
     setSelectedConfiguracionID(null);
     setShowDeleteMenu(false);
   };
-  
+
   const handleDelete = () => {
     if (selectedConfiguracionID === null) {
       return;
     }
-  
+
     axios
-    .get(`${apiUrl}/api/admin/usuario/usullamada/${selectedConfiguracionID}`)
-    .then((res) => {
-      if (res.data.length > 0) {
-        // Mostrar una alerta porque el rol está en uso por usuarios
+      .get(`${apiUrl}/api/admin/usuario/usullamada/${selectedConfiguracionID}`)
+      .then((res) => {
+        if (res.data.length > 0) {
+          // Mostrar una alerta porque el rol está en uso por usuarios
+          Swal.fire({
+            title: 'Error',
+            text: 'No se puede eliminar el rol. Está en uso por usuarios.',
+            icon: 'error',
+          });
+        } else {
+          // El rol no está en uso, proceder con la eliminación
+          axios
+            .delete(`${apiUrl}/api/admin/configuracion/Confidel/${selectedConfiguracionID}`)
+            .then((res) => {
+              console.log(res);
+              fetchData();
+              Swal.fire({
+                title: 'Eliminado correctamente',
+                text: 'El rol se ha sido eliminado correctamente',
+                icon: 'success',
+                showConfirmButton: false,
+                timer: 1500,
+              });
+              handleCloseMenu();
+            })
+            .catch((err) => {
+              console.log(err);
+              Swal.fire({
+                title: 'Error',
+                text: 'No se puede eliminar este rol, ya que tiene usuarios asociados.',
+                icon: 'error',
+              });
+            });
+        }
+      })
+      .catch((err) => {
+        console.log(err);
         Swal.fire({
           title: 'Error',
-          text: 'No se puede eliminar el rol. Está en uso por usuarios.',
+          text: 'Ocurrió un error al verificar el uso del rol por usuarios.',
           icon: 'error',
         });
-      } else {
-        // El rol no está en uso, proceder con la eliminación
-        axios
-          .delete(`${apiUrl}/api/admin/configuracion/Confidel/${selectedConfiguracionID}`)
-          .then((res) => {
-            console.log(res);
-            fetchData();
-            Swal.fire({
-              title: 'Eliminado Correctamente',
-              text: 'El rol se ha sido eliminado correctamente',
-              icon: 'success',
-              showConfirmButton: false,
-              timer: 1500,
-            });
-            handleCloseMenu();
-          })
-          .catch((err) => {
-            console.log(err);
-            Swal.fire({
-              title: 'Error',
-              text: 'Ocurrió un error al eliminar el rol.',
-              icon: 'error',
-            });
-          });
-      }
-    })
-    .catch((err) => {
-      console.log(err);
-      Swal.fire({
-        title: 'Error',
-        text: 'Ocurrió un error al verificar el uso del rol por usuarios.',
-        icon: 'error',
       });
-    });
-};
+  };
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -242,7 +228,7 @@ export default function ListaConfiguracion() {
     setSelectedConfiguracionID(ID_Rol);
     setModalShow(true);
     setOpen(null);
-    setShowDeleteMenu(false); 
+    setShowDeleteMenu(false);
   };
 
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0;
@@ -259,7 +245,7 @@ export default function ListaConfiguracion() {
           <Typography variant="h4" gutterBottom>
             Configuración
           </Typography>
-          <ConfiFormulario open={modalShow} onClose={handleCloseModal} />
+          <ConfiFormulario open={modalShow} onClose={handleCloseModal} fetchData={fetchData} />
         </Stack>
         <Card>
           <UserListToolbar
@@ -329,8 +315,6 @@ export default function ListaConfiguracion() {
                   {filteredRol.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
                     const { ID_Rol, Nombre_Rol, estado } = row;
                     const selectedConfiguracion = selected.indexOf(ID_Rol) !== -1;
-                    console.table( selectedConfiguracionID);
-                    console.log("error sdfsdfased");
                     const estadoText = estado === 1 ? 'Activo' : 'Inactivo';
                     return (
                       <TableRow
@@ -346,13 +330,10 @@ export default function ListaConfiguracion() {
                             onClick={(event) => handleClick(event, ID_Rol)}
                           />
                         </TableCell>
-                        <TableCell component="th" scope="row" padding="none">
-                          <Stack direction="row" alignItems="center" spacing={2}>
-                            <Avatar alt="" src="" />
-                            <Typography variant="subtitle2" noWrap>
-                              {ID_Rol}
-                            </Typography>
-                          </Stack>
+                        <TableCell>
+                          <Typography variant="subtitle2" noWrap>
+                            #{ID_Rol}
+                          </Typography>
                         </TableCell>
                         <TableCell align="left">{Nombre_Rol}</TableCell>
                         <TableCell align="left">
@@ -369,32 +350,32 @@ export default function ListaConfiguracion() {
                             <Iconify icon={'eva:more-vertical-fill'} />
                           </IconButton>
                           <Popover
-  open={Boolean(open)}
-  anchorEl={open}
-  onClose={handleCloseMenu}
-  anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-  transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-  PaperProps={{
-    sx: {
-      p: 1,
-      width: 140,
-      '& .MuiMenuItem-root': {
-        px: 1,
-        typography: 'body2',
-        borderRadius: 0.75,
-      },
-    },
-  }}
->
-  <MenuItem sx={{ color: 'warning.main' }} onClick={() => handleEditar(selectedConfiguracionID)}>
-    <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
-    Editar
-  </MenuItem>
-  <MenuItem sx={{ color: 'error.main' }} onClick={() => handleDelete(selectedConfiguracionID)}>
-    <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
-    Eliminar
-  </MenuItem>
-</Popover>
+                            open={Boolean(open)}
+                            anchorEl={open}
+                            onClose={handleCloseMenu}
+                            anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
+                            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                            PaperProps={{
+                              sx: {
+                                p: 1,
+                                width: 140,
+                                '& .MuiMenuItem-root': {
+                                  px: 1,
+                                  typography: 'body2',
+                                  borderRadius: 0.75,
+                                },
+                              },
+                            }}
+                          >
+                            <MenuItem sx={{ color: 'warning.main' }} onClick={() => handleEditar(selectedConfiguracionID)}>
+                              <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
+                              Editar
+                            </MenuItem>
+                            <MenuItem sx={{ color: 'error.main' }} onClick={() => handleDelete(selectedConfiguracionID)}>
+                              <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
+                              Eliminar
+                            </MenuItem>
+                          </Popover>
                         </TableCell>
                       </TableRow>
                     );
@@ -438,14 +419,15 @@ export default function ListaConfiguracion() {
             page={page}
             onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}
+            labelRowsPerPage="Filas por pagina:"
           />
         </Card>
       </Container>
       <EditarConfi
         show={modalShow}
         onHide={() => setModalShow(false)}
-        selectedConfiguracionID={selectedConfiguracionID }
-        
+        selectedConfiguracionID={selectedConfiguracionID}
+
         fetchData={fetchData}
       />
     </>

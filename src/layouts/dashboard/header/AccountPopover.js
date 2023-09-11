@@ -47,7 +47,7 @@ export default function AccountPopover() {
         Swal.fire({
           title: 'Cerrando sesión...',
           html: 'Por favor espere un momento',
-          timer: 2000,
+          timer: 1000,
           timerProgressBar: true,
           didOpen: () => {
             Swal.showLoading();
@@ -91,25 +91,35 @@ export default function AccountPopover() {
 
   return (
     <>
-      <IconButton
-        onClick={handleOpen}
+      <Box
         sx={{
-          p: 0,
-          ...(open && {
-            '&:before': {
-              zIndex: 1,
-              content: "''",
-              width: '100%',
-              height: '100%',
-              borderRadius: '50%',
-              position: 'absolute',
-              bgcolor: (theme) => alpha(theme.palette.grey[900], 0.8),
-            },
-          }),
+          display: 'flex',
+          alignItems: 'center',
+          cursor: 'pointer',
+          '&:hover': { color: 'white' } // Cambia esto al color que prefieras
         }}
+        onClick={handleOpen}
       >
-        <Avatar src={`${apiUrl}/anchetas/${img}`} alt="photoURL" />
-      </IconButton>
+        <Typography variant="body1" sx={{ fontWeight: 'bold', fontSize: '20px', color: 'rgb(33, 43, 54);', marginRight: 1 }}>Mi cuenta</Typography>
+        <IconButton
+          sx={{
+            p: 0,
+            ...(open && {
+              '&:before': {
+                zIndex: 1,
+                content: "''",
+                width: '100%',
+                height: '100%',
+                borderRadius: '50%',
+                position: 'absolute',
+                bgcolor: (theme) => alpha(theme.palette.grey[900], 0.8),
+              },
+            }),
+          }}
+        >
+          <Avatar src={`${apiUrl}/anchetas/${img}`} alt="photoURL" />
+        </IconButton>
+      </Box>
 
       <Popover
         open={Boolean(open)}
@@ -160,7 +170,7 @@ export default function AccountPopover() {
 
           <Link to="/dashboard/profile" style={{ color: '#000' }}>
             <MenuItem onClick={handleClose}>
-              Mi Perfil
+              Mi perfil
             </MenuItem>
           </Link>
 

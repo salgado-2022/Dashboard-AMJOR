@@ -44,7 +44,7 @@ const TABLE_HEAD = [
   { id: 'documento', label: 'Documento', alignRight: false },
   { id: 'nombre', label: 'Nombres Completos ', alignRight: false },
   { id: 'correo', label: 'Correo', alignRight: false },
-  { id: 'rol', label: 'Rol del Usuario', alignRight: false },
+  { id: 'rol', label: 'Rol', alignRight: false },
   { id: 'estado', label: 'Estado', alignRight: false },
   { id: '', label: '', alignRight: false },
 ];
@@ -221,7 +221,7 @@ export default function UserPage() {
           <Typography variant="h4" gutterBottom>
             Usuarios
           </Typography>
-          <Button variant="contained" onClick={handleOpenModal} startIcon={<Iconify icon="eva:plus-fill" />}>
+          <Button variant="contained" style={{textTransform: 'none'}} onClick={handleOpenModal} startIcon={<Iconify icon="eva:plus-fill" />}>
             Crear nuevo usuario
           </Button>
           <UsuariosFormulario2 open={openModal} onClose={handleCloseModal} fetchData={fetchData} />
@@ -415,6 +415,7 @@ export default function UserPage() {
             page={page}
             onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}
+            labelRowsPerPage="Filas por pagina:"
           />
         </Card>
       </Container>
