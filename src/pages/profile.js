@@ -147,7 +147,6 @@ export default function Profile() {
         window.history.back();
     }
 
-
     return (
         <>
             <Helmet>
@@ -171,7 +170,7 @@ export default function Profile() {
                                         {values.img && (
                                             <div>
                                                 <CardMedia component="img" alt="" sx={{ width: 150, height: 150, borderRadius: 50 }} image={imageUrlEdit || `${apiUrl}/anchetas/` + values.img} />
-                                                <IconButton color="trash" sx={{ position: "absolute", top: "0px", right: "8px" }} onClick={() => {
+                                                <IconButton color="trash" sx={{ position: "absolute", top: "8px", right: "8px" }} onClick={() => {
                                                     setImageUrlEdit(null);
                                                     setValues((prev) => ({ ...prev, img: null }));
                                                 }}>
