@@ -14,6 +14,7 @@ import {
   Avatar,
   Button,
   Popover,
+  Checkbox,
   TableRow,
   MenuItem,
   TableBody,
@@ -41,7 +42,7 @@ const TABLE_HEAD = [
   { id: 'w', label: '', alignRight: false },
   { id: 'idUsuario', label: 'ID', alignRight: false },
   { id: 'documento', label: 'Documento', alignRight: false },
-  { id: 'nombre', label: 'Nombres', alignRight: false },
+  { id: 'nombre', label: 'Nombres Completos ', alignRight: false },
   { id: 'correo', label: 'Correo', alignRight: false },
   { id: 'rol', label: 'Rol del Usuario', alignRight: false },
   { id: 'estado', label: 'Estado', alignRight: false },
@@ -78,6 +79,7 @@ function applySortFilter(array, comparator, query) {
   }
   return stabilizedThis.map((el) => el[0]);
 }
+
 export default function UserPage() {
   const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
 
@@ -233,15 +235,17 @@ export default function UserPage() {
           />
 
           <Scrollbar>
-            {loading ? ( // Mostrar un mensaje de carga si los datos aún están cargando
+            {loading ? (
               <TableContainer sx={{ minWidth: 800 }}>
                 <Table>
-                  <OrderListHead
+                  <UserListHead
                     order={order}
                     orderBy={orderBy}
                     headLabel={TABLE_HEAD}
                     rowCount={data.length}
                     numSelected={selected.length}
+                    onRequestSort={handleRequestSort}
+                    onSelectAllClick={handleSelectAllClick}
                   />
                   <TableBody>
                     {Array.from({ length: rowsPerPage }).map((_, index) => (
@@ -251,7 +255,7 @@ export default function UserPage() {
                           <Stack direction="row" alignItems="center" spacing={2}>
                             <Skeleton variant="circular" width={40} height={40} />
                             <Typography variant="subtitle2" noWrap>
-                              <Skeleton variant="rounded" width={23} height={10} />
+                              <Skeleton variant="rounded" width={13} height={10} />
                             </Typography>
                           </Stack>
                         </TableCell>
@@ -302,12 +306,17 @@ export default function UserPage() {
                     {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
                       const { idUsuario, Documento, Nombre, Apellido, correo, Nombre_Rol, Estado } = row;
                       const selectedUser = selected.indexOf(idUsuario) !== -1;
-                      const estadoText = Estado === 1 ? 'Activo' : 'Inactivo'; // Texto del estado según el valor
+                      const estadoText = Estado === 1 ? 'Activo' : 'Inactivo';
                       return (
-                        <TableRow key={row.idUsuario} hover tabIndex={-1} role="checkbox" selected={selectedUser}>
-                          <TableCell></TableCell>
+                        <TableRow key={row.idUsuario} hover tabIndex={-1} role="checkbox" selected={selectedUser} className="custom-table-row">
+                          <TableCell>
+                            <Checkbox
+                              checked={selectedUser}
+                              onClick={(event) => handleClick(event, idUsuario)}
+                            />
+                          </TableCell>
                           <TableCell component="th" scope="row" padding="none">
-                            <Stack direction="row" alignItems="center" spacing={2}>
+                            <Stack direction="row" alignItems="center" spacing={1}>
                               <Avatar alt="" src="" />
                               <Typography variant="subtitle2" noWrap>
                                 {idUsuario}
@@ -366,7 +375,7 @@ export default function UserPage() {
                     })}
                     {emptyRows > 0 && (
                       <TableRow style={{ height: 53 * emptyRows }}>
-                        <TableCell colSpan={5} />{' '}
+                        <TableCell colSpan={8} />
                       </TableRow>
                     )}
                   </TableBody>
@@ -374,7 +383,7 @@ export default function UserPage() {
                   {isNotFound && (
                     <TableBody>
                       <TableRow>
-                        <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
+                        <TableCell align="center" colSpan={8} sx={{ py: 3 }}>
                           <Paper
                             sx={{
                               textAlign: 'center',
@@ -409,12 +418,7 @@ export default function UserPage() {
           />
         </Card>
       </Container>
-      <EditarUsuario
-        show={modalShow}
-        onHide={() => setModalShow(false)}
-        fetchData={fetchData}
-        selectedUsuarioID={selectedUser1}
-      />
+      <EditarUsuario show={modalShow} onHide={() => setModalShow(false)} fetchData={fetchData} selectedUsuarioID={selectedUser1} />
     </>
   );
 }

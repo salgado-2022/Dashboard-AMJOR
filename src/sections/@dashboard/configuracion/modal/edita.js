@@ -172,6 +172,8 @@ function EditarConfi(props) {
         value={values.Nombre_Rol}
         onChange={handleInput}
       />
+      <br />
+      <br />
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
