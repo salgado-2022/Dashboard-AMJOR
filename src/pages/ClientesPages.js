@@ -45,7 +45,7 @@ const TABLE_HEAD = [
   { id: 'nombre', label: 'Nombres', alignRight: false },
   { id: 'correo', label: 'Correo', alignRight: false },
   { id: 'telefono', label: 'Telefono', alignRight: false },
-  { id: 'rol', label: 'Rol del Usuario', alignRight: false },
+  { id: 'rol', label: 'Rol del usuario', alignRight: false },
   { id: 'estado', label: 'Estado', alignRight: false },
   { id: '', label: '', alignRight: false },
   
@@ -225,7 +225,7 @@ export default function ParteCliente() {
           <Typography variant="h4" gutterBottom>
             Clientes
           </Typography>
-          <Button variant="contained" onClick={handleOpenModal} startIcon={<Iconify icon="eva:plus-fill" />}>
+          <Button variant="contained" style={{ textTransform: 'none'}} onClick={handleOpenModal} startIcon={<Iconify icon="eva:plus-fill" />}>
             Crear nuevo usuario
           </Button>
           <UsuariosFormulario2 open={openModal} onClose={handleCloseModal} fetchData={fetchData} />
