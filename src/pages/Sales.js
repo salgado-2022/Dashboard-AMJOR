@@ -122,7 +122,7 @@ export default function SalesPage() {
 
     useEffect(() => {
         axiosData();
-    },[])
+    }, [])
 
     const axiosData = () => {
         axios.get(`${apiUrl}/api/admin/listar/ventas`)
@@ -291,7 +291,7 @@ export default function SalesPage() {
                                 />
                                 <TableBody>
                                     {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                                        const { ID_Pedido, ID_Cliente, Nombre_Cliente, Direccion_Entrega, Fecha_Entrega, Precio_Total, correo, image, Estado, Municipio, Barrio, fecha_creacion, Telefono, Status_Pedido } = row;
+                                        const { ID_Pedido, ID_Cliente, Nombre_Cliente, Direccion_Entrega, Fecha_Entrega, Precio_Total, correo, image, Estado, Municipio, Barrio, fecha_creacion, Telefono, Status_Pedido, foto } = row;
                                         const selectedUser = selected.indexOf(ID_Pedido) !== -1;
 
                                         return (
@@ -308,7 +308,7 @@ export default function SalesPage() {
                                                     </TableCell>
                                                     <TableCell>
                                                         <Stack direction="row" alignItems="center" spacing={2}>
-                                                            <Avatar alt='' src={`${apiUrl}/anchetas/` + image} />
+                                                            <Avatar alt='' src={`${apiUrl}/anchetas/` + foto} />
                                                             <Typography hidden={true}>
                                                                 {ID_Cliente}
                                                             </Typography>

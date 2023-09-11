@@ -12,6 +12,7 @@ import useResponsive from '../../../hooks/useResponsive';
 import Logo from '../../../components/logo';
 import Scrollbar from '../../../components/scrollbar';
 import NavSection from '../../../components/nav-section';
+import logo from '../../../assets/img/logo.png'
 //
 import navConfig from './config';
 
@@ -85,7 +86,7 @@ export default function Nav({ openNav, onCloseNav }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
-  
+
   const filteredNavConfig = navConfig.filter(configItem => data.includes(configItem.title));
 
 
@@ -99,7 +100,6 @@ export default function Nav({ openNav, onCloseNav }) {
       }}
     >
       <Box sx={{ px: 2.5, py: 3, display: 'inline-flex' }}>
-        <Logo />
       </Box>
 
       <Box sx={{ mb: 5, mx: 2.5 }}>
