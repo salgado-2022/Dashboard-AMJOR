@@ -99,20 +99,6 @@ export default function ListaConfiguracion() {
   useEffect(() => {
     setLoading(true);
     fetchData();
-
-    // Configura un intervalo de auto-refresh cada 5 segundos (puedes ajustar el tiempo según tus necesidades)
-    const interval = setInterval(() => {
-      fetchData();
-    }, 1000);
-
-    // Almacenamos el ID del intervalo en el estado refreshInterval
-    setRefreshInterval(interval);
-
-    // Esta función se ejecutará cuando el componente se desmonte
-    return () => {
-      // Limpia el intervalo cuando el componente se desmonta
-      clearInterval(interval);
-    };
   }, []);
 
   const fetchData = () => {
@@ -174,7 +160,7 @@ export default function ListaConfiguracion() {
               console.log(err);
               Swal.fire({
                 title: 'Error',
-                text: 'Ocurrió un error al eliminar el rol.',
+                text: 'No se puede eliminar este rol, ya que tiene usuarios asociados.',
                 icon: 'error',
               });
             });
@@ -259,7 +245,7 @@ export default function ListaConfiguracion() {
           <Typography variant="h4" gutterBottom>
             Configuración
           </Typography>
-          <ConfiFormulario open={modalShow} onClose={handleCloseModal} />
+          <ConfiFormulario open={modalShow} onClose={handleCloseModal} fetchData={fetchData} />
         </Stack>
         <Card>
           <UserListToolbar
@@ -329,8 +315,6 @@ export default function ListaConfiguracion() {
                   {filteredRol.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
                     const { ID_Rol, Nombre_Rol, estado } = row;
                     const selectedConfiguracion = selected.indexOf(ID_Rol) !== -1;
-                    console.table(selectedConfiguracionID);
-                    console.log("error sdfsdfased");
                     const estadoText = estado === 1 ? 'Activo' : 'Inactivo';
                     return (
                       <TableRow
@@ -346,13 +330,10 @@ export default function ListaConfiguracion() {
                             onClick={(event) => handleClick(event, ID_Rol)}
                           />
                         </TableCell>
-                        <TableCell component="th" scope="row" padding="none">
-                          <Stack direction="row" alignItems="center" spacing={2}>
-                            <Avatar alt="" src="" />
-                            <Typography variant="subtitle2" noWrap>
-                              {ID_Rol}
-                            </Typography>
-                          </Stack>
+                        <TableCell>
+                          <Typography variant="subtitle2" noWrap>
+                            #{ID_Rol}
+                          </Typography>
                         </TableCell>
                         <TableCell align="left">{Nombre_Rol}</TableCell>
                         <TableCell align="left">

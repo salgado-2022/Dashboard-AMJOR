@@ -256,7 +256,9 @@ function EditarUsuario(props) {
   const handleUpdate = (event) => {
     event.preventDefault();
 
-    const documentoValido = /^[0-9]+$/.test(values.documento) && values.documento.length >= 8 && values.documento.length <= 10;
+    const documentoValido = /^[0-9]{1,11}$/.test(values.documento);
+    console.log(documentoValido)
+    console.log(values.documento)
     setDocumentoError(!documentoValido);
 
     const nombreValido = /^[a-zA-ZñÑ\s]+$/.test(values.nombre) && values.nombre.length >= 4;
@@ -291,7 +293,6 @@ function EditarUsuario(props) {
       ...prevValues,
       ID_Rol: nuevoID_Rol,
     }));
-
     axios
       .put(`${apiUrl}/api/admin/usuario/usuariarioedit/${id}`, values)
       .then((res) => {
@@ -475,7 +476,7 @@ function EditarUsuario(props) {
           </Grid>
           <Grid container spacing={2} style={{ marginTop: '16px' }}>
             <Grid item xs={12} sm={6}>
-              <Button type="submit" style={{ textTransform: 'none'}} variant="contained" color="primary" fullWidth>
+              <Button type="submit" style={{ textTransform: 'none' }} variant="contained" color="primary" fullWidth>
                 Guardar cambios
               </Button>
             </Grid>
