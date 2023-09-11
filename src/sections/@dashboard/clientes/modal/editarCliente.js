@@ -214,7 +214,7 @@ function EditarCliente(props) {
   const handleUpdate = (event) => {
     event.preventDefault();
 
-    const documentoValido = /^[0-9]+$/.test(values.documento) && values.documento.length >= 8 && values.documento.length <= 10;
+    const documentoValido = /^[0-9]{1,11}$/.test(values.documento);
     setDocumentoError(!documentoValido);
   
     const nombreValido = /^[a-zA-ZñÑ\s]+$/.test(values.nombre) && values.nombre.length >= 4;

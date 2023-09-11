@@ -47,7 +47,6 @@ function AuthGuard({ children }) {
         console.log(err)
       })
   }
-  console.log("data ruta ", data)
   if (data === "Acceso Denegado") {
     return window.location.href = `${landingURL}`;
   }
