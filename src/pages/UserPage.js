@@ -305,13 +305,13 @@ export default function UserPage() {
                   <TableBody>
                     {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
                       const { idUsuario, Documento, Nombre, Apellido, correo, Nombre_Rol, Estado } = row;
-                      const selectedUser = selected.indexOf(idUsuario) !== -1;
+                      const selectedUser1 = selected.indexOf(idUsuario) !== -1;
                       const estadoText = Estado === 1 ? 'Activo' : 'Inactivo';
                       return (
-                        <TableRow key={row.idUsuario} hover tabIndex={-1} role="checkbox" selected={selectedUser} className="custom-table-row">
+                        <TableRow key={row.idUsuario} hover tabIndex={-1} role="checkbox" selected={selectedUser1} className="custom-table-row">
                           <TableCell>
                             <Checkbox
-                              checked={selectedUser}
+                              checked={selectedUser1}
                               onClick={(event) => handleClick(event, idUsuario)}
                             />
                           </TableCell>
