@@ -247,8 +247,8 @@ export default function SuppliesPage() {
           <Typography variant="h4" gutterBottom>
             Insumos
           </Typography>
-          <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleOpenModal}>
-            Crear Insumo
+          <Button variant="contained" style={{ textTransform: 'none'}} startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleOpenModal}>
+            Crear insumo
           </Button>
         </Stack>
 
@@ -257,7 +257,7 @@ export default function SuppliesPage() {
             numSelected={selected.length}
             filterName={filterName}
             onFilterName={handleFilterByName}
-            placeholder="Buscar Insumo..."
+            placeholder="Buscar insumo..."
           />
 
           <Scrollbar>
