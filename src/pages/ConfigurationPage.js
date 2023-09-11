@@ -32,6 +32,7 @@ import Iconify from '../components/iconify';
 import Scrollbar from '../components/scrollbar';
 import Label from '../components/label';
 import { EditarConfi } from '../sections/@dashboard/configuracion/modal/editar';
+import OrderListHead from '../sections/@dashboard/pedidos/OrderListHead';
 
 // sections
 import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
@@ -39,6 +40,7 @@ import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
+  { id: '', label: '', alignRight: false },
   { id: 'ID_Rol', label: 'ID', alignRight: false },
   { id: 'Nombre_Rol', label: 'Nombre del rol', alignRight: false },
   { id: 'estado', label: 'Estado', alignRight: false },
@@ -259,7 +261,7 @@ export default function ListaConfiguracion() {
             {loading ? (
               <TableContainer sx={{ minWidth: 800 }}>
                 <Table>
-                  <UserListHead
+                  <OrderListHead
                     order={order}
                     orderBy={orderBy}
                     headLabel={TABLE_HEAD}
@@ -271,18 +273,17 @@ export default function ListaConfiguracion() {
                   <TableBody>
                     {Array.from({ length: rowsPerPage }).map((_, index) => (
                       <TableRow key={index} hover role="swict">
-                        <TableCell padding="swict">
-                          <swict />
+                        <TableCell padding="checkbox">
+
                         </TableCell>
-                        <TableCell component="th" scope="row" padding="none">
-                          <Stack direction="row" alignItems="center" spacing={2}>
-                            <Skeleton variant="circular" width={40} height={40} />
+                        <TableCell component="th" scope="row" padding="none" width={250}>
+                          <Stack direction="row" alignItems="center" spacing={2} >
                             <Typography variant="subtitle2" noWrap>
                               <Skeleton variant="rounded" width={23} height={10} />
                             </Typography>
                           </Stack>
                         </TableCell>
-                        <TableCell align="left" width={310}>
+                        <TableCell align="left" width={410}>
                           <Skeleton variant="rounded" width={170} height={22} />
                         </TableCell>
                         <TableCell align="left" width={266}>
@@ -290,7 +291,7 @@ export default function ListaConfiguracion() {
                             <Skeleton variant="rounded" width={100} height={22} />
                           </Label>
                         </TableCell>
-                        <TableCell align="left" width={295}>
+                        <TableCell align="left" width={240}>
                           <IconButton size="large" color="inherit">
                             <Iconify icon={'eva:more-vertical-fill'} />
                           </IconButton>
@@ -302,7 +303,7 @@ export default function ListaConfiguracion() {
               </TableContainer>
             ) : (
               <Table>
-                <UserListHead
+                <OrderListHead
                   order={order}
                   orderBy={orderBy}
                   headLabel={TABLE_HEAD}
@@ -325,10 +326,7 @@ export default function ListaConfiguracion() {
                         selected={selectedConfiguracion}
                       >
                         <TableCell padding="checkbox">
-                          <Checkbox
-                            checked={selectedConfiguracion}
-                            onClick={(event) => handleClick(event, ID_Rol)}
-                          />
+
                         </TableCell>
                         <TableCell>
                           <Typography variant="subtitle2" noWrap>
