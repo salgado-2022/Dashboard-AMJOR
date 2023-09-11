@@ -26,7 +26,8 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-function ConfiFormulario({ onClose }) {
+function ConfiFormulario({ onClose, fetchData }) {
+
   const apiUrl = process.env.REACT_APP_AMJOR_API_URL;
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -101,6 +102,7 @@ function ConfiFormulario({ onClose }) {
               text: 'El rol ha sido creado exitosamente.',
               icon: 'success',
             }).then(() => {
+              fetchData();
               onClose();
             });
           } else {

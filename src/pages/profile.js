@@ -144,7 +144,6 @@ export default function Profile() {
                     window.location.reload();
                 }, 1000)
             })
-        window.history.back();
     }
 
 
