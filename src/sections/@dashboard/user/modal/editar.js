@@ -297,8 +297,8 @@ function EditarUsuario(props) {
       .then((res) => {
         setGuardadoExitoso(true);
         Swal.fire({
-          title: 'Modificado Correctamente',
-          text: 'Tu Usuario se ha sido modificado correctamente',
+          title: 'Modificado correctamente',
+          text: 'El usuario ha sido modificado correctamente',
           icon: 'success',
           showConfirmButton: false,
           timer: 2600,
@@ -340,12 +340,13 @@ function EditarUsuario(props) {
   return (
     <Dialog open={show} onClose={onHide} TransitionComponent={Transition}>
       <DialogContent>
-        <h2 style={{ textAlign: 'center', marginBottom: '24px' }}>Editar datos de Usuario</h2>
+        <h2 style={{ textAlign: 'center', marginBottom: '24px' }}>Editar datos de usuario</h2>
         <form onSubmit={handleUpdate} id="editarUsuario">
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
+                required
                 label="Documento"
                 variant="outlined"
                 type="number"
@@ -361,6 +362,7 @@ function EditarUsuario(props) {
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
+                required
                 label="Nombre"
                 variant="outlined"
                 type="text"
@@ -378,6 +380,7 @@ function EditarUsuario(props) {
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
+                required
                 label="Apellido"
                 variant="outlined"
                 type="text"
@@ -393,6 +396,7 @@ function EditarUsuario(props) {
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
+                required
                 label="Correo"
                 variant="outlined"
                 type="email"
@@ -410,6 +414,7 @@ function EditarUsuario(props) {
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
+                required
                 label="Telefono"
                 variant="outlined"
                 type="number"
@@ -448,6 +453,7 @@ function EditarUsuario(props) {
           <TextField
             select
             fullWidth
+            required
             label="Rol"
             variant="outlined"
             name="ID_Rol"
@@ -464,12 +470,12 @@ function EditarUsuario(props) {
             ))}
           </TextField>
           <Grid container alignItems="center" spacing={1} style={{ marginTop: '16px' }}>
+            <Typography style={{ paddingLeft: '15px' }}>Estado del usuario:</Typography>
             <Switch color="switch" id="estado" name="estado" checked={isUsuarioActivo} onChange={handleInput} />
-            <Typography>Usuario Activo</Typography>
           </Grid>
           <Grid container spacing={2} style={{ marginTop: '16px' }}>
             <Grid item xs={12} sm={6}>
-              <Button type="submit" variant="contained" color="primary" fullWidth>
+              <Button type="submit" style={{ textTransform: 'none'}} variant="contained" color="primary" fullWidth>
                 Guardar cambios
               </Button>
             </Grid>

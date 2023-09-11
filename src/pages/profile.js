@@ -126,8 +126,8 @@ export default function Profile() {
         axios.put(`${apiUrl}/api/user/perfil/update/` + id, formdata)
             .then(res => {
                 Swal.fire({
-                    title: 'Actualizado Correctamente',
-                    text: "Se actualizo correctamente",
+                    title: 'Actualizado correctamente',
+                    text: "Se actualizó correctamente",
                     icon: 'success',
                     showConfirmButton: false,
                     timer: 1500
@@ -150,13 +150,13 @@ export default function Profile() {
     return (
         <>
             <Helmet>
-                <title>Mi Perfil | AMJOR</title>
+                <title>Mi perfil | AMJOR</title>
             </Helmet>
 
             <Container maxWidth="xl">
                 <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
                     <Typography variant="h4" gutterBottom>
-                        Mi Perfil
+                        Mi perfil
                     </Typography>
                 </Stack>
 

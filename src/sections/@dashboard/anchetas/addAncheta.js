@@ -164,7 +164,7 @@ function AddAncheta() {
 
             if (!values.image) {
                 Swal.fire({
-                    title: 'No hay Imagen',
+                    title: 'No hay imagen',
                     text: "Debes subir una imagen de la ancheta",
                     icon: 'warning',
                     showConfirmButton: false,
@@ -190,7 +190,7 @@ function AddAncheta() {
                 .then(res => {
                     if (res.data.Status === "Success") {
                         Swal.fire({
-                            title: 'Creado Correctamente',
+                            title: 'Creado correctamente',
                             text: "Tu ancheta ha sido creada correctamente",
                             icon: 'success',
                             showConfirmButton: false,
@@ -244,7 +244,7 @@ function AddAncheta() {
     return (
     <Container maxWidth={"xl"}>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-            <Typography variant="h4" gutterBottom>Crear Ancheta</Typography>
+            <Typography style={{ }} variant="h4" gutterBottom>Crear ancheta</Typography>
             <Link to="/dashboard/anchetas">
                 <Button variant="contained" startIcon={<Iconify icon="ph:arrow-left" />}>
                 Volver
@@ -255,8 +255,8 @@ function AddAncheta() {
         <form onSubmit={handleSubmit} onReset={handleReset} encType="multipart/form-data">
             <Grid container spacing={2}>
                 <Grid item md={4} >
-                    <TextField fullWidth style={{ marginBottom: '16px' }} label="Nombre" variant="outlined" id="NombreAncheta" name="NombreAncheta" value={values.NombreAncheta} onChange={handleInput} error={nombreError !== ''}  helperText={nombreError} />
-                    <TextField multiline rows={4} fullWidth style={{ marginBottom: '16px' }} label="Descripción" variant="outlined" id="Descripcion" name="Descripcion" value={values.Descripcion} onChange={handleInput} error={descripcionError !== ''}  helperText={descripcionError}/>
+                    <TextField fullWidth style={{ marginBottom: '16px' }} label="Nombre *" variant="outlined" id="NombreAncheta" name="NombreAncheta" value={values.NombreAncheta} onChange={handleInput} error={nombreError !== ''}  helperText={nombreError} />
+                    <TextField multiline rows={4} fullWidth style={{ marginBottom: '16px' }} label="Descripción *" variant="outlined" id="Descripcion" name="Descripcion" value={values.Descripcion} onChange={handleInput} error={descripcionError !== ''}  helperText={descripcionError}/>
                     <Card elevation={3} style={{ marginBottom: '16px' }}>
                     {values.image && (
                         <div>
@@ -314,7 +314,7 @@ function AddAncheta() {
                     </Card>
                     <Typography variant="h5" marginBottom={1}>Total: {formatPrice(Precio)}</Typography>
                     <Stack direction="row" alignItems="center" spacing={1}>
-                        <Button type="submit" variant="contained" color="primary" fullWidth>Crear Ancheta</Button>
+                        <Button type="submit" variant="contained" color="primary" style={{ textTransform: 'none' }} fullWidth>Crear ancheta</Button>
                         <Button type="reset" variant="contained" color="secondary" fullWidth>Cancelar</Button>
                     </Stack> 
                 </Grid>
@@ -323,7 +323,7 @@ function AddAncheta() {
                         <UserListToolbar
                             filterName={filterName}
                             onFilterName={handleFilterByName}
-                            placeholder="Buscar Insumo..."
+                            placeholder="Buscar insumo..."
                         />
                         <List sx={{ height: '625px', overflowY: 'auto' }}>
                             {filteredUsers.reverse().filter(insumo => !insumosAgregados.includes(insumo.ID_Insumo) && insumo.Estado !== 'Agotado').slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((insumo, index) => {

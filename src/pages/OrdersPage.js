@@ -231,23 +231,24 @@ export default function OrderPage() {
 
         if (statusPedido === 0) {
             Swal.fire({
-                title: '¿Estas seguro?',
-                text: "El estado del pedido cambiara a EN PREPARACIÓN",
+                title: '¿Estás seguro?',
+                text: "El estado del pedido cambiará a EN PREPARACIÓN",
                 icon: 'warning',
                 showCancelButton: true,
                 cancelButtonText: "Cancelar",
                 confirmButtonColor: '#9c27b0',
                 cancelButtonColor: '#343a40',
-                confirmButtonText: 'Si'
+                confirmButtonText: 'Sí'
             }).then((result) => {
                 if (result.isConfirmed) {
                     axios.put(`${apiUrl}/api/admin/pedido/status/preparacion/` + idPedido)
                         .then(res => {
-                            Swal.fire(
-                                'Se cambio el estado',
-                                'El estado se cambio correctamente.',
-                                'success'
-                            )
+                            Swal.fire({
+                                title: 'Estado cambiado',
+                                text: 'El estado se cambió correctamente.',
+                                icon: 'success',
+                                timer: 2000
+                            })
                             AxiosData();
                         })
                         .catch(err => {
@@ -263,23 +264,24 @@ export default function OrderPage() {
         else if (statusPedido === 1) {
 
             Swal.fire({
-                title: '¿Estas seguro?',
-                text: "El estado del pedido cambiara a PREPRADADO",
+                title: '¿Estás seguro?',
+                text: "El estado del pedido cambiará a PREPRADADO",
                 icon: 'warning',
                 showCancelButton: true,
                 cancelButtonText: "Cancelar",
                 confirmButtonColor: '#9c27b0',
                 cancelButtonColor: '#343a40',
-                confirmButtonText: 'Si'
+                confirmButtonText: 'Sí'
             }).then((result) => {
                 if (result.isConfirmed) {
                     axios.put(`${apiUrl}/api/admin/pedido/status/preparado/` + idPedido)
                         .then(res => {
-                            Swal.fire(
-                                'Se cambio el estado',
-                                'El estado se cambio correctamente.',
-                                'success'
-                            )
+                            Swal.fire({
+                                title: 'Estado cambiado',
+                                text: 'El estado se cambió correctamente.',
+                                icon: 'success',
+                                timer: 2000
+                            })
                             AxiosData();
                         })
                         .catch(err => {
@@ -294,22 +296,23 @@ export default function OrderPage() {
         } else if (statusPedido === 2) {
             Swal.fire({
                 title: '¿Estás seguro?',
-                text: "El estado del pedido cambiara a DESPACHADO",
+                text: "El estado del pedido cambiará a DESPACHADO",
                 icon: 'warning',
                 showCancelButton: true,
                 cancelButtonText: "Cancelar",
                 confirmButtonColor: '#9c27b0',
                 cancelButtonColor: '#343a40',
-                confirmButtonText: 'Si'
+                confirmButtonText: 'Sí'
             }).then((result) => {
                 if (result.isConfirmed) {
                     axios.put(`${apiUrl}/api/admin/pedido/status/despachado/` + idPedido)
                         .then(res => {
-                            Swal.fire(
-                                'Se cambió el estado',
-                                'El estado se cambió correctamente.',
-                                'success'
-                            )
+                            Swal.fire({
+                                title: 'Estado cambiado',
+                                text: 'El estado se cambió correctamente.',
+                                icon: 'success',
+                                timer: 2000
+                            })
                             AxiosData();
                         })
                         .catch(err => {
@@ -336,6 +339,7 @@ export default function OrderPage() {
                 if (res.data.Success === true) {
                     Swal.fire({
                         icon: 'success',
+                        timer: 2000,
                         title: 'Pedido aceptado correctamente',
                         confirmButtonText: 'OK'
                     })
@@ -364,8 +368,9 @@ export default function OrderPage() {
                 if (res.data.Success === true) {
                     Swal.fire({
                         icon: 'success',
+                        timer: 2000,
                         title: 'Pedido rechazado correctamente',
-                        confirmButtonText: 'OK'
+                        confirmButtonText: 'Ok'
                     })
                     AxiosData();
                 }
@@ -596,7 +601,7 @@ export default function OrderPage() {
                                         const { ID_Pedido, ID_Cliente, Nombre_Cliente, Direccion_Entrega, Fecha_Entrega, Precio_Total, correo, image, Estado, Municipio, Barrio, fecha_creacion, Telefono, Status_Pedido } = row;
                                         const selectedUser = selected.indexOf(ID_Pedido) !== -1;
                                         const estadoText = Estado === 3 ? 'Pendiente' : Estado === 4 ? 'Aceptado' : 'Rechazado'
-                                        const statusText = Status_Pedido === 1 ? 'En preparación' : Status_Pedido === 2 ? 'Preparado' : 'Despachado'
+                                        const statusText = Status_Pedido === 1 ? 'En preparacion' : Status_Pedido === 2 ? 'Preparado' : 'Despachado'
                                         return (
                                             <React.Fragment key={ID_Pedido}>
                                                 <TableRow hover tabIndex={-1} role="checkbox" selected={selectedUser}  >

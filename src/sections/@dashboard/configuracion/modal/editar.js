@@ -18,7 +18,7 @@ import {
   DialogTitle,
   Slide,
   Dialog,
-  
+
   DialogContent,
   DialogActions,
 } from '@mui/material';
@@ -97,7 +97,7 @@ function EditarConfi(props) {
       });
       fetchData();
       setTimeout(() => {
-        
+
       }, 50);
     } catch (error) {
       console.error(error);
@@ -158,74 +158,78 @@ function EditarConfi(props) {
 
   return (
     <Dialog open={show} onClose={handleCloseModal} TransitionComponent={Transition}>
-  <DialogTitle >
-    <Typography variant="h5" align="center" sx={{ mb: 1}}>
-      Editar Roles y los permisos
-    </Typography>
-  </DialogTitle>
-  <DialogContent dividers sx={{ width: '600px' }}>
-      <TextField
-        fullWidth
-        id="Nombre_Rol"
-        name="Nombre_Rol"
-        label="Nombre del Rol"
-        value={values.Nombre_Rol}
-        onChange={handleInput}
-      />
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Permiso</TableCell>
-              <TableCell align="center">Seleccionar</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {permissions.map((permiso) => (
-              <TableRow key={permiso.ID_Permiso}>
-                <TableCell>{permiso.NombrePermiso}</TableCell>
-                <TableCell align="center">
-                  <Switch
-                    checked={selectedPermisos.includes(permiso.ID_Permiso)}
-                    onChange={() => handleSwitchChange(permiso.ID_Permiso)}
-                  />
-                </TableCell>
+      <DialogTitle >
+        <Typography variant="h5" align="center" sx={{ mb: 1 }}>
+          Editar rol y permisos
+        </Typography>
+      </DialogTitle>
+      <DialogContent dividers sx={{ width: '600px' }}>
+        <TextField
+          fullWidth
+          required
+          id="Nombre_Rol"
+          name="Nombre_Rol"
+          label="Nombre del rol"
+          value={values.Nombre_Rol}
+          onChange={handleInput}
+        />
+        <br />
+        <br />
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Permiso</TableCell>
+                <TableCell align="center">Seleccionar</TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-  </DialogContent>
-  <Grid item xs={12}>
-    <Grid container alignItems="center" spacing={-1} style={{ marginTop: '1px' }}>
-      <Switch color="switch" id="estado" name="estado" checked={isRolActivo} onChange={handleInput} />
-      <Typography>Rol Activo</Typography>
-    </Grid>
-  </Grid>
-  <DialogActions>
-    <Button
-      type="submit"
-      variant="contained"
-      color="primary"
-      id="modRol"
-      fullWidth
-      style={{ marginTop: '8px' }}
-      onClick={handleSubmit}
-    >
-      Modificar el rol
-    </Button>
-    <Button
-      variant="contained"
-      color="secondary"
-      id="cancelarRol"
-      fullWidth
-      style={{ marginTop: '8px' }}
-      onClick={handleCloseModal}
-    >
-      Cancelar
-    </Button>
-  </DialogActions>
-</Dialog>
+            </TableHead>
+            <TableBody>
+              {permissions.map((permiso) => (
+                <TableRow key={permiso.ID_Permiso}>
+                  <TableCell>{permiso.NombrePermiso}</TableCell>
+                  <TableCell align="center">
+                    <Switch
+                      checked={selectedPermisos.includes(permiso.ID_Permiso)}
+                      onChange={() => handleSwitchChange(permiso.ID_Permiso)}
+                    />
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </DialogContent>
+      <Grid item xs={12}>
+        <Grid container alignItems="center" spacing={-1} style={{ marginTop: '1px' }}>
+          <Typography style={{ paddingLeft: '16px'}}>Estado del rol: </Typography>
+          <Switch color="switch" id="estado" name="estado" checked={isRolActivo} onChange={handleInput} />
+
+        </Grid>
+      </Grid>
+      <DialogActions>
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          id="modRol"
+          fullWidth
+          style={{ textTransform: 'none', marginTop: '8px' }}
+          onClick={handleSubmit}
+        >
+          Guardar cambios
+        </Button>
+        <Button
+          variant="contained"
+          color="secondary"
+          id="cancelarRol"
+          fullWidth
+          style={{ marginTop: '8px' }}
+          onClick={handleCloseModal}
+        >
+          Cancelar
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 }
 

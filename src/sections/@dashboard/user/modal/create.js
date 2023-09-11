@@ -309,6 +309,7 @@ function UsuariosFormulario2({ open, onClose, fetchData }) {
                 type="number"
                 margin="dense"
                 fullWidth
+                required
                 color="secondary"
                 value={values.Documento}
                 onChange={handleInputChange}
@@ -329,6 +330,7 @@ function UsuariosFormulario2({ open, onClose, fetchData }) {
                 margin="dense"
                 color="secondary"
                 fullWidth
+                required
                 value={values.Nombre}
                 onChange={handleInputChange}
                 onBlur={handleBlur}
@@ -346,6 +348,7 @@ function UsuariosFormulario2({ open, onClose, fetchData }) {
                 onBlur={handleBlur}
                 margin="dense"
                 fullWidth
+                required
                 error={validationErrors.Apellido !== null}
                 helperText={validationErrors.Apellido || ''}
               />
@@ -360,6 +363,7 @@ function UsuariosFormulario2({ open, onClose, fetchData }) {
                 onBlur={handleBlur}
                 margin="dense"
                 fullWidth
+                required
                 error={validationErrors.Telefono !== null}
                 helperText={validationErrors.Telefono || ''}
               />
@@ -374,6 +378,7 @@ function UsuariosFormulario2({ open, onClose, fetchData }) {
                 onBlur={handleBlur}
                 margin="dense"
                 fullWidth
+                required
                 error={validationErrors.Email !== null}
                 helperText={validationErrors.Email || ''}
               />
@@ -388,6 +393,7 @@ function UsuariosFormulario2({ open, onClose, fetchData }) {
                 onBlur={handleBlur}
                 margin="dense"
                 fullWidth
+                required
                 error={validationErrors.Password !== null}
                 helperText={validationErrors.Password || ''}
                 InputProps={{
@@ -406,7 +412,7 @@ function UsuariosFormulario2({ open, onClose, fetchData }) {
               />
             </Grid>
             <Grid item xs={12}>
-              <FormControl fullWidth>
+              <FormControl fullWidth required>
                 <InputLabel>Seleccionar rol</InputLabel>
                 <Select
                   label="Rol"
@@ -436,14 +442,14 @@ function UsuariosFormulario2({ open, onClose, fetchData }) {
               variant="contained"
               color="primary"
               fullWidth
-              style={{ marginTop: '8px' }}
+              style={{ textTransform: 'none', marginTop: '8px' }}
               onClick={(event) => {
                 handleSubmit(event);
                 resetForm();
                 onClose();
               }}
             >
-              Crear Usuario
+              Crear usuario
             </Button>
             <Button
               variant="contained"

@@ -192,7 +192,7 @@ export default function DashboardAppPage() {
 
           <Grid item xs={12} md={6} lg={4}>
             <AppConversionRates
-              title="Anchetas mas vendidas"
+              title="Anchetas más vendidas"
               chartData={data}
             />
           </Grid>

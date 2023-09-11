@@ -4,7 +4,7 @@ import Swal from 'sweetalert2';
 import { Helmet } from 'react-helmet-async';
 import { filter } from 'lodash';
 import { sentenceCase } from 'change-case';
-import { ConfiFormulario } from '../sections/@dashboard/configuracion/modal/crearte';
+import { ConfiFormulario } from '../sections/@dashboard/configuracion/modal/create';
 
 // @mui
 import {
@@ -31,7 +31,7 @@ import {
 import Iconify from '../components/iconify';
 import Scrollbar from '../components/scrollbar';
 import Label from '../components/label';
-import { EditarConfi } from '../sections/@dashboard/configuracion/modal/edita';
+import { EditarConfi } from '../sections/@dashboard/configuracion/modal/editar';
 
 // sections
 import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
@@ -40,8 +40,8 @@ import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
 
 const TABLE_HEAD = [
   { id: 'ID_Rol', label: 'ID', alignRight: false },
-  { id: 'Nombre_Rol', label: 'Rol', alignRight: false },
-  { id: 'estado', label: 'Estado del Rol', alignRight: false },
+  { id: 'Nombre_Rol', label: 'Nombre del rol', alignRight: false },
+  { id: 'estado', label: 'Estado', alignRight: false },
   { id: '', label: '', alignRight: false },
 ];
 
@@ -99,6 +99,20 @@ export default function ListaConfiguracion() {
   useEffect(() => {
     setLoading(true);
     fetchData();
+
+    // Configura un intervalo de auto-refresh cada 5 segundos (puedes ajustar el tiempo según tus necesidades)
+    const interval = setInterval(() => {
+      fetchData();
+    }, 1000);
+
+    // Almacenamos el ID del intervalo en el estado refreshInterval
+    setRefreshInterval(interval);
+
+    // Esta función se ejecutará cuando el componente se desmonte
+    return () => {
+      // Limpia el intervalo cuando el componente se desmonta
+      clearInterval(interval);
+    };
   }, []);
 
   const fetchData = () => {
@@ -148,7 +162,7 @@ export default function ListaConfiguracion() {
               console.log(res);
               fetchData();
               Swal.fire({
-                title: 'Eliminado Correctamente',
+                title: 'Eliminado correctamente',
                 text: 'El rol se ha sido eliminado correctamente',
                 icon: 'success',
                 showConfirmButton: false,
@@ -160,7 +174,7 @@ export default function ListaConfiguracion() {
               console.log(err);
               Swal.fire({
                 title: 'Error',
-                text: 'No se puede eliminar el rol. Está en uso por usuarios.',
+                text: 'Ocurrió un error al eliminar el rol.',
                 icon: 'error',
               });
             });
@@ -245,7 +259,7 @@ export default function ListaConfiguracion() {
           <Typography variant="h4" gutterBottom>
             Configuración
           </Typography>
-          <ConfiFormulario open={modalShow} onClose={handleCloseModal} fetchData={fetchData} />
+          <ConfiFormulario open={modalShow} onClose={handleCloseModal} />
         </Stack>
         <Card>
           <UserListToolbar
@@ -315,6 +329,8 @@ export default function ListaConfiguracion() {
                   {filteredRol.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
                     const { ID_Rol, Nombre_Rol, estado } = row;
                     const selectedConfiguracion = selected.indexOf(ID_Rol) !== -1;
+                    console.table(selectedConfiguracionID);
+                    console.log("error sdfsdfased");
                     const estadoText = estado === 1 ? 'Activo' : 'Inactivo';
                     return (
                       <TableRow
@@ -330,12 +346,13 @@ export default function ListaConfiguracion() {
                             onClick={(event) => handleClick(event, ID_Rol)}
                           />
                         </TableCell>
-                        <TableCell>
-
-                          <Typography variant="subtitle2" noWrap>
-                            #{ID_Rol}
-                          </Typography>
-
+                        <TableCell component="th" scope="row" padding="none">
+                          <Stack direction="row" alignItems="center" spacing={2}>
+                            <Avatar alt="" src="" />
+                            <Typography variant="subtitle2" noWrap>
+                              {ID_Rol}
+                            </Typography>
+                          </Stack>
                         </TableCell>
                         <TableCell align="left">{Nombre_Rol}</TableCell>
                         <TableCell align="left">
@@ -421,6 +438,7 @@ export default function ListaConfiguracion() {
             page={page}
             onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}
+            labelRowsPerPage="Filas por pagina:"
           />
         </Card>
       </Container>
@@ -428,6 +446,7 @@ export default function ListaConfiguracion() {
         show={modalShow}
         onHide={() => setModalShow(false)}
         selectedConfiguracionID={selectedConfiguracionID}
+
         fetchData={fetchData}
       />
     </>
