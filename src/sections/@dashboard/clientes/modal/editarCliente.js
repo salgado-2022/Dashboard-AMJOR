@@ -116,7 +116,7 @@ function EditarCliente(props) {
         setNombreError('');
       }
     }
-    
+
     if (name === 'apellido') {
       if (!value) {
         setApellidoError('Campo obligatorio');
@@ -126,7 +126,7 @@ function EditarCliente(props) {
         setApellidoError('');
       }
     }
-    
+
     if (name === 'telefono') {
       if (!value) {
         setTelefonoError('Campo obligatorio');
@@ -136,7 +136,7 @@ function EditarCliente(props) {
         setTelefonoError('');
       }
     }
-    
+
     if (name === 'correo') {
       if (!value) {
         setCorreoError('Campo obligatorio');
@@ -216,19 +216,19 @@ function EditarCliente(props) {
 
     const documentoValido = /^[0-9]{1,11}$/.test(values.documento);
     setDocumentoError(!documentoValido);
-  
+
     const nombreValido = /^[a-zA-ZñÑ\s]+$/.test(values.nombre) && values.nombre.length >= 4;
     setNombreError(!nombreValido);
-  
+
     const apellidoValido = /^[a-zA-ZñÑ\s]+$/.test(values.apellido) && values.apellido.length >= 5;
     setApellidoError(!apellidoValido);
-  
+
     const telefonoValido = /^[0-9]+$/.test(values.telefono) && values.telefono.length >= 7 && values.telefono.length <= 11;
     setTelefonoError(!telefonoValido);
-  
+
     const correoValido = validateEmail(values.correo);
     setCorreoError(!correoValido);
-  
+
 
     if (!documentoValido || !nombreValido || !apellidoValido || !telefonoValido || !correoValido) {
       return;
@@ -237,13 +237,13 @@ function EditarCliente(props) {
       ...prevValues,
       ID_Rol: 2,
     }));
-  
+
     axios
       .put(`${apiUrl}/api/admin/cliente/clienteedit/${id}`, values)
       .then((res) => {
         setGuardadoExitoso(true);
         Swal.fire({
-          title: 'Modificado Correctamente',
+          title: 'Modificado correctamente',
           text: 'El cliente ha sido modificado correctamente',
           icon: 'success',
           showConfirmButton: false,
@@ -256,7 +256,7 @@ function EditarCliente(props) {
         }, 50);
       })
       .catch((err) => console.log(err));
-  };  
+  };
 
   const resetFields = () => {
     setValues({
@@ -292,13 +292,13 @@ function EditarCliente(props) {
         }}
       >
         <Paper elevation={3} style={{ padding: '16px', borderRadius: '8px', width: '100%', maxWidth: '600px' }}>
-          <h2 style={{ textAlign: 'center', marginBottom: '24px' }}>Editar datos del Cliente</h2>
+          <h2 style={{ textAlign: 'center', marginBottom: '24px' }}>Editar datos del cliente</h2>
           <form onSubmit={handleUpdate} id="editarUsuario">
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
-                  label="Documento"
+                  label="Documento *"
                   variant="outlined"
                   type="number"
                   name="documento"
@@ -313,7 +313,7 @@ function EditarCliente(props) {
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
-                  label="Nombre"
+                  label="Nombre *"
                   variant="outlined"
                   type="text"
                   name="nombre"
@@ -330,7 +330,7 @@ function EditarCliente(props) {
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
-                  label="Apellido"
+                  label="Apellido *"
                   variant="outlined"
                   type="text"
                   name="apellido"
@@ -345,7 +345,7 @@ function EditarCliente(props) {
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
-                  label="Correo"
+                  label="Correo *"
                   variant="outlined"
                   type="email"
                   name="correo"
@@ -362,7 +362,7 @@ function EditarCliente(props) {
               <Grid item xs={12} sm={12}>
                 <TextField
                   fullWidth
-                  label="Telefono"
+                  label="Telefono *"
                   variant="outlined"
                   type="number"
                   name="telefono"
@@ -377,7 +377,7 @@ function EditarCliente(props) {
             </Grid>
             <TextField
               fullWidth
-              label="Rol"
+              label="Rol *"
               variant="outlined"
               type="text"
               name="ID_Rol"
@@ -389,12 +389,13 @@ function EditarCliente(props) {
             >
             </TextField>
             <Grid container alignItems="center" spacing={1} style={{ marginTop: '16px' }}>
+              <Typography style={{ paddingLeft: '15px' }}>Estado del usuario:</Typography>
               <Switch color="switch" id="estado" name="estado" checked={isUsuarioActivo} onChange={handleInput} />
-              <Typography>Usuario Activo</Typography>
+
             </Grid>
             <Grid container spacing={2} style={{ marginTop: '16px' }}>
               <Grid item xs={12} sm={6}>
-                <Button type="submit" variant="contained" color="primary" fullWidth>
+                <Button type="submit" style={{ textTransform: 'none'}} variant="contained" color="primary" fullWidth>
                   Guardar cambios
                 </Button>
               </Grid>
