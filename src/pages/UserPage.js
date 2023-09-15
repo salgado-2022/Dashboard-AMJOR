@@ -46,7 +46,7 @@ const TABLE_HEAD = [
   { id: 'correo', label: 'Correo', alignRight: false },
   { id: 'rol', label: 'Rol', alignRight: false },
   { id: 'estado', label: 'Estado', alignRight: false },
-  { id: '' },
+  { id: '', label: '', alignRight: false },
 ];
 
 // ----------------------------------------------------------------------
@@ -304,16 +304,13 @@ export default function UserPage() {
                   />
                   <TableBody>
                     {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                      const { idUsuario, Documento, Nombre, Apellido, correo, Nombre_Rol, Estado } = row;
+                      const { idUsuario, Documento, Nombre, Apellido, correo, Nombre_Rol, Estado, foto } = row;
                       const selectedUser = selected.indexOf(idUsuario) !== -1;
                       const estadoText = Estado === 1 ? 'Activo' : 'Inactivo';
                       return (
                         <TableRow key={row.idUsuario} hover tabIndex={-1} role="checkbox" selected={selectedUser} className="custom-table-row">
                           <TableCell>
-                            <Checkbox
-                              checked={selectedUser}
-                              onClick={(event) => handleClick(event, idUsuario)}
-                            />
+
                           </TableCell>
                           <TableCell component="th" scope="row" padding="none">
                             <Stack direction="row" alignItems="center" spacing={1}>
@@ -375,7 +372,7 @@ export default function UserPage() {
                     })}
                     {emptyRows > 0 && (
                       <TableRow style={{ height: 53 * emptyRows }}>
-                        <TableCell colSpan={7} />
+                        <TableCell colSpan={8} />
                       </TableRow>
                     )}
                   </TableBody>
@@ -419,12 +416,7 @@ export default function UserPage() {
           />
         </Card>
       </Container>
-      <EditarUsuario
-        show={modalShow}
-        onHide={() => setModalShow(false)}
-        fetchData={fetchData}
-        selectedUsuarioID={selectedUser1}
-      />
+      <EditarUsuario show={modalShow} onHide={() => setModalShow(false)} fetchData={fetchData} selectedUsuarioID={selectedUser1} />
     </>
   );
 }
