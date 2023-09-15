@@ -45,7 +45,7 @@ const TABLE_HEAD = [
   { id: 'nombre', label: 'Nombres', alignRight: false },
   { id: 'correo', label: 'Correo', alignRight: false },
   { id: 'telefono', label: 'Telefono', alignRight: false },
-  { id: 'rol', label: 'Rol del Usuario', alignRight: false },
+  { id: 'rol', label: 'Rol del usuario', alignRight: false },
   { id: 'estado', label: 'Estado', alignRight: false },
   { id: '' },
   
@@ -225,7 +225,7 @@ export default function ParteCliente() {
           <Typography variant="h4" gutterBottom>
             Clientes
           </Typography>
-          <Button variant="contained" onClick={handleOpenModal} startIcon={<Iconify icon="eva:plus-fill" />}>
+          <Button variant="contained" style={{ textTransform: 'none'}} onClick={handleOpenModal} startIcon={<Iconify icon="eva:plus-fill" />}>
             Crear nuevo usuario
           </Button>
           <UsuariosFormulario2 open={openModal} onClose={handleCloseModal} fetchData={fetchData} />
@@ -306,7 +306,7 @@ export default function ParteCliente() {
                   />
                   <TableBody>
                     {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                      const { idUsuario, Documento, Nombre, correo, Telefono, ID_Rol, Estado } = row;
+                      const { idUsuario, Documento, Nombre, correo, Telefono, ID_Rol, Estado, foto } = row;
                       const selectedUser = selected.indexOf(idUsuario) !== -1;
                       const estadoText = Estado === 1 ? 'Activo' : 'Inactivo'; // Texto del estado según el valor
                       return (
@@ -314,7 +314,7 @@ export default function ParteCliente() {
                           <TableCell></TableCell>
                           <TableCell component="th" scope="row" padding="none">
                             <Stack direction="row" alignItems="center" spacing={2}>
-                              <Avatar alt="" src="" />
+                              <Avatar alt="" src={`${apiUrl}/anchetas/` + foto} />
                               <Typography variant="subtitle2" noWrap>
                                 {idUsuario}
                               </Typography>

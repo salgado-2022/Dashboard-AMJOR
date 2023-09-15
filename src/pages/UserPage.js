@@ -221,12 +221,7 @@ export default function UserPage() {
           <Typography variant="h4" gutterBottom>
             Usuarios
           </Typography>
-          <Button
-            variant="contained"
-            style={{ textTransform: 'none' }}
-            onClick={handleOpenModal}
-            startIcon={<Iconify icon="eva:plus-fill" />}
-          >
+          <Button variant="contained" style={{ textTransform: 'none' }} onClick={handleOpenModal} startIcon={<Iconify icon="eva:plus-fill" />}>
             Crear nuevo usuario
           </Button>
           <UsuariosFormulario2 open={openModal} onClose={handleCloseModal} fetchData={fetchData} />
@@ -243,7 +238,7 @@ export default function UserPage() {
             {loading ? (
               <TableContainer sx={{ minWidth: 800 }}>
                 <Table>
-                  <UserListHead
+                  <OrderListHead
                     order={order}
                     orderBy={orderBy}
                     headLabel={TABLE_HEAD}
@@ -310,13 +305,19 @@ export default function UserPage() {
                   <TableBody>
                     {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
                       const { idUsuario, Documento, Nombre, Apellido, correo, Nombre_Rol, Estado } = row;
+                      const selectedUser = selected.indexOf(idUsuario) !== -1;
                       const estadoText = Estado === 1 ? 'Activo' : 'Inactivo';
                       return (
-                        <TableRow key={row.idUsuario} hover tabIndex={-1}>
-                          <TableCell></TableCell>
+                        <TableRow key={row.idUsuario} hover tabIndex={-1} role="checkbox" selected={selectedUser} className="custom-table-row">
+                          <TableCell>
+                            <Checkbox
+                              checked={selectedUser}
+                              onClick={(event) => handleClick(event, idUsuario)}
+                            />
+                          </TableCell>
                           <TableCell component="th" scope="row" padding="none">
                             <Stack direction="row" alignItems="center" spacing={1}>
-                              <Avatar alt="" src="" />
+                              <Avatar alt="" src={`${apiUrl}/anchetas/` + foto} />
                               <Typography variant="subtitle2" noWrap>
                                 {idUsuario}
                               </Typography>

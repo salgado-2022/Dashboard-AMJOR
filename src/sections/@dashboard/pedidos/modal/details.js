@@ -27,9 +27,16 @@ function VerInsumosPedido(props) {
                 minimumFractionDigits: 0,
             });
         }
-        return 'N/A'; // Otra opción es retornar un valor predeterminado en caso de que price no sea un número válido
+        return 'N/A';
     };
 
+    const calcularTotal = () => {
+        let total = 0;
+        for (const insumo of data) {
+            total += insumo.Cantidad * insumo.Precio;
+        }
+        return total;
+    };
 
     useEffect(() => {
         setIsLoading(true);
@@ -45,7 +52,7 @@ function VerInsumosPedido(props) {
                 }
             };
 
-            fetchData();// Llama a la API al cargar el componente
+            fetchData();
         }
     }, [id]);
 
@@ -67,31 +74,32 @@ function VerInsumosPedido(props) {
                             <table className="table">
                                 <thead>
                                     <tr>
-                                        <th scope="col">ID</th>
                                         <th scope="col">Insumo</th>
                                         <th scope="col">Cantidad</th>
-                                        <th scope="col">Precio</th>
+                                        <th scope="col">Precio/U</th>
+                                        <th scope="col">Total</th>
                                     </tr>
                                 </thead>
                                 <tbody className="table-group-divider">
                                     {data.map((insumos, index) => {
                                         return (
                                             <tr key={index}>
-                                                <th scope="row">{insumos.ID_PedidoInsumo}</th>
+                                                <th hidden scope="row">{insumos.ID_PedidoInsumo}</th>
                                                 <td>{insumos.NombreInsumo}</td>
                                                 <td>{insumos.Cantidad}</td>
                                                 <td>{formatPrice(insumos.Precio)}</td>
+                                                <td>{formatPrice(insumos.Cantidad * insumos.Precio)}</td>
                                             </tr>
                                         );
                                     })}
                                 </tbody>
                             </table>
+                            <Typography variant="h4">Total: {formatPrice(calcularTotal())}</Typography>
                         </div>
                     </>
                 )}
             </DialogContent>
             <DialogActions>
-                {/* <Typography variant="h4">Total: {formatPrice(dataA.PrecioUnitario)}</Typography> */}
             </DialogActions>
         </Dialog>
     );
