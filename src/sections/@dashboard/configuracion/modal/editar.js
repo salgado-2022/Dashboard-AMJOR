@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import Swal from 'sweetalert2';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 import {
   Button,
   Table,
@@ -13,14 +13,13 @@ import {
   Switch,
   TextField,
   Typography,
-  Stack,
   Grid,
   DialogTitle,
   Slide,
   Dialog,
-
   DialogContent,
   DialogActions,
+  Snackbar,
 } from '@mui/material';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -40,6 +39,8 @@ function EditarConfi(props) {
     Nombre_Rol: '',
     estado: '',
   });
+  const [errorNombre, setErrorNombre] = useState(false);
+  const [errorPermisos, setErrorPermisos] = useState(false);
 
   const handleInput = (event) => {
     const { name, value, type, checked } = event.target;
@@ -55,6 +56,20 @@ function EditarConfi(props) {
       }
     } else {
       setValues((prev) => ({ ...prev, [name]: value }));
+    }
+
+    // Validar que el campo "Nombre del rol" no esté vacío
+    if (name === 'Nombre_Rol' && value.trim() === '') {
+      setErrorNombre(true);
+    } else {
+      setErrorNombre(false);
+    }
+
+    // Validar que al menos se haya seleccionado un permiso
+    if (name === 'selectedPermisos' && value.length === 0) {
+      setErrorPermisos(true);
+    } else {
+      setErrorPermisos(false);
     }
   };
 
@@ -72,11 +87,28 @@ function EditarConfi(props) {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    try {
-      await handleUpdate();
-      handleCloseModal();
-    } catch (error) {
-      console.error(error);
+
+    // Validar nuevamente que los campos no estén vacíos
+    if (values.Nombre_Rol.trim() === '') {
+      setErrorNombre(true);
+    } else {
+      setErrorNombre(false);
+    }
+
+    // Validar que al menos se haya seleccionado un permiso
+    if (selectedPermisos.length === 0) {
+      setErrorPermisos(true);
+    } else {
+      setErrorPermisos(false);
+    }
+
+    // Si no hay errores, proceder con el envío de datos
+    if (!errorNombre && !errorPermisos) {
+      try {
+        await handleUpdate();
+      } catch (error) {
+        console.error(error);
+      }
     }
   };
 
@@ -87,27 +119,23 @@ function EditarConfi(props) {
         estado: values.estado,
         Permisos: selectedPermisos,
       };
+
       await axios.put(`${apiUrl}/api/admin/configuracion/confiedit/${id}`, updatedData);
+      fetchData();
+
+      // Comprueba si todos los campos están correctamente diligenciados antes de cerrar la modal
+      if (!errorNombre && !errorPermisos) {
+        handleCloseModal(); // Cierra la modal si los campos están correctos
+      }
+
       Swal.fire({
         title: 'Modificado Correctamente',
         text: 'Tu rol se ha sido modificado correctamente',
         icon: 'success',
-        showConfirmButton: false,
-        timer: 1500,
+        showConfirmButton: true,
       });
-      fetchData();
-      setTimeout(() => {
-
-      }, 50);
     } catch (error) {
       console.error(error);
-      Swal.fire({
-        title: 'Error',
-        text: 'Ha ocurrido un error al modificar el rol',
-        icon: 'error',
-        confirmButtonColor: '#3085d6',
-        confirmButtonText: 'Aceptar',
-      });
     }
   };
 
@@ -157,8 +185,8 @@ function EditarConfi(props) {
   }, [id, show]);
 
   return (
-    <Dialog open={show} onClose={handleCloseModal} TransitionComponent={Transition}>
-      <DialogTitle >
+    <Dialog open={show} onClose={onHide} TransitionComponent={Transition}>
+      <DialogTitle>
         <Typography variant="h5" align="center" sx={{ mb: 1 }}>
           Editar rol y permisos
         </Typography>
@@ -172,6 +200,8 @@ function EditarConfi(props) {
           label="Nombre del rol"
           value={values.Nombre_Rol}
           onChange={handleInput}
+          error={errorNombre}
+          helperText={errorNombre ? 'El campo no puede estar vacío' : ''}
         />
         <br />
         <br />
@@ -203,7 +233,6 @@ function EditarConfi(props) {
         <Grid container alignItems="center" spacing={-1} style={{ marginTop: '1px' }}>
           <Typography style={{ paddingLeft: '16px' }}>Estado del rol: </Typography>
           <Switch color="switch" id="estado" name="estado" checked={isRolActivo} onChange={handleInput} />
-
         </Grid>
       </Grid>
       <DialogActions>
