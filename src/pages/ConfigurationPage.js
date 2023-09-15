@@ -92,7 +92,6 @@ export default function ListaConfiguracion() {
   const [modalShow, setModalShow] = useState(false);
   const [loading, setLoading] = useState(true);
   const [showDeleteMenu, setShowDeleteMenu] = useState(false);
-  const [refreshInterval, setRefreshInterval] = useState(null);
 
 
 
@@ -166,14 +165,6 @@ export default function ListaConfiguracion() {
             });
         }
       })
-      .catch((err) => {
-        console.log(err);
-        Swal.fire({
-          title: 'Error',
-          text: 'Ocurrió un error al verificar el uso del rol por usuarios.',
-          icon: 'error',
-        });
-      });
   };
 
   const handleRequestSort = (event, property) => {

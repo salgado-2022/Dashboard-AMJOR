@@ -46,7 +46,7 @@ const TABLE_HEAD = [
   { id: 'correo', label: 'Correo', alignRight: false },
   { id: 'rol', label: 'Rol', alignRight: false },
   { id: 'estado', label: 'Estado', alignRight: false },
-  { id: '', label: '', alignRight: false },
+  { id: '' },
 ];
 
 // ----------------------------------------------------------------------
@@ -221,7 +221,12 @@ export default function UserPage() {
           <Typography variant="h4" gutterBottom>
             Usuarios
           </Typography>
-          <Button variant="contained" style={{textTransform: 'none'}} onClick={handleOpenModal} startIcon={<Iconify icon="eva:plus-fill" />}>
+          <Button
+            variant="contained"
+            style={{ textTransform: 'none' }}
+            onClick={handleOpenModal}
+            startIcon={<Iconify icon="eva:plus-fill" />}
+          >
             Crear nuevo usuario
           </Button>
           <UsuariosFormulario2 open={openModal} onClose={handleCloseModal} fetchData={fetchData} />
@@ -305,16 +310,10 @@ export default function UserPage() {
                   <TableBody>
                     {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
                       const { idUsuario, Documento, Nombre, Apellido, correo, Nombre_Rol, Estado } = row;
-                      const selectedUser1 = selected.indexOf(idUsuario) !== -1;
                       const estadoText = Estado === 1 ? 'Activo' : 'Inactivo';
                       return (
-                        <TableRow key={row.idUsuario} hover tabIndex={-1} role="checkbox" selected={selectedUser1} className="custom-table-row">
-                          <TableCell>
-                            <Checkbox
-                              checked={selectedUser1}
-                              onClick={(event) => handleClick(event, idUsuario)}
-                            />
-                          </TableCell>
+                        <TableRow key={row.idUsuario} hover tabIndex={-1}>
+                          <TableCell></TableCell>
                           <TableCell component="th" scope="row" padding="none">
                             <Stack direction="row" alignItems="center" spacing={1}>
                               <Avatar alt="" src="" />
@@ -375,7 +374,7 @@ export default function UserPage() {
                     })}
                     {emptyRows > 0 && (
                       <TableRow style={{ height: 53 * emptyRows }}>
-                        <TableCell colSpan={8} />
+                        <TableCell colSpan={7} />
                       </TableRow>
                     )}
                   </TableBody>
@@ -419,7 +418,12 @@ export default function UserPage() {
           />
         </Card>
       </Container>
-      <EditarUsuario show={modalShow} onHide={() => setModalShow(false)} fetchData={fetchData} selectedUsuarioID={selectedUser1} />
+      <EditarUsuario
+        show={modalShow}
+        onHide={() => setModalShow(false)}
+        fetchData={fetchData}
+        selectedUsuarioID={selectedUser1}
+      />
     </>
   );
 }

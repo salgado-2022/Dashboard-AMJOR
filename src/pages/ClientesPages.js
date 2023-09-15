@@ -47,7 +47,7 @@ const TABLE_HEAD = [
   { id: 'telefono', label: 'Telefono', alignRight: false },
   { id: 'rol', label: 'Rol del Usuario', alignRight: false },
   { id: 'estado', label: 'Estado', alignRight: false },
-  { id: '', label: '', alignRight: false },
+  { id: '' },
   
 ];
 
